@@ -1,4 +1,4 @@
-const KB_BASE_PATH = "";
+const KB_BASE_PATH = "/knowledgebase-public";
 const THEME_KEY = "theme";
 const SOURCE_ORDER = ["paper", "reddit", "rss", "custom"];
 const COLLAPSED_ITEM_IDS = new Set();
