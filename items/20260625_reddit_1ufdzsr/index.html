@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Optimising LMAPF guidance graphs using Evolutionary algorithms: Advice needed [R]</title>
+  <link rel="stylesheet" href="/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>Optimising LMAPF guidance graphs using Evolutionary algorithms: Advice needed [R]</h1>
+<p><strong>Date:</strong> 2026-06-25</p>
+<p><strong>Source:</strong> reddit / MachineLearning</p>
+
+<p><a href="https://www.reddit.com/r/MachineLearning/comments/1ufdzsr/optimising_lmapf_guidance_graphs_using/">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">1. **ポストの内容説明**
+
+このRedditのポストは、Lifelong Multi-Agent Path Finding (LMAPF) という問題において、進化アルゴリズムを用いて「ガイダンスグラフ」を最適化することに関するものです。
+
+*   **LMAPFとは:** 複数のエージェントがそれぞれの目的地に移動する問題で、Lifelong MAPFではタスク完了後もエージェントに新しいタスクが割り当てられます。エージェントはグリッド状のマップで、1ステップあたり隣接マスへの移動か待機が可能です。LMAPFアルゴリズムの目標は、単位時間あたりの完了ジョブ数を最大化することです。
+*   **ガイダンスグラフとは:** LMAPFアルゴリズムがエージェントの経路選択に影響を与えるために使用される、重み付けされたグラフです。エッジ（移動経路）の重みを変えることで、LMAPFアルゴリズムの振る舞いを変化させ、結果としてスループット（単位時間あたりの完了ジョブ数）を向上させることができます。
+*   **進化アルゴリズムの適用:** 投稿者は、LMAPFアルゴリズム自体を変更せずに、ガイダンスグラフを最適化するために進化アルゴリズムを使おうとしています。これは、特定のLMAPFアルゴリズム、マップ、エージェント数に特化したガイダンスグラフを見つけるためのアプローチです。
+*   **投稿者の現状:**
+    *   基本的な進化アルゴリズム（初期集団の生成、評価、選択、次世代生成）を実装しました。
+    *   ガイダンスグラフの「適応度」（フィットネススコア）は、LMAPFシミュレーションで一定時間内に完了したジョブ数で評価しています。
+    *   **問題点:**
+        *   **評価のばらつき:** シミュレーションのシード（乱数生成の元）によって、同じガイダンスグラフでも得られるスループット（適応度）が大きく変動します。これにより、どのガイダンスグラフが本当に優れているのかを reliably（信頼性高く）判断するのが難しい状況です。シミュレーション時間を長くしても、このばらつき（CV: 0.006）は十分に小さくならないようです。
+        *   **進化の停滞/劣化:** 9割の候補が前世代の最良候補よりも劣る場合、進化がうまくいかず、解が悪化していく可能性があります。
+        *   **ミューテーション戦略の難しさ:**
+            *   **変化の度合い:** 少ない変更（例: 10個の重みの変更）では、すべての重みを試すのに膨大な時間がかかります。一方、多くの変更を加えると、良い変化と悪い変化が打ち消し合ってしまう可能性があります。
+            *   **試したミューテーション戦略:**
+                1.  各重みにランダムな値を加える。
+                2.  特定のタイルの3x3範囲の重みをまとめて変更する。
+                3.  2つのノード間の最短経路に沿って重みを調整する（一方通行で重みを減らし、逆方向で増やす）。
+        *   **結果:** 3番目の戦略が、高エージェント数で混雑を回避しスループットを向上させる傾向が見られましたが、投稿者はこれを進化アルゴリズムの功績ではなく、ミューテーション戦略自体の効果だと考えています。他の戦略では、均一な重みを持つガイダンスグラフよりも悪い結果しか得られていません。
+*   **投稿者の懸念:** 投稿者は、このアプローチがうまくいくのか疑問に思っており、アドバイスを求めています。
+
+2. **興味深いコメント**
+
+このポストにはまだコメントがありません。もしコメントがあれば、それらの内容を分析し、特に興味深いものを特定して提示することができます。
+
+（現時点ではコメントがないため、この項目については回答できません。）</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

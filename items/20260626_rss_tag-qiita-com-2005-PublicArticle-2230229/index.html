@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>【Frontend CSS – パート14】Style Query・Container Naming・実践パターンまで徹底解説</title>
+  <link rel="stylesheet" href="/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>【Frontend CSS – パート14】Style Query・Container Naming・実践パターンまで徹底解説</h1>
+<p><strong>Date:</strong> 2026-06-26</p>
+<p><strong>Source:</strong> rss / Qiita Trend</p>
+
+<p><a href="https://qiita.com/tuanphan/items/5179c23d9b5a25ceeb2f?utm_campaign=popular_items&amp;utm_medium=feed&amp;utm_source=popular_items">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">## 【Frontend CSS – パート14】Container QueryとStyle Queryによるコンポーネントの再利用性向上
+
+本記事では、CSSのContainer Query（コンテナクエリ）とStyle Query（スタイルクエリ）について、その必要性から実践的な使い方までを解説します。
+
+### 1. Container Queryの必要性
+
+従来のMedia Queryはビューポート（画面サイズ）のみを基準としてスタイルを適用するため、コンポーネントがどのような親要素（サイドバー、グリッドなど）に配置されているかを把握できませんでした。これにより、コンポーネントのバリアント増加、propsによるレイアウト調整、CSSの肥大化といった問題が生じ、コンポーネントの再利用性が低下していました。
+
+Container Queryは、コンポーネント自身が親コンテナのサイズやスタイルを問い合わせることで、これらの問題を解決します。
+
+### 2. Container Queryの基本構文
+
+Container Queryは、親コンテナのサイズまたはスタイルに基づいてスタイルを適用します。基本的な流れは以下の3ステップです。
+
+1.  **`container-type`の宣言**: コンテナの種類を指定します。
+    *   `inline-size`: コンテナの幅（inline軸）に基づいてクエリします。最も一般的です。
+    *   `size`: コンテナの幅と高さの両方に基づいてクエリします。
+    *   `normal`: サイズクエリ用のコンテナではありません。
+    ```css
+    .card-container {
+      container-type: inline-size; /* 幅のみクエリ */
+      /* または */
+      container-type: size;       /* 幅と高さの両方クエリ */
+    }
+    ```
+
+2.  **`@container`で条件を指定**: 親コンテナのサイズやスタイルに対する条件を記述します。
+    ```css
+    /* 名前なし — 最も近いコンテナをクエリ */
+    @container (max-width: 400px) {
+      .child { /* スタイル */ }
+    }
+
+    /* 名前あり — 特定のコンテナをクエリ */
+    @container sidebar (max-width: 400px) {
+      .child { /* スタイル */ }
+    }
+    ```
+
+3.  **条件が真なら子要素にスタイル適用**: 指定した条件が満たされた場合に、子要素にスタイルが適用されます。
+
+### 3. Container Naming（コンテナ名）
+
+複数のコンテナがネストしている場合、`@container`で名前を指定しないと、最も近いコンテナがクエリ対象となり、意図しないスタイルが適用される可能性があります。`container-name`プロパティを使用することで、特定のコンテナを正確に指定できます。
+
+*   **名前の付け方**:
+    ```css
+    /* 方法1: container-name を個別に */
+    .card-container {
+      container-name: card;
+      container-type: inline-size;
+    }
+
+    /* 方法2: container のショートハンド */
+    .card-container {
+      container: card / inline-size; /* 名前 / タイプ */
+    }
+    ```
+
+*   **`@container`で名前を使用**:
+    ```css
+    /* container名 &#34;card&#34; が 500px より広いときだけ適用 */
+    @container card (min-width: 500px) {
+      .card-title { font-size: 1.5rem; }
+    }
+    ```
+
+*   **複数のコンテナに同じ名前**: 複数のコンテナに同じ名前を付けることで、1つの`@container`ルールが複数の場所で反応するようにできます。
+
+*   **Name-only Container Query**: サイズ条件なしで、特定の名前のコンテナで囲まれているかどうかだけでスタイルを適用できます。（※2026年5月頃から利用可能）
+
+### 4. Style Query（スタイルクエリ）
+
+Style Queryは、コンテナのサイズだけでなく、カスタムプロパティなどの「スタイル値」に基づいてスタイルを適用する機能です。これにより、ReactのContextを使わずに、コンポーネントが親コンテナのテーマ（例: ダークモード）などを読み取れるようになります。
+
+*   **Style Queryの構文**:
+    ```css
+    /* カスタムプロパティのクエリ — 対応済み */
+    @container style(--theme: dark) {
+      .card { /* スタイル */ }
+    }
+
+    /* 論理演算子との組み合わせ */
+    @container style(--theme: dark) and (min-width: 400px) {
+      .card { /* スタイル */ }
+    }
+    ```
+    **注意**: 現時点（2026年5月頃からBaseline Newly Available）では、Style Queryが広く対応しているのは**カスタムプロパティのみ**です。
+
+### 5. ブラウザのレンダリングパイプラインとContainer Query
+
+`@container`は、コンテナのレイアウト計算後に評価されます。そのため、リサイズ時にコンポーネントが一瞬「跳ねる」ことがありますが、これはバグではなくブラウザが正しく動作している証拠です。
+
+### 6. 実践：React + TypeScript で DashboardCard
+
+Container QueryとStyle Queryを組み合わせた`DashboardCard`コンポーネントの実装例が紹介されています。この例では、コンポーネントが配置されるコンテナの幅に応じてレイアウト（横並び、縦並び、トレンド表示の有無、フォントサイズ）、さらに親コンテナに設定された`--theme`カスタムプロパティによるダークモードへの自動対応を実現しています。これは、Variant propsなしで、3つの異なるコンテキスト（メインコンテンツ、サイドバー、ダークテーマコンテナ）で同じコンポーネントが適切に表示されることを示しています。
+
+### 7. 実務で使えるパターン
+
+*   **Responsive Grid**: コンテナの幅に応じてグリッドの列数を変更します。
+*   **Fluid Typography**: `cqi`（container query inline-size）などのコンテナクエリ単位と`clamp()`を組み合わせ、コンテナ幅に比例してフォントサイズを変化させます。
+*   **ネストした Container Query**: 外側のコンテナと内側のコンテナでそれぞれクエリを行い、より細かくレイアウトを制御します。
+
+### 8. Container Query Units
+
+`cqi`, `cqb`, `cqw`, `cqh` などのコンテナクエリ単位は、コンテナのサイズを基準にした相対単位です。`vw`/`vh`がビューポート基準なのに対し、これらはコンポーネント単位でのレスポンシブデザインを可能にします。
+
+### 9. Media Query、Container Query、Style Query の使い分け
+
+*   **Media Query**: ページ全体のレスポンシブデザイン（ヘッダー、フッター、メイングリッドなど）に。
+*   **Container Query**: 再利用可能なコンポーネントが、親コンテナのサイズに応じてどのように振る舞うべきかに。
+*   **Style Query**: コンポーネントが親コンテナのコンテキスト（テーマ、デザイントークンなど）に基づいてスタイルを適用する必要がある場合に。
+
+Container QueryはMedia Queryを補完するものであり、置き換えるものではありません。
+
+### 10. パフォーマンス &amp; Production のベストプラクティス
+
+*   **`container-type`はコンポーネントの境界に**: 全ての`div`に`container-type`を適用するのではなく、コンポーネントの最外側のラッパーに適用するのが原則です。
+*   **`@supports`によるフォールバック**: 古いブラウザのために、Container Queryに対応しない環境でも機能するデフォルトスタイルを用意します。
+*   **意味のあるbreakpoint**: 数字ではなく、`compact`, `medium`, `expanded`のような意味のある名前でブレークポイントを定義します。
+*   **Media QueryとContainer Queryの併用**: ページ全体のレイアウトにはMedia Query、コンポーネント内部の調整にはContainer Queryを使い分けます。
+*   **意味のあるコンテナ名**: `c1`のような短い名前ではなく、`sidebar`, `card-grid`のように意味がわかる名前を付けます。
+
+### 11. チェックリスト：Container Query を諦める前に
+
+Container Queryが動作しない場合、以下の項目を確認してください。
+
+*   `container-type`の宣言（`inline-size`または`size`）
+*   `container-name`と`@container`での名前の一致
+*   Style Queryでカスタムプロパティを使用しているか
+*   `@supports`によるフォールバックの有無
+*   ブラウザサポートの確認（特にStyle Query）
+*   構文の誤り（括弧など）
+
+### 12. まとめ
+
+Container Query、Container Naming、Style Queryは、コンポーネントの再利用性を劇的に向上させる強力なツールです。これらを活用することで、Media Queryだけでは難しかった、コンポーネントが様々なコンテキストで適切に機能するデザインシステムを構築できます。
+
+*   **Media Query**: ページ全体の広さ・狭さ
+*   **Container Query**: コンポーネントが配置される場所の広さ
+*   **Style Query**: コンポーネントのコンテキスト（テーマなど）
+
+これらのツールを適切に使い分けることで、「768pxの画面でカードはどう見えるか」ではなく、「コンテナが300pxのとき、カードに何が必要か」といった、コンポーネント中心の設計思想へとシフトできます。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

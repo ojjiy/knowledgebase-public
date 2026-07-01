@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Optimizing cloud economics with linear elastic caching</title>
+  <link rel="stylesheet" href="/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>Optimizing cloud economics with linear elastic caching</h1>
+<p><strong>Date:</strong> 2026-06-25</p>
+<p><strong>Source:</strong> rss / Google Research Blog</p>
+
+<p><a href="https://research.google/blog/optimizing-cloud-economics-with-linear-elastic-caching/">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">Google CloudのTodd Lipcon氏とGoogle ResearchのManish Purohit氏による記事「Optimizing cloud economics with linear elastic caching」は、クラウド環境におけるキャッシュコストの最適化について論じています。
+
+従来のキャッシュ管理は、固定されたメモリ容量に対し、LRU（Least Recently Used）などのアルゴリズムでデータ配置を管理してきました。しかし、これはピーク時の需要に合わせてメモリを過剰に確保するか、そうでなければパフォーマンスが低下するという「ゴールドラッシュ」問題を引き起こしていました。
+
+本記事では、「線形弾性キャッシュ（linear elastic caching）」という新しいアプローチを提案しています。これは、キャッシュサイズをワークロードに応じて動的に調整し、総所有コスト（TCO）を最小化することを目指します。メモリを固定リソースではなく、データサイズと保持期間に線形比例するユーティリティとして捉え、メモリ使用量とキャッシュミス発生時のペナルティとのトレードオフを最適化します。
+
+この最適化には、未知の期間のスキー旅行に例えられる「スキーレンタル問題」の考え方が応用されています。データは「メモリを借りる（Renting）」（メモリを消費し続ける）か、「キャッシュミスを買い取る（Buying the miss）」（メモリを節約するが、再度アクセスされた場合にペナルティが発生する）かの選択に直面します。本研究では、この「レンタル期間」（time-to-live: TTL）と「購入コスト」を分離して最適化できることを理論的に示し、実装を容易にしました。
+
+実証実験では、Googleの分散データベースSpannerのプロダクションワークロードと、公開されているキャッシュトレースを用いて評価が行われました。
+
+Spannerへの導入では、軽量な機械学習（浅い決定木）を用いたTTL予測モデルを開発しました。その結果、標準的な固定サイズキャッシュと比較して、メモリ使用量を15.5%削減し、キャッシュミスを5.5%増加させるだけで、TCOを約5%削減することに成功しました。さらに、コスト認識型のアルゴリズムにより、増加したキャッシュミスはストレージからの取得が容易なデータに集中し、実際のI/Oコストへの影響はわずか0.5%でした。
+
+公開トレースを用いた実験でも、線形弾性キャッシュは多様なワークロードで固定サイズキャッシュを上回り、特にメモリコストがキャッシュミス発生時のコストに対して高くなるほど、その効果は顕著になりました。
+
+結論として、線形弾性キャッシュは、静的なピーク負荷対応から動的でコストを意識したモデルへの移行を促し、高性能かつ経済的に効率的なシステム構築を可能にします。特に、クラウド環境で従量課金制が普及する中、大規模サービスにおいてはグローバルなフットプリントの最適化に不可欠な戦略となることが示唆されています。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

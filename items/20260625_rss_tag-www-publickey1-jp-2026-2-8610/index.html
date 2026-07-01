@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AWS Lambda MicroVMs登場。サーバレスの手軽さでステートフルかつ隔離された実行環境を提供</title>
+  <link rel="stylesheet" href="/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>AWS Lambda MicroVMs登場。サーバレスの手軽さでステートフルかつ隔離された実行環境を提供</h1>
+<p><strong>Date:</strong> 2026-06-25</p>
+<p><strong>Source:</strong> rss / Publickey</p>
+
+<p><a href="https://www.publickey1.jp/blog/26/aws_lambda_microvms.html">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">AWS Lambda MicroVMs は、サーバレスの利便性を維持しつつ、ステートフルかつ隔離された実行環境を提供する新しいサービスです。従来の Lambda では、実行環境は一時的でステートレスなものでしたが、MicroVMs を利用することで、最大8時間までステートを保持できる実行環境が利用可能になります。
+
+このサービスは、Firecracker を採用しており、コンテナレベルで隔離された仮想マシンによる安全な分離を実現します。これにより、AIが生成した信頼性の低いコードや、インタラクティブなスクリプトなどを、プロビジョニングの手間なく安全に実行できます。また、隔離されたマルチテナント環境を容易に構築することも想定されています。
+
+MicroVMs は、以下の特徴を備えています。
+- Firecracker を採用した、コンテナレベルで隔離された仮想マシンによる安全な分離。
+- 最大8時間ステートを維持できるステートフルな実行環境。
+- アイドル状態でもメモリとディスクの内容を保持し、ステートフルな状態を維持。APIやポリシーによりアイドル状態の設定が可能。
+- トラフィックが着信すると、アイドル状態からでもMicroVMによりセッションを即座に再開。
+- DockerfileとAmazon S3バケットによるMicroVMイメージの管理。
+
+これにより、即座に起動して便利に利用でき、仮想マシンと同等の安全な隔離環境を、AWS Lambda のサーバレス基盤で管理の手間なく利用できます。ただし、永続的にステートを保持できるわけではなく、一時的または短時間で完了するワークロードの利用が想定されています。
+
+対応するプロセッサはARM64アーキテクチャで、1つあたり最大16個のvCPU、32GBのメモリ、32GBのディスクを備えています。利用可能なリージョンは、東京、米国東部（バージニア北部、オハイオ）、米国西部（オレゴン）、ヨーロッパ（アイルランド）です。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

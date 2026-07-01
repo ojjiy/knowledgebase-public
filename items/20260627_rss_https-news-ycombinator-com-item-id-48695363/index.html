@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>IBM MCGA Gate Array Reverse Engineering</title>
+  <link rel="stylesheet" href="/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>IBM MCGA Gate Array Reverse Engineering</h1>
+<p><strong>Date:</strong> 2026-06-27</p>
+<p><strong>Source:</strong> rss / Hacker News Front Page</p>
+
+<p><a href="https://github.com/schlae/IBM_MCGA">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">IBM MCGA (Multi-Color Graphics Array) は、PS/2モデル25および30に搭載された低コストのビデオチップセットです。このチップセットは、メモリコントローラーゲートアレイ (72X8300) とビデオフォーマッターゲートアレイ (72X8205) の2つの主要なゲートアレイで構成されています。
+
+**メモリコントローラーゲートアレイ (72X8300)**
+このゲートアレイは、MC6845同期ジェネレーターICの実装、ISAバスへのビデオRAMインターフェース管理、キャラクターRAMインターフェース管理、およびクロック選択やモニターID読み取りといったその他の機能を含んでいます。
+本稿では、Seiko SLA6430ゲートアレイを使用した例がリバースエンジニアリングされており、4,342個の基本セル (BC) で構成されています。これは2μm CMOSプロセスで、2層のメタル配線が使用されています。
+
+**ビデオフォーマッターゲートアレイ (72X8205)**
+このゲートアレイは、ISAメモリおよびI/Oポートアドレスのデコード、RAMDACインターフェースの管理、そしてグラフィックスモードとテキストモードの両方でピクセルデータを生成する役割を担います。
+2つのICの画像が提示されており、1つはIBMの社内ゲートアレイプロセスで製造されたものですが、デカップリング中にトップメタル層が除去されたため、ネットリストは抽出できませんでした。もう1つはSeiko SLA6330ゲートアレイで、3,312個の基本セルで構成されており、リバースエンジニアリングされています。
+
+**MCGAの機能とレジスタ情報**
+リバースエンジニアリングの結果、MCGAに関するいくつかの新しい情報が明らかになりました。
+
+*   **Genlock機能:** MCGAは外部HSYNCおよびVSYNC信号とのGenlockが可能です。これらの信号はビデオコネクタのピン12 (ID1: VSYNC) およびピン11 (ID0: HSYNC) に引き出されています。このモードを有効にするには、レジスタ0x12 (キャラクタージェネレーターインターフェースおよび同期極性) のビット3に1を書き込みます。
+*   **レジスタ0x10 (Mode Control):**
+    *   ビット3 (&#34;Compatibility&#34;) は80x25テキストモードにのみ影響し、水平タイミングレジスタを2倍にします。
+    *   ビット2 (&#34;Clock = 1&#34;) はビデオ回路を駆動するクロックを制御します。デフォルトでは25.175MHzクロックを使用しますが、このビットを0に設定すると14.318MHzクロックが使用されます。
+    *   ビット6 (&#34;Reserved = 0&#34;) はまだ完全に理解されていません。
+*   **レジスタ0x20 (Reserved):** 製造テストモード用のレジスタであり、14.318MHz代替クロックモード、VCKピン代替モード、カーソル位置やカウンターのスピードアップモードなどの機能が含まれています。
+*   **レジスタ0x1A (Extended Mode Register):** 2つの未公開ビットがあり、256色モードの強制や、ボーダーカラーの表示全体への適用などが考えられています。
+*   **製造テストレジスタ:** レジスタ0x19 (アドレス) および0x18 (データ) を介してアクセス可能で、RAMDACへのデータ送信内容、VRAMからのデータ受信内容、および未知の16色モードデータなどを読み取ることができます。アドレス4には、製造リセットや一部出力の無効化を行う書き込み専用レジスタも存在します。
+
+**リバースエンジニアリングプロセス**
+72x8300の画像は、特定の縮尺および圧縮率で処理され、KiCADにインポートされました。基本セルごとにライブラリフットプリントが作成され、配線は2層のメタル層で行われていました。基本セルは、VCCとGNDを運ぶ2本の並列メタル2配線と、外部信号を接続するためのメタル1配線で構成されていました。配線はフットプリントパッドから始まり、基盤となるメタルに沿って接続され、ネット名が付与された後、回路図に逆伝播されました。
+
+**今後の計画**
+今後は、KiCADのネットリストからVerilogコードを生成することが予定されています。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

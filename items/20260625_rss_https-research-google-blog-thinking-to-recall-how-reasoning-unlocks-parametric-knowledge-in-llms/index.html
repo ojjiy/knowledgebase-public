@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Thinking to recall: How reasoning unlocks parametric knowledge in LLMs</title>
+  <link rel="stylesheet" href="/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>Thinking to recall: How reasoning unlocks parametric knowledge in LLMs</h1>
+<p><strong>Date:</strong> 2026-06-25</p>
+<p><strong>Source:</strong> rss / Google Research Blog</p>
+
+<p><a href="https://research.google/blog/thinking-to-recall-how-reasoning-unlocks-parametric-knowledge-in-llms/">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">大規模言語モデル（LLM）は、複雑なタスクにおいて段階的な推論（chain-of-thought、CoT）を行うことで性能が向上することが知られています。しかし、単純な単一ホップの事実に関する質問に対して、推論がどのように役立つかは不明でした。Google Researchの研究者であるZorik Gekhman氏とJonathan Herzig氏は、LLMが単純な事実の想起に推論を活用する現象を調査し、「Thinking to Recall: How Reasoning Unlocks Parametric Knowledge in LLMs」と題した論文で発表しました。
+
+この研究では、LLMが推論を行うことで、通常はアクセスできない正解を想起できるようになることを示しています。この効果は、以下の2つのメカニズムによって引き起こされることが特定されました。
+
+1.  **計算バッファ効果（Computational Buffer Effect）**:
+    LLMが生成する推論トークンは、単なる意味的な内容としてだけでなく、追加の計算時間を提供し、内部状態を洗練させるための「計算バッファ」として機能します。意味のない文字列を繰り返して推論トレースの長さを模倣した場合でも、正解の想起能力が向上することから、この効果が確認されました。ただし、この効果には限界があり、推論トレースの実際の意味内容も重要であることが示唆されています。
+
+2.  **事実のプライミング（Factual Priming）**:
+    LLMが生成する自然な推論トレースは、論理的な証明ではなく、質問に関連する事実を列挙する傾向があります。これは、人間の認知における「拡散活性化」と同様のメカニズムで、関連する事実を生成することで、正解の想起を促進します。研究では、推論トレースから抽出した事実のみを条件として与えることで、推論を無効にした場合でも、推論を有効にした場合と同等の性能に近づくことが示されました。例えば、ネパールの歴代国王について質問された場合、過去の国王の名前を列挙することが、次の国王の名前を想起するのを助けます。
+
+しかし、この「事実のプライミング」メカニズムには、生成された中間事実が誤っている（ハルシネーション）というリスクが伴います。研究では、推論トレースに1つでも誤った事実が含まれている場合、最終的な正解にたどり着く可能性が著しく低下することが明らかになりました。
+
+これらの知見は、LLMの信頼性向上に繋がる実践的な示唆を与えます。テスト段階で、検証可能でハルシネーションを含まない事実のみを含む推論経路を優先することで、モデルの精度を大幅に向上させることが可能です。将来的には、事実に基づいた中間ステップを奨励する「プロセス報酬」をトレーニングに活用することで、より信頼性が高く、ハルシネーションの少ないモデルを構築できる可能性があります。
+
+結論として、LLMにおける推論は、単なるタスク分解や論理演算以上の広範な目的を果たし、モデルの内部メモリを露出し、パラメトリック知識の境界を拡張する基本的なメカニズムであることが示されました。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

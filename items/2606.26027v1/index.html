@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Why Multi-Step Tool-Use Reinforcement Learning Collapses and How Supervisory Signals Fix It</title>
+  <link rel="stylesheet" href="/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>Why Multi-Step Tool-Use Reinforcement Learning Collapses and How Supervisory Signals Fix It</h1>
+<p><strong>Date:</strong> 2026-06-24</p>
+<p><strong>Source:</strong> paper / hf-papers</p>
+
+<p><a href="http://arxiv.org/abs/2606.26027v1">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body"># タイトル
+Why Multi-Step Tool-Use Reinforcement Learning Collapses and How Supervisory Signals Fix It
+[View Paper](http://arxiv.org/abs/2606.26027v1)
+
+## 1. 問題意識：解決したい問題はなにか
+大規模言語モデル（LLM）が外部ツールを利用して複雑なタスクを実行する能力は増しているが、エージェント型の強化学習（RL）のみでは、ツールの多段階利用タスクにおいて、性能の不安定さや限定的な改善しか得られないという問題がある。特に、モデルの性能が突然劇的に低下し、ツール呼び出しの構造が崩壊する「壊滅的な崩壊（catastrophic collapse）」という現象が観測される。この問題の根本原因は、特定の制御トークンにおける予期せぬ確率の急増であり、これが構造化された実行を妨げている。この論文では、このRLの不安定性とその崩壊メカニズムを理解し、それを克服するための手法を提案することを目的としている。
+
+## 2. 提案手法のアプローチ：どのようなアイデア・アプローチで問題を解決しようとしたか
+本研究では、RLの不安定性とその崩壊メカニズムを理解するため、まず詳細な分析を通じて、性能低下がモデルの推論能力の低下ではなく、特定の制御トークンの確率増幅に起因する構造生成の歪みであることを明らかにした。その上で、この問題を解決するために、多様な「監視信号（supervisory signals）」をRLトレーニングに組み込むアプローチを採用した。具体的には、以下の監視信号とトレーニングパラダイムを系統的に調査・提案している。
+
+*   **監視信号の種類:**
+    *   SFT（教師ありファインチューニング）→ RL: 高品質なツール使用軌跡に事前にSFTを行う。
+    *   オフポリシー監視（Off-policy supervision）: モデル生成の軌跡の一部を正解軌跡で置き換える。
+    *   ヒントベースガイダンス（Hint-based guidance）: モデルが応答を生成する前に、正しいヒントを前置する。
+    *   誤り軌跡監視（Erroneous trajectory supervision）: トレーニングプロセス中に発生した失敗例（誤り軌跡）を教師あり学習データとして利用する。
+    *   プロセス反映監視（Process Reflection Supervision）: 中間的な推論ステップから抽出されたテキストによる「反省」や「考察」を、誤り軌跡と組み合わせて教師あり学習データとして利用する。
+*   **トレーニングパラダイム:**
+    *   **同期（Synchronous）:** RLと監視信号を同時に適用する。
+    *   **インターリーブ（Interleaved）:** RLとSFT（または他の監視信号）を交互に（段階的に）適用する。
+
+これらの組み合わせにより、RLの探索能力を維持しつつ、構造化されたツール使用を安定させることを目指した。
+
+## 3. 成果：提案手法により、何が達成できたのか
+本研究の主な成果は以下の通りである。
+
+*   **RLにおける性能崩壊のメカニズム解明:** RLトレーニング中に発生する性能崩壊は、モデルの推論能力の低下ではなく、特定の制御トークン（例: `&lt;tool_call&gt;`, `&lt;/tool_call&gt;`)の確率が異常に増幅され、構造化されたツール呼び出しが不正なトークン列に歪むことに起因することを発見した。
+*   **監視信号による安定化:** 多様な監視信号、特にインターリーブトレーニングと組み合わせることで、RLトレーニングの安定性が大幅に向上することを示した。
+*   **インターリーブトレーニングの有効性:** SFTとRLをインターリーブする手法は、トレーニングの安定性を大幅に改善したが、分布外（OOD）評価では性能が低下する傾向があることも確認された。
+*   **プロセス反映監視（PRS）の有効性:** PRSは、単なる報酬によるガイダンスよりも、中間的な推論ステップを分析し、構造化されたデータに変換することで、ツールの使用能力を向上させ、安定性と最終性能の両方を改善する可能性を示した。
+*   **学習率とSFTデータ分布の影響分析:** 学習率の感度や、SFTデータの分布がRLの安定性や一般化能力に与える影響についても分析し、これらの要因が重要であることを明らかにした。
+*   **構造崩壊は能力限界ではないことの示唆:** 性能崩壊は、モデルの根本的な能力限界ではなく、制御トークンの分布の変化に敏感であるという、より構造的な問題であることを示唆した。
+
+## 4. 課題：本手法の限界・課題にはなにか。本文中で著者が言及しているものと、あなたが想定するもの
+### 本文中で著者が言及している課題:
+*   **SFTとRLのインターリーブにおけるOOD性能低下:** SFTとRLをインターリーブする手法は安定性を向上させるが、フォーマットやコンテンツが訓練データと異なる分布外（OOD）の評価では性能が低下する可能性がある。
+*   **トレーニングデータの限定性:** 本研究で使用されたトレーニングデータは、オープンソースで検証可能なツール呼び出し環境が限られているため、相対的に限定的である。データ規模が結果に与える影響は十分に探求されていない。
+*   **Qwen3の「思考モード」による影響:** Qwen3モデルでは、「思考モード」と呼ばれる推論出力が、構造化された軌跡学習を妨げる可能性があり、SFTとRLの間のプロンプトフォーマットの不一致が性能崩壊につながる場合がある。
+
+### あなたが想定する課題:
+*   **監視信号の設計と選択の複雑さ:** 提案された多様な監視信号は効果的である一方で、どの信号を、どのタイミングで、どの程度使用するのが最適かを決定するための、より洗練されたガイドラインや自動化された手法が必要となる可能性がある。
+*   **計算リソースの増加:** 監視信号（特にプロセス反映監視のような高度なもの）を導入することで、トレーニングプロセスが複雑化し、計算リソース（時間、GPUメモリなど）の要求が増加する可能性がある。
+*   **汎用性の検証:** 本研究は特定のLLM（Qwenシリーズ）と特定のベンチマーク（BFCL-V3, ACEBench）で評価されているが、他のLLMアーキテクチャや、より多様で広範なツールセットを持つタスクにおける提案手法の汎用性については、さらなる検証が必要である。
+*   **「壊滅的な崩壊」の完全な防止:** 提案手法により安定性は向上するものの、完全に崩壊を防ぐことができるかは、モデルのサイズ、タスクの複雑さ、ハイパーパラメータ設定など、多くの要因に依存する可能性がある。
+
+## 5. 技術詳細：提案手法の技術的な詳細について、できるだけ詳しく。数式やアルゴリズム、モデル構造なども可能な限り詳しく
+### 1. RLにおける性能崩壊のメカニズム
+*   **問題:** pure RLでは、特定の制御トークン（例: `&lt;tool_call&gt;`, `&lt;/tool_call&gt;`, `&lt;/tool_code&gt;`, `&lt;/result&gt;`）の確率が異常に増幅され、生成されるトークン列が構造化されたツール呼び出しのスキーマから逸脱し、最終的に意味のない終了シーケンス（例: `&lt;|im_end|&gt;`)に収束してしまう。
+*   **現象:**
+    *   **Healthy Tool Call:** 有効なツール呼び出し。
+    *   **Text Polluted:** 部分的に誤用されたツールタグ。
+    *   **Collapsed:** 意味のない終了トークンのみ、または意味内容のないツール呼び出し。
+*   **原因:** RLの報酬最大化プロセスが、誤った方法で特定の制御トークンを過度に強化してしまう。これは、モデルの能力低下ではなく、トークンレベルの実行パターンの制御の問題である。
+
+### 2. 監視信号とトレーニングパラダイム
+#### 監視信号の詳細:
+
+*   **SFT then RL (SFT→RL):**
+    *   SFTフェーズ: 高品質なツール使用軌跡 $\mathcal{D}_{\text{SFT}}$ を用いて、ポリシー $\pi_{\theta}(a_t | q, \tau_{&lt;t})$ を教師あり学習で訓練する。
+        ```python
+        # SFT loss
+        loss_sft = - (1 / len(D_SFT)) * sum(
+            log(pi_theta(a_t | q, tau_less_than_t)))
+            for (q, tau) in D_SFT for t in range(len(tau))
+        )
+        ```
+    *   RLフェーズ: SFTで初期化されたモデルに対し、RLアルゴリズム（例: GRPO）を適用する。
+
+*   **オフポリシー監視 (Off-policy Supervision, OPS):**
+    *   モデル生成のオンポリシー軌跡 $\mathcal{D}_{\text{on}}$ と、正解軌跡（SFTデータなど）のオフポリシー軌跡 $\mathcal{D}_{\text{off}}$ を混合して使用する。
+    *   利得（Advantage） $\hat{A}_i$ を計算し、CLIP関数を用いて surrogated loss を定義する。
+        ```python
+        # Advantage calculation
+        # G_on: reward set from on-policy trajectories
+        # G_off: reward set from off-policy trajectories
+        hat_A_i = (R(tau_i) - mean(G_on union G_off)) / std(G_on union G_off)
+
+        # Importance ratio
+        r_k_t(theta) = pi_theta(tau_k_t | q, tau_k_less_than_t) / pi_theta_old(tau_k_t | q, tau_k_less_than_t)
+
+        # OPS surrogate objective
+        J_OPS(theta) = (1 / Z) * sum(
+            CLIP(r_k_t(theta), hat_A_i, epsilon)
+            for tau_i in D_on union D_off for t in range(len(tau_i))
+        )
+        ```
+
+*   **ヒントベースガイダンス (Hint-based Guidance, HBG):**
+    *   モデルの応答生成時に、タスクの解決方法を示すヒント $\mathcal{H}_q$ をプロンプトに前置する。
+        ```python
+        # Trajectory generation conditioned on hint
+        tau_i_t ~ pi_theta(tau_t | q, tau_i_less_than_t, H_q)
+        ```
+    *   推論時（評価時）にはヒントは除去される。
+
+*   **誤り軌跡監視 (Erroneous Trajectory Supervision, ETS):**
+    *   RLトレーニング中に、全てのサンプル軌跡が失敗したクエリ $q$ を「誤り」とラベル付けする。
+    *   これらの誤り軌跡と正解ラベル $\tau_{\text{label}}$ を用いて、教師あり学習データ $\mathcal{E}_k$ を構築し、損失 $\mathcal{L}_{\text{err}}(\theta)$ を最小化する。
+        ```python
+        # Error-derived supervision set
+        E_k = union(
+            {(q, tau_label) | for all tau_prime in T_q, R(tau_prime) == 0}
+            for q in Q
+        )
+
+        # Error supervision loss
+        L_err(theta) = - (1 / len(E_k)) * sum(
+            log(pi_theta(a_t | q, tau_less_than_t)))
+            for (q, tau) in E_k for t in range(len(tau))
+        )
+        ```
+    *   このSFTステップをRL更新とインターリーブして行う。
+
+*   **プロセス反映監視 (Process Reflection Supervision, PRS):**
+    *   現在のポリシー $\pi_{\theta}$ で生成された軌跡 $\tau$ と、それに対するLLM（例: gpt-5-mini）による「反省」 $r_{\tau}^{\mathrm{ref}}$（中間決定、構造的誤り、推論ギャップの分析）を組み合わせたデータセット $\mathcal{R}_k$ を構築する。
+    *   誤り軌跡監視（ETS）も併用し、統合された損失関数 $\mathcal{L}_{\text{ref}}(\theta)$ を定義する。
+        ```python
+        # Reflection-augmented dataset
+        R_k = {(q, tau, r_tau_ref) | ...}
+
+        # Reflection supervision loss
+        L_ref(theta) = - (1 / len(R_k)) * sum(
+            log(pi_theta(r_tau_ref | q)))
+            for (q, tau, r_tau_ref) in R_k
+        )
+        - (1 / len(E_k)) * sum(
+            log(pi_theta(a_t | q, tau_less_than_t)))
+            for (q, tau) in E_k for t in range(len(tau))
+        )
+        ```
+
+#### トレーニングパラダイム:
+*   **同期 (Synchronous):** RLと監視信号を同時に適用。
+*   **インターリーブ (Interleaved):** SFTとRL、あるいはETSとRLなどを交互に実行。例: RLで軌跡を収集 → 失敗例でETS → RL、といったサイクル。
+
+### 3. モデルとデータセット
+*   **モデル:** Qwen2.5-1.5B-Instruct, Qwen3-1.7B (non-thinking variant)。
+*   **データセット:**
+    *   BFCL-V3 (Benchmark for Fine-grained Complex LLM Tool Use): 多段階ツールの利用を評価するベンチマーク。
+    *   ACEBench: 訓練データとは異なるツールタイプやプロンプト構造を持つOOD評価用。
+    *   ToolACE: SFTのデータ分布の影響を研究するために利用。
+
+### 4. 学習率とOOD評価
+*   **学習率:** 学習率の感度を分析。低すぎると不安定、高すぎても（特に同期学習で）問題を引き起こす可能性。ETSと組み合わせることで、より高い学習率が有効になる場合がある。
+*   **OOD評価:**
+    *   **Content OOD:** 未知のツールタイプやシナリオ。
+    *   **Format OOD:** 訓練時とは異なるInvocationテンプレート。
+    *   SFTのみで訓練したモデルはFormat OODで性能が著しく低下する「フォーマット過学習」を起こしやすい。PRSのようなプロセス中心の監視信号は、この過学習を軽減し、一般化能力を高める。
+
+## 6. この論文を140字以内のツイートで要約すると？
+LLMのツール利用RL、突然の性能崩壊は制御トークン増幅が原因。論文では、多様な監視信号（SFT、誤り軌跡、プロセス反映など）をRLに組み込むことで、この崩壊を防ぎ、安定した高精度なツール利用学習を実現。特にインターリーブ学習が有効。 #LLM #強化学習 #ツール利用</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

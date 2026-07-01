@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Accelerating Transformers Fine-Tuning with NVIDIA NeMo AutoModel</title>
+  <link rel="stylesheet" href="/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>Accelerating Transformers Fine-Tuning with NVIDIA NeMo AutoModel</h1>
+<p><strong>Date:</strong> 2026-06-25</p>
+<p><strong>Source:</strong> rss / Hugging Face Blog</p>
+
+<p><a href="https://huggingface.co/blog/nvidia/accelerating-fine-tuning-nvidia-nemo-automodel">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">NVIDIA NeMo AutoModelは、Hugging Face Transformers v5のMixture-of-Experts (MoE) モデルに対するサポートを基盤に、Transformerベースの生成AIモデルのファインチューニングを高速化するオープンソースライブラリです。NeMo AutoModelは、Hugging Face Transformers v5のAPI（`from_pretrained()`）と互換性を保ちつつ、Expert Parallelism（EP）、DeepEP fused all-to-all dispatch、TransformerEngineカーネルなどの最適化を導入しています。
+
+これにより、ネイティブなTransformers v5と比較して、MoEモデルのファインチューニングにおいて、3.4～3.7倍のトレーニングスループット向上と29～32%のGPUメモリ削減を実現します。APIの変更はインポート文の修正のみで、コードの書き換えは不要です。
+
+MoEモデルのトレーニングにおける課題は、多数のエキスパート間でのトークンのルーティング、エキスパートの行列計算の単一カーネルへの統合、GPU間での重みのシャーディング、計算と通信のオーバーラップなどがあり、これらは標準的なライブラリでは対応が難しいものでした。Transformers v5は、エキスパートバックエンド、動的な重みロード、分散実行のためのテンソル並列プランなどを導入し、MoEモデルのサポートを強化しました。
+
+NeMo AutoModelは、Transformers v5の`AutoModelForCausalLM`をサブクラス化し、Expert Parallelism、DeepEP、TransformerEngineカーネルを追加しています。特にDeepEPは、通信とエキスパートの計算をオーバーラップさせる機能を提供します。また、v5の動的な重み変換を利用することで、チェックポイントの管理を効率化し、標準的なHugging Faceチェックポイント形式で保存されるため、vLLMやSGLangといった推論フレームワークとの互換性も維持されます。
+
+ベンチマークでは、16ノードでの550Bモデルのフルファインチューニング、およびシングルノードでの30B MoEモデルのトレーニングにおいて、NeMo AutoModelがTransformers v5よりも大幅なパフォーマンス向上を達成したことが示されています。特に、550Bモデルのファインチューニングにおいては、Expert ParallelismによるエキスパートのGPU間シャーディングがメモリ制約を解決し、トレーニングを可能にしました。
+
+NeMo AutoModelのパフォーマンス向上は、以下の3つの主要因に起因します。
+1.  **Expert Parallelism (EP)**: エキスパートの重みをGPU全体に分散させることで、GPUあたりのメモリ使用量を削減します。
+2.  **DeepEP fused all-to-all dispatch**: トークンルーティングを最適化されたGPUカーネルに統合し、通信とエキスパート計算のオーバーラップを実現します。
+3.  **TransformerEngine kernels**: TransformerEngineによる最適化されたアテンション、線形層、RMSNormの実装が、コア操作を高速化します。
+
+Hugging Face Transformers v5の機能であるエキスパートバックエンド（`experts_implementation`パラメータ）では、`grouped_mm`バックエンドがメモリ効率の良いトレーニングを提供しますが、NeMo AutoModelはこれをさらに発展させ、DeepEP、Grouped GEMM、TransformerEngineを組み合わせることで、より高度な最適化を実現しています。Expert Parallelismについても、NeMo AutoModelはPyTorchのDTensorと組み合わせ、エキスパートの重みを物理的にシャーディングすることで、メモリ効率とスケーラビリティを大幅に向上させています。
+
+NeMo AutoModelは、Hugging Face Transformersユーザーがモデルトレーニングをスケールアップするための次世代ソリューションであり、API互換性を保ちながら、トレーニング速度とメモリ効率を劇的に改善します。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

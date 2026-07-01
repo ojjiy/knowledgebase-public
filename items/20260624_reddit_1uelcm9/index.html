@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>High Dimensional, Dynamic Rotary Positional Embedding [P]</title>
+  <link rel="stylesheet" href="/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>High Dimensional, Dynamic Rotary Positional Embedding [P]</h1>
+<p><strong>Date:</strong> 2026-06-24</p>
+<p><strong>Source:</strong> reddit / MachineLearning</p>
+
+<p><a href="https://www.reddit.com/r/MachineLearning/comments/1uelcm9/high_dimensional_dynamic_rotary_positional/">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">1.  **ポストの内容説明:**
+    このRedditのポストは、筆者が開発した新しい位置エンコーディング手法である「HDD-RoPE（High Dimensional, Dynamic Rotary Positional Embedding）」について紹介しています。
+
+    *   **背景:** 筆者は以前の投稿で、行列の累積積を位置エンコーディングとして使用するアイデアを提案しました。今回の投稿では、そのアイデアを発展させ、HDD-RoPEとして具体化し、モデルを訓練した結果、特に「TinyStories」というデータセットで、既存の「xPos」という位置エンコーディング手法を用いたベースラインのTransformerモデルよりも学習が速く収束することを確認したと述べています。
+    *   **HDD-RoPEの概要:**
+        *   **従来のRoPEとの違い:** 標準的なRoPEは、クエリとキーを2つずつのペアに分割し、それぞれのペアを固定されたレートで回転させることで、トークンの相対位置を学習させます。これは、直線的なシーケンス（例: 文）において、1次元の視点での位置を捉えるのに適しています。
+        *   **HDD-RoPEの革新性:** HDD-RoPEは、位置を単なる一次元ではなく、多次元的なものと捉えます。そのため、トークンを2つ以上のグループ（例: 4つの要素）に分割し、これらのグループを回転させます。これにより、6次元の位置情報（4つの要素から2つを選ぶ組み合わせの数）を表現できるようになります。
+        *   **「多次元的な位置」の意味:** これは、トークンが単にシーケンス上の位置にあるだけでなく、モデルが学習できる任意の構造（例: 段落、文）内の位置にあると考えることを可能にします。
+        *   **「動的」な回転:** さらに、各回転軸にかかる回転量は、入力コンテキスト（現在の層の活性化）に依存するようにデータ駆動型にしました。これにより、モデルは現在の情報に基づいて、位置の進み方を学習できるようになります。
+    *   **提供情報:** ポストには、HDD-RoPEを訓練したGPT-2ライクなモデルの検証損失のグラフ（TinyStoriesデータセットでxPosより速く収束することを示す）、GitHubリポジトリへのリンク（数学的な詳細やアーキテクチャについて解説）、そしてHDD-RoPEの技術的な説明が含まれています。
+
+2.  **興味深いコメント:**
+    このポストに対するコメントの中で、特に興味深いのは以下の点です。
+
+    *   **「very cool. I&#39;m curious to see how the rotations change depending on input context.」**
+        これは、HDD-RoPEの「動的」な側面、つまり「各回転軸にかかる回転量がデータ依存である」という部分に注目したコメントです。ユーザーは、入力されるコンテキスト（データ）によって、実際にどの程度、どのように回転が変わるのかに強い興味を示しています。これは、HDD-RoPEの革新的な特徴であり、その効果を具体的に知りたいという意欲の表れです。
+
+    *   **GitHubリンクに関するやり取り（「~~the link to your github seems broken on my side (no hdd-rope amongst the repos)~~ edit: it&#39;s fine!」「it&#39;s fixed, thank you!」）**
+        これは技術的な話題ですが、興味深い点として挙げられます。当初、コメントしたユーザーがGitHubリポジトリを見つけられなかった（リポジトリが「private」になっていたため）という問題が発生しましたが、投稿者がそれを修正し、再度アクセス可能になったというやり取りです。これは、新しい技術に興味を持ったユーザーが、実際にコードや詳細を確認しようとする際の典型的な流れを示しており、筆者の開発した技術への関心の高さを裏付けています。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

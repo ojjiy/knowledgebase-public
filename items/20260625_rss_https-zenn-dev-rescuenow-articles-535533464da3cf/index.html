@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ローカルのGit差分をGitHub風UIでレビューできる「difit」を使ってみた</title>
+  <link rel="stylesheet" href="/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>ローカルのGit差分をGitHub風UIでレビューできる「difit」を使ってみた</h1>
+<p><strong>Date:</strong> 2026-06-25</p>
+<p><strong>Source:</strong> rss / Hatena Bookmark Programming</p>
+
+<p><a href="https://zenn.dev/rescuenow/articles/535533464da3cf">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">「difit」は、ローカルのGit差分をGitHub風のUIでブラウザ表示・レビューできるCLIツールです。
+
+**主な機能・特徴:**
+
+*   **GitHub風の差分ビュー:** シンタックスハイライト付きで、行番号付きの差分を分かりやすく表示します。
+*   **コメント機能:** 差分の各行にレビューコメントを追加でき、コメントには「Copy Prompt」ボタンが付いています。
+*   **AIエージェント連携:** 「Copy Prompt」ボタンで、Claude CodeなどのAIコーディングエージェントに修正依頼を渡すためのプロンプトをコピーできます。
+*   **多彩な比較モード:** 単一コミット、ブランチ間、作業ディレクトリ、ステージング、GitHub PRなど、様々な比較対象を指定できます。
+*   **コメントの永続化:** コメントはブラウザのlocalStorageにコミット単位で保存されます。
+*   **自動折りたたみ:** 削除ファイルや自動生成ファイルは折りたたんで表示され、見やすさを向上させます。
+*   **Skills連携:** AIコーディングエージェントからdifitを呼び出し、差分レビューを依頼する連携も可能です。
+
+**利用シーン:**
+
+*   PRを作成するほどではないが、差分をきちんと見返したい場合。
+*   AIに差分レビューを手伝ってほしい場合。
+*   コミット前のセルフレビュー。
+
+**利用上の留意点:**
+
+*   ブラウザを開くことが前提のため、SSH先サーバーなどではオプション指定が必要です。
+*   コメントはローカルのlocalStorageに保存されるため、チーム間での共有には向きません。
+
+**インストール・起動:**
+
+*   `npx difit` でインストール不要で実行できます。
+*   `npm install -g difit` でグローバルインストールも可能です。
+*   リポジトリのディレクトリで `npx difit` を実行すると、最新コミットの差分がブラウザで開きます。
+
+**比較モードの例:**
+
+*   `difit HEAD`: 最新コミットの差分
+*   `difit .`: 未コミットの変更をすべて表示
+*   `difit staged`: ステージング済みの変更を表示
+*   `difit --pr &lt;PR_URL&gt;`: GitHubのPRをレビュー
+
+「difit」は、ローカルのGit差分確認作業を効率化し、AIとの連携も容易にする便利なツールです。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

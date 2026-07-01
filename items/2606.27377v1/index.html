@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>DanceOPD: On-Policy Generative Field Distillation</title>
+  <link rel="stylesheet" href="/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>DanceOPD: On-Policy Generative Field Distillation</h1>
+<p><strong>Date:</strong> 2026-06-25</p>
+<p><strong>Source:</strong> paper / hf-papers</p>
+
+<p><a href="http://arxiv.org/abs/2606.27377v1">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body"># タイトル
+[DanceOPD: On-Policy Generative Field Distillation](http://arxiv.org/abs/2606.27377v1)
+
+## 1. 問題意識：解決したい問題はなにか
+現代の画像生成モデルには、テキストから画像を生成する (T2I)、局所的な編集、全体的な編集といった多様な能力を単一のモデルで統一的に実現することが求められています。しかし、これらの能力は互いに自然に整合せず、しばしば衝突します。例えば、編集を行うとT2Iの性能が低下する傾向があり、全体的な編集と局所的な編集も互いに干渉します。そのため、これらの能力を効果的に組み合わせることが、画像生成モデルのトレーニングにおける中心的な課題となっています。
+
+## 2. 提案手法のアプローチ：どのようなアイデア・アプローチで問題を解決しようとしたか
+この問題に対処するため、提案手法「DanceOPD」は、フローマッチングモデル向けのオンポリシー生成フィールド蒸留フレームワークを導入しました。このフレームワークでは、各サンプルを1つの能力フィールドにルーティングし、低ノイズの学生（student）によって誘発された状態をクエリし、単純な速度 (velocity) のMSE（平均二乗誤差）目的関数で学習します。各能力ソースを共有フロー状態空間上の速度フィールドとして定義することで、学生は自身のロールアウト状態（rollout states）でクエリされたフィールドから学習し、エキスパートの能力を合成します。この定式化は、classifier-free guidance（CFG）のようなオペレーター定義のフィールドも吸収できます。
+
+## 3. 成果：提案手法により、何が達成できたのか
+DanceOPDは、T2I、編集、リアリズムフィールド吸収、CFG吸収に関する包括的な実験により、提案手法がマルチ能力合成を改善し、ターゲットとなる能力を強化しつつ、アンカーとなる生成品質を維持することを示しました。具体的には、T2Iと編集の合成、局所的および全体的な編集の合成において、既存のベースラインと比較して性能を向上させました。また、リアリズムフィールド吸収では、ベースのT2I能力を維持しながらリアリズムの報酬を向上させ、CFG吸収では、トレーニングのみの吸収と比較して顕著な改善を示しました。
+
+## 4. 課題：本手法の限界・課題にはなにか。本文中で著者が言及しているものと、あなたが想定するもの
+### 著者が言及している課題：
+*   **ターゲットフィールドの曖昧さ (Target-field ambiguity):** 複数の冷凍されたフィールドを1つのサンプルターゲット内で線形に組み合わせると、どの能力フィールドにも明確に対応しない監視方向が生成され、ターゲットフィールドの曖昧さを引き起こし、各能力の意味的同一性を失う可能性があります。
+*   **状態分布の不一致 (State-distribution mismatch):** フィールドをデータ状態、教師の軌道、またはその他のオフポリシー状態（off-policy states）で評価すると、学生は生成中に実際に訪れる状態に対して教師からの監視が不十分になり、トレーニングと推論の間のギャップが生じます。
+*   **軌道クエリ相関 (Trajectory-query correlation):** 同じロールアウトから複数の状態を密に（densely）取得すると、これらの状態が同じプロンプト、ノイズシード、学生のダイナミクス、パス履歴を共有するため、高度に相関した監視信号を過剰にカウントしてしまいます。これにより、軌道クエリの相関が発生し、結果として生じる勾配が偏る可能性があります。
+
+### 想定される課題：
+*   **計算コスト:** オンポリシーのロールアウト（rollout）を各トレーニングステップで行うため、オフポリシー手法と比較して計算コストが増加する可能性があります。特に、長いロールアウトや多数のステップが必要な場合、その影響は顕著になるでしょう。
+*   **能力間の依存性:** DanceOPDは個々の能力フィールドを合成しますが、能力間の複雑な依存関係や、特定の能力の組み合わせが予期せぬ相互作用を引き起こす可能性については、さらなる研究が必要かもしれません。
+*   **教師モデルの選択:** 提案手法は冷凍された教師フィールドを利用しますが、教師フィールドの選択や質が最終的な学生モデルの性能に大きく影響する可能性があります。互換性のない、または質の低い教師フィールドを選択した場合、期待される結果が得られない可能性があります。
+*   **ハイパーパラメータ調整:** ロールアウトの長さ、クエリする状態の数、ルーティング確率などのハイパーパラメータの調整が、性能に影響を与える可能性があります。
+
+## 5. 技術詳細：提案手法の技術的な詳細について、できるだけ詳しく。数式やアルゴリズム、モデル構造なども可能な限り詳しく
+DanceOPDは、フローマッチングモデルにおけるオンポリシー生成フィールド蒸留のためのフレームワークです。その中核となるアイデアは、各能力（T2I、編集など）を、共有された生成状態空間（generative state space）上の速度フィールド（velocity field）として捉えることです。
+
+### 主要な構成要素とアイデア：
+
+1.  **能力フィールド (Capability Fields):**
+    *   各機能ソース（例: T2Iモデル、編集モデル）は、状態 $z_t$、時間 $t$、条件 $c$ の関数として、速度場 $v_m(z_t, t, c)$ を提供すると見なされます。ここで、$m$ は能力のインデックスです。
+    *   これらのフィールドは、学習中に冷凍（frozen）されたまま使用されます。
+
+2.  **フィールドクエリ問題 (Field-Query Problem):**
+    *   能力合成は、どの能力フィールドが特定のサンプルを監視すべきか、そのフィールドを状態空間のどこでクエリすべきか、そして学生のロールアウトからいくつの状態を監視に使用すべきか、という3つの選択肢が組み合わされた問題として定式化されます。
+
+3.  **3つの設計上の課題とそれに対応するDanceOPDの解決策:**
+
+    *   **ターゲットフィールドの曖昧さ (Target-field ambiguity) → ハードルーティング (Hard Routing):**
+        *   **問題:** 複数のフィールドを単純に平均すると、意味的に無効なターゲットになる可能性がある。
+        *   **解決策:** 各トレーニングサンプルは、厳密に1つの能力フィールドにルーティングされます。例えば、T2IデータセットからのサンプルはT2Iフィールドを、編集データセットからのサンプルは編集フィールドをクエリします。ルーティング確率は $\pi(m)$ で表され、通常はアクティブな能力バケット間で均一に設定されます。
+        *   **数式/疑似コード:**
+            ```python
+            # m: capability index (e.g., T2I, Edit)
+            # pi: routing probability distribution
+            # D_m: data distribution for capability m
+            m = sample_from_distribution(pi)
+            (x, c) = sample_from_distribution(D_m)
+            routed_field_target_velocity = v_m # The velocity field for the selected capability m
+            ```
+
+    *   **状態分布の不一致 (State-distribution mismatch) → オンポリシー・クエリ (On-Policy Query):**
+        *   **問題:** 教師フィールドをオフポリシーの状態（例: 固定されたノイズエンドポイント）でクエリすると、学生が実際に生成する状態分布と一致しない。
+        *   **解決策:** 能力フィールドは、現在の学生（student）のロールアウト（rollout）によって生成された状態（stop-gradient）でクエリされます。これにより、監視が学生自身の状態分布に合わせられます。
+        *   **数式/疑似コード:**
+            ```python
+            # theta: student model parameters
+            # z_T: initial noise
+            # c: conditioning information (e.g., text prompt)
+            # Rollout function generates a trajectory using the student&#39;s velocity field v_theta
+            student_trajectory = Rollout(v_theta, z_T, c)
+            # Query a state from the student&#39;s trajectory (stop-gradient to not backprop through the rollout solver)
+            queried_state = stop_gradient(student_trajectory.state_at_time(t))
+            ```
+
+    *   **軌道クエリ相関 (Trajectory-query correlation) → セミサイド・シングルクエリ (Semantic-Side Single Query):**
+        *   **問題:** 同じロールアウトから複数の状態を密に（densely）クエリすると、それらの状態は相関しており、独立した監視信号を十分に提供しない。
+        *   **解決策:** 各サンプルに対して、ロールアウトの「意味側」（semantic-side、低ノイズ側、最終画像に近い側）から1つの状態のみがクエリされます。この領域は、能力固有の情報が最も集中していると考えられています。
+        *   **数式/疑似コード:**
+            ```python
+            # q_sem: distribution biased towards low-noise states (semantic side)
+            # N: total number of steps in the rollout
+            # s: sampled semantic-side coordinate
+            # t = t(s): mapping from semantic coordinate to physical timestep
+            s = sample_from_distribution(q_sem)
+            t = map_semantic_to_timestep(s, N)
+            # Select the single query state from the student rollout at time t
+            single_query_state = student_trajectory.state_at_time(t)
+            ```
+
+4.  **学習目標 (Learning Objective):**
+    *   **速度MSE (Velocity MSE):** 学生は、クエリされた能力フィールドの速度に、自身の速度を一致させるように学習します。これは、単純な平均二乗誤差（MSE）損失関数によって行われます。
+    *   **数式/疑似コード:**
+        ```python
+        # v_theta: student&#39;s predicted velocity
+        # v_m: target velocity from the queried capability field m
+        # queried_state: state from student&#39;s rollout at time t
+        loss = mean_squared_error(v_theta(queried_state, t, c), v_m(queried_state, t, c))
+        ```
+    *   **オペレーター定義フィールドの吸収:** Classifier-Free Guidance (CFG) のようなオペレーター定義のフィールドも、同様の速度フィールドとして扱われ、同じMSE目的関数で学生に吸収させることができます。
+
+5.  **モデル構造:**
+    *   基本となるのはフローマッチングモデル（例: Diffusersライブラリで実装されるようなモデル）です。
+    *   教師モデルは、学習時に冷凍されたまま、速度フィールドを提供します。
+    *   学生モデルは、トレーニング中に更新され、多様な能力を合成するように学習します。
+
+### アルゴリズムの概要：
+
+```python
+Initialize student model parameters theta
+
+Loop for training epochs:
+    Sample a capability index m according to routing probability pi
+    Sample a data sample (x, c) from the dataset D_m for capability m
+
+    # Generate an initial noise and perform an on-policy rollout with the current student
+    Sample initial noise z_T ~ p_T
+    student_trajectory = Rollout(v_theta, z_T, c) # Using the current student&#39;s velocity field
+
+    # Select a single semantic-side, low-noise query state from the student&#39;s trajectory
+    Sample semantic coordinate s ~ q_sem
+    t = map_semantic_to_timestep(s, N)
+    queried_state = stop_gradient(student_trajectory.state_at_time(t))
+
+    # Get the target velocity from the routed capability field
+    target_velocity = v_m(queried_state, t, c) # Frozen teacher field
+
+    # Calculate the loss
+    predicted_velocity = v_theta(queried_state, t, c)
+    loss = mean_squared_error(predicted_velocity, target_velocity)
+
+    # Update student model parameters
+    theta = OptimizerStep(theta, gradient_of(loss))
+```
+
+## 6. この論文を140字以内のツイートで要約すると？
+DanceOPDは、画像生成の多様な能力（T2I, 編集）を単一モデルに統合する新手法。各能力を速度フィールドとみなし、オンポリシー・フィールド蒸留で合成。サンプル毎に能力をルーティングし、学生自身の状態から学習。性能向上と能力干渉の低減を実現。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

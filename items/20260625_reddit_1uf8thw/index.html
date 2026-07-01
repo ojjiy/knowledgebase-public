@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CALHippo - Mapping neurons and glial cells in the human brain hippocampus in 3D using SOTA segmentation and density estimation models [R]</title>
+  <link rel="stylesheet" href="/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>CALHippo - Mapping neurons and glial cells in the human brain hippocampus in 3D using SOTA segmentation and density estimation models [R]</h1>
+<p><strong>Date:</strong> 2026-06-25</p>
+<p><strong>Source:</strong> reddit / MachineLearning</p>
+
+<p><a href="https://i.redd.it/m8eyacfmbf9h1.gif">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">1.  **ポストの内容説明**
+
+    このRedditのポストは、「CALHippo」というタイトルの研究成果について投稿されています。投稿者は、機械学習（ML）を用いてヒト海馬の細胞（ニューロンとグリア細胞）を3次元でマッピングした研究について紹介しています。
+
+    **研究の概要は以下の通りです。**
+
+    *   **使用データ:** 高解像度（1マイクロメートル/ピクセル）のヒト海馬スライスと、それよりも20倍解像度が低い（細胞核が1ピクセル幅程度）スライスを使用しました。
+    *   **細胞のセグメンテーション（分割）:**
+        *   高解像度スライスに対して、CellPoseSAMのような最先端（SoTA）の全スライス細胞セグメンテーションネットワークを利用しました。
+        *   これらのセグメンテーション結果を半自動で修正し、さらにファインチューニングされたモデルをパイプラインに組み込みました。
+        *   最終的に、細胞を3つのクラス（興奮性ニューロン、抑制性ニューロン、グリア細胞）に分類しました。
+    *   **細胞密度の推定:**
+        *   高解像度スライスで得られた細胞情報だけでは海馬全体をカバーできないため、低解像度スライスに対応する高解像度アノテーションをマッピングしました。
+        *   このマッピング情報を用いて、小規模なUNetモデルを訓練し、3クラスの細胞密度推定タスクを行いました。
+        *   これにより、細胞の位置確率マップを得られる密度マップが生成されました。
+    *   **3D再構築:**
+        *   海馬全体をカバーする低解像度密度マップをすべて積み重ねることで、点群（ポイントクラウド）を生成しました。
+        *   GIF画像では、この点群が解剖学的なCA（Cornus Ammonis）領域と対応して表示されています。
+    *   **結果と課題:**
+        *   データ量や低解像度スライスの制限により、性能はまだ限定的ですが、これまでの研究者による推定結果と比較して生物学的に妥当な結果が得られたことを示しました。
+    *   **発表:** この研究論文は、MICCAI 2026に採択されました。
+    *   **フィードバック募集:** 投稿者は、特に密度推定の定式化や生成された点群の利用法について、フィードバックを求めています。
+
+2.  **ポストに対するコメントのうち、特に興味深いもの**
+
+    提供された情報では、ポストに対するコメントは空欄になっています。そのため、現時点ではポストに対するコメントの中から興味深いものを特定することはできません。
+
+    もしコメントが追加されるようであれば、その内容に基づいて回答を生成します。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

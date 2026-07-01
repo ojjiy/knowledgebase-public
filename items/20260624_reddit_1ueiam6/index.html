@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Find the best open-source OCR models in one place at Papers with Code [P]</title>
+  <link rel="stylesheet" href="/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>Find the best open-source OCR models in one place at Papers with Code [P]</h1>
+<p><strong>Date:</strong> 2026-06-24</p>
+<p><strong>Source:</strong> reddit / MachineLearning</p>
+
+<p><a href="https://www.reddit.com/r/MachineLearning/comments/1ueiam6/find_the_best_opensource_ocr_models_in_one_place/">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">1. **このポストの内容を説明してください。**
+
+このRedditのポストは、OCR（Optical Character Recognition：光学文字認識）分野における最新のオープンソースモデルとベンチマークについて、Nielsさんという投稿者が作成した情報サイト「Papers with Code」の概要を紹介するものです。
+
+具体的には、以下の点が説明されています。
+
+*   **OCRの重要性:** PDFやスキャンされた文書をデジタル化し、AIエージェントによる利用（RAGなど）を可能にするための基盤技術として、OCRの重要性が強調されています。
+*   **最新のOCRモデルの紹介:**
+    *   Baiduがリリースした3Bパラメータの「Unlimited OCR」モデル（Reference Sliding Window Attention (R-SWA) という新技術を採用し、DeepSeek OCRを基盤としている）。
+    *   MistralがリリースしたAPI経由で利用可能な「OCR 4」モデル。
+*   **情報サイト「Papers with Code」の紹介:** Hugging Faceなどで多数のOCRモデルがリリースされている中で、どのモデルを使用すれば良いか迷うユーザーのために、主要なOCRベンチマークとトップパフォーマンスのモデル、およびそれらの論文とコードへのリンクをまとめたサイト（https://paperswithcode.co/tasks/ocr）を作成・公開したことを説明しています。これは、以前存在したが削除されたウェブサイトを復旧させたものとのことです。
+*   **推奨ベンチマークとモデル:** Ai2によって作成されたOlmOCRBenchと、Shanghai AI Laboratoryによって作成されたOmniDocBenchを推奨ベンチマークとして挙げています。また、現在のトップ推奨モデルとしてDatalabの「Chandra OCR 2」（オープンソースで、セルフホストまたはAPI利用可能）とMistral OCR v4を挙げています。
+*   **今後の要望:** 他にどのようなタスクの主要ベンチマークを知りたいか、ユーザーに問いかけています。
+
+要するに、このポストはOCR技術の最新動向と、それらを効率的に探求できる情報源を紹介し、コミュニティからのフィードバックを求めているものです。
+
+2. **このポストに対するコメントのうち、特に興味深いものを教えてください。**
+
+このポストに対するコメントの中で、特に興味深いのは、投稿者Nielsさんと、彼がHugging Faceを宣伝していると見なしたユーザーとの間のやり取りです。このやり取りは、オープンソースプロジェクトの宣伝とマーケティングの境界線、そしてコミュニティ内での透明性について議論を提起しています。
+
+興味深いコメントとその理由は以下の通りです。
+
+*   **「At what point does this just become spam?」**
+    *   **理由:** これは、投稿者が繰り返し投稿していることに対する率直な疑問であり、コンテンツの価値と宣伝の度合いについてのコミュニティの懸念を端的に表しています。
+
+*   **「I just read about Unlimited OCR the other day. Thanks for updating your site quickly and often. Appreciate the work with the benchmarks too!」**
+    *   **理由:** このコメントは、投稿者の情報収集と更新の速さを評価しており、ポストの内容が実際に役立っていることを示しています。これは、投稿者が「Papers with Code」の最新情報を迅速に提供していることへの肯定的なフィードバックです。
+
+*   **「great way to represent HuggingFace! I asked a question, which the community could have responded to. instead of dialing back the transparent marketing you post multiple times a week and going with something more organic you respond by declaring my very fair critique as toxic. well done...」**
+    *   **理由:** このコメントは、投稿者がHugging Faceの「透明なマーケティング」を行っていると非難し、以前の批判に対するNielsさんの対応（「toxic」と表現したこと）に不満を表明しています。このコメントは、投稿者の意図（Hugging Faceの宣伝なのか、「Papers with Code」の宣伝なのか）と、コミュニティがそれをどう受け止めているかという対立軸を浮き彫りにしています。
+
+*   **Nielsさんの返信（「Fair, to be honest, my intention isn&#39;t to market Hugging Face here... What I am marketing, though, is my PwC website...」など）**
+    *   **理由:** Nielsさんの返信は、この議論の中心となります。彼は、Hugging Faceの宣伝ではなく、自身の「Papers with Code」というサイト（AI分野の「Wikipedia」のようなもの）を宣伝していると説明し、その目的が研究共有や再利用を促進することにあると述べています。また、企業名（Hugging Face, OpenAI, Anthropicなど）を言及することの是非についても問いかけており、オープンソースコミュニティにおける情報共有とマーケティングの線引きについて、より深い考察を促しています。
+
+これらのコメントとNielsさんの返信のやり取りは、単なる情報共有にとどまらず、Redditのようなプラットフォームにおけるコンテンツ投稿の意図、透明性、そしてコミュニティとの関係性といった、より複雑な側面を浮き彫りにしているため、特に興味深いと言えます。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

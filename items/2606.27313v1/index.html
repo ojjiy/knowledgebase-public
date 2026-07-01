@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ViQ: Text-Aligned Visual Quantized Representations at Any Resolution</title>
+  <link rel="stylesheet" href="/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>ViQ: Text-Aligned Visual Quantized Representations at Any Resolution</h1>
+<p><strong>Date:</strong> 2026-06-25</p>
+<p><strong>Source:</strong> paper / hf-papers</p>
+
+<p><a href="http://arxiv.org/abs/2606.27313v1">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body"># タイトル
+[View Paper](http://arxiv.org/abs/2606.27313v1)
+
+## 1. 問題意識：解決したい問題はなにか
+テキストと画像を統一的に扱える表現（Unified representation for text and vision）は、マルチモーダルモデリングの単純化と効率的な学習に繋がるため、自然な追求です。しかし、画像をテキストのように離散信号として表現すると、情報損失が避けられず、低レベルの詳細と高レベルの意味（semantics）のバランスを取ることが困難でした。既存の手法では、再構築指向の表現は意味情報に欠け、意味的に強い表現は詳細を失うというトレードオフがありました。
+
+## 2. 提案手法のアプローチ：どのようなアイデア・アプローチで問題を解決しようとしたか
+ViQ（Visual Quantized Representations）というフレームワークを提案し、離散表現における意味と詳細のバランスを取り、ネイティブ解像度での入力をサポートすることで、あらゆる視覚入力に対して統一的で汎用的な離散表現を提供することを目指しました。アプローチは以下の2段階に分けられます。
+
+1.  **テキストアラインメント事前学習 (Text-aligned pre-training)**: 事前学習済み言語モデルからの意味豊富な教師信号（semantic-rich supervision）を用いて、視覚エンコーダーを強化し、ネイティブ解像度の視覚入力を処理できるようにします。
+2.  **特徴量離散化 (Feature discretization)**: 特徴空間を段階的に圧縮するプロキシマル表現学習戦略（proximal representation learning strategy）と、任意解像度を柔軟に処理できる位置情報を持つヘッドごとの量子化メカニズム（position-aware head-wise quantization mechanism）を提案します。
+
+## 3. 成果：提案手法により、何が達成できたのか
+ViQは、以下のような成果を達成しました。
+
+*   **意味と詳細のバランス**: 離散表現でありながら、低レベルの画像再構築においても高い精度を維持しつつ、最先端の連続的で高次元な視覚特徴を持つマルチモーダルビジョンエンコーダーと比較して競争力のある性能を発揮しました。
+*   **効率の向上**: 量子化された視覚表現を用いたマルチモーダル学習は、学習効率を大幅に向上させ、ベースとなるLLMや学習レシピによって20%～70%の高速化を実現しました。
+*   **ネイティブ解像度対応**: 任意の解像度の入力に対応し、統一的で汎用的な離散表現として機能します。
+*   **高品質な再構築**: 画像デコーダーと組み合わせた場合、PSNR 22.73、rFIDスコア 0.62を達成し、主流の離散視覚オートエンコーダーの中でトップクラスの性能を示しました。
+*   **高圧縮率での高品質画像保存**: JPEGと比較して、同程度の圧縮率でより高品質な画像を保存できます。
+
+## 4. 課題：本手法の限界・課題にはなにか。本文中で著者が言及しているものと、あなたが想定するもの
+### 著者らが言及している課題：
+*   **詳細度の限界**: OCRBenchのような非常に詳細なタスクでは、依然として一部の連続エンコーダーに劣る場合があります。これは、離散コードへの積極的な圧縮に伴う高周波詳細の損失が原因であるとされています。
+*   **大規模モデルとの連携**: 0.5Bから7BパラメータのLLMでの有効性は検証されていますが、さらに大規模な基盤モデル（70Bパラメータ以上）との統合や相乗効果については、今後の実証的な研究が必要です。
+*   **データバイアス**: 他の多くのマルチモーダルモデルと同様に、学習データの品質と多様性に依存するため、固有のデータバイアスが特殊または極端なドメイン外シナリオでのゼロショット汎化に影響を与える可能性があります。
+
+### 想定される課題：
+*   **計算コスト**: 事前学習や量子化学習の段階で、多数のGPUや長時間の学習が必要となる可能性があり、リソースの制約がある環境では導入が難しい場合があります。
+*   **ハイパーパラメータチューニング**: プロキシマル表現学習、量子化メカニズム、損失関数の重み付け（λの値）など、多くのハイパーパラメータが存在し、最適な設定を見つけるために試行錯誤が必要になる可能性があります。
+*   **汎用性の限界**: 特定のタスク（例：OCR、ドキュメント理解）で強みを発揮する一方で、芸術的な表現や極めて抽象的な概念の理解など、他の種類のタスクにおいては、連続表現の方が依然として有利である可能性も考えられます。
+
+## 5. 技術詳細：提案手法の技術的な詳細について、できるだけ詳しく。数式やアルゴリズム、モデル構造なども可能な限り詳しく
+ViQは、以下の2段階の学習プロセスと、それを支える複数の技術要素から構成されます。
+
+### 2段階学習プロセス
+#### ステージ1: テキストアラインメント事前学習 (Text-Aligned Pre-training)
+*   **目的**: 視覚エンコーダーと言語モデル間の意味的なアラインメントを確立し、マルチモーダルな入力を処理できるようにすること。
+*   **アプローチ**:
+    *   **ネイティブ解像度対応**: NaViTのアプローチを参考に、固定サイズの positional embedding を、あらゆる解像度に対応できるものに置き換えます。これにより、動的な解像度変更が可能になります。
+    *   **計算効率**: OryxViTの技術を用いて、可変長の視覚トークンでも計算効率を維持します。
+    *   **テキスト教師信号**: データトリプレット $(I, T, A)$（画像、テキスト、アノテーション）に対し、言語モデル（LLM）を用いてテキスト教師信号 $\mathcal{L}_{\text{text}}$ を計算します。
+        ```python
+        # Pseudo-code for text loss
+        # LLM_model: A pre-trained language model
+        # ViQ_encoder: The current ViQ visual encoder
+        # image_I: Input image
+        # text_T: Corresponding text
+        # annotation_A: Ground truth label for text_T
+        
+        visual_features = ViQ_encoder(image_I)
+        output_logits = LLM_model(visual_features, text_T)
+        text_loss = CrossEntropy(output_logits, annotation_A)
+        ```
+    *   **自己蒸留 (Self-distillation)**: マルチモーダルデータへの過学習を防ぎ、大規模な言語画像事前学習で得られた知識を維持するために、固定解像度のオリジナルモデル（teacher）を用いて、任意の解像度で生成される表現のコサイン類似度を正則化します。
+        ```python
+        # Pseudo-code for distillation loss
+        # z_s_student: Semantic token from the student (any-resolution) model
+        # z_s_teacher: Semantic token from the teacher (fixed-resolution) model
+        
+        distillation_loss = 1 - cosine_similarity(z_s_student, z_s_teacher)
+        ```
+    *   **段階的学習**: 低解像度の画像から開始し、徐々にピクセル数を増やしながらネイティブ解像度まで学習を進めます。
+    *   **データパッキング**: マルチモーダルデータをパッキングして最大トークン長に合わせ、事前学習効率を高めます。
+
+#### ステージ2: 特徴量離散化 (Feature Discretization)
+*   **目的**: 連続的な視覚特徴量を、情報損失を最小限に抑えつつ離散コードに量子化すること。
+*   **アプローチ**:
+    *   **プロキシマル表現学習 (Proximal Representation Learning)**:
+        *   高次元特徴量 $f$ を、まずボトルネック層（BN）で中間次元 $\hat{f}$ へ圧縮します。
+        *   その後、$-\ell_{1}$ノルムなどの正則化関数を適用し、特徴空間の複雑さを制約します。具体的には、特徴量をハイパーキューブ表面に射影します（例：$\|\hat{f}\|_{\infty} \le 1$）。これにより、量子化前の特徴空間を徐々に正規化し、情報損失を低減します。
+        ```python
+        # Pseudo-code for bottleneck and proximal representation
+        # f: High-dimensional visual feature
+        # BN: Bottleneck layer for dimension compression
+        # BN_prime: Inverted bottleneck layer
+        # L_inf_norm: L-infinity norm constraint
+        
+        intermediate_feature = BN(f)
+        proximal_feature = BN_prime(L_inf_norm(intermediate_feature)) # or other norm constraints like L1
+        ```
+    *   **ヘッドごとの量子化 (Head-wise Quantization)**:
+        *   **Finite Scalar Quantization (FSQ)**: 圧縮された連続特徴量 $\hat{f}$ を、学習可能なコードブックなしで離散化します。FSQは、安定した学習挙動を提供します。
+        ```python
+        # Pseudo-code for FSQ quantization
+        # compact_continuous_features: Features after proximal learning
+        # FSQ_function: Finite Scalar Quantization function
+        
+        quantized_features = FSQ_function(compact_continuous_features)
+        ```
+    *   **位置情報エンコーディング (Position-Aware Mechanism)**:
+        *   **2D Rotary Position Embedding (RoPE)**: 任意解像度での量子化表現のために、2D RoPEを導入し、空間解像度情報を明示的にエンコードします。これにより、高さと幅の両方の情報が埋め込まれ、相対的な空間関係が維持されます。
+        ```python
+        # Pseudo-code for 2D RoPE
+        # f_m: Token feature in a 2D feature map
+        # h, w: Height and width coordinates
+        # theta_h, theta_w: Frequency parameters for height and width
+        
+        complex_exponential = exp(1j * (h * theta_h + w * theta_w))
+        quantized_feature_with_pos = f_m * complex_exponential # element-wise multiplication
+        ```
+    *   **マルチヘッドアテンションによる特徴拡張**: 各視覚パッチを複数の視覚コードに拡張するためにマルチヘッドアテンションを使用します。これにより、表現能力が向上します。
+
+### その他の技術要素
+*   **低レベル損失 (Low-level Supervision)**:
+    *   VAEスタイルの潜在損失と負の対数尤度（NLL）項を導入し、低レベルの詳細保持を強化します。
+    *   $\mathcal{L}_{\text{recon}} = \text{NLL}(\hat{f}, \text{Encoder}(x))$
+    *   NLLはガウス尤度（単位分散）の下で計算され、実際には $\hat{f}$ と $x$ のエンコーダー出力との平均二乗誤差（MSE）に相当します。
+*   **全体学習目標**:
+    *   $\mathcal{L}_{\text{total}} = \lambda_{\text{text}}\mathcal{L}_{\text{text}} + \lambda_{\text{distill}}\mathcal{L}_{\text{distill}} + \lambda_{\text{recon}}\mathcal{L}_{\text{recon}}$
+
+### モデル構造の抜粋
+*   **視覚エンコーダー**: SigLIP2-g をベースとし、出力次元を量子化要件に合わせてボトルネック層で削減します。
+*   **量子化**: FSQ を採用し、コードブックサイズは64,000です。
+*   **LLMへの統合**: ViQからのマルチモーダル特徴量は、単純なMLP層を介してLLMの潜在空間に投影されます。
+*   **位置エンコーディング**: RoPE-2D を使用します。
+
+## 6. この論文を140字以内のツイートで要約すると？
+ViQ：画像とテキストを統一する離散表現！ネイティブ解像度対応で、意味と詳細のバランスを取りつつ、学習効率を20-70%向上。高圧縮・高品質な画像保存も可能に。マルチモーダルAIの新たな標準へ！ #ViQ #マルチモーダルAI #画像認識</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

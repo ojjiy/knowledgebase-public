@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>OllamaがMLX対応したらしいのでApple MLXを調査して、M2 Maxで計測してみた</title>
+  <link rel="stylesheet" href="/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>OllamaがMLX対応したらしいのでApple MLXを調査して、M2 Maxで計測してみた</h1>
+<p><strong>Date:</strong> 2026-06-27</p>
+<p><strong>Source:</strong> rss / DevelopersIO</p>
+
+<p><a href="https://dev.classmethod.jp/articles/apple-mlx-ollama-deep-dive/">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">OllamaがApple Silicon上でLLMを高速に動作させるために、従来のllama.cppに代わりAppleの機械学習フレームワークであるMLXを採用した背景と、その詳細について調査した記事です。
+
+**MLXとは何か？**
+MLXは、Appleの機械学習研究チームが開発したApple Silicon向けの配列フレームワークです。NumPyやPyTorch、JAXに影響を受けた設計で、MITライセンスで提供されています。推論だけでなく、学習やファインチューニングまでを視野に入れた汎用的なフレームワークであり、以下の4つの特徴があります。
+
+*   **統合メモリモデル (Unified Memory):** CPUとGPUがメモリを共有するため、データコピーが不要でLLM推論に適しています。
+*   **遅延評価 (Lazy Evaluation):** 計算結果が必要になるまで実行されないため、無駄なメモリ消費を抑えられます。
+*   **合成可能な関数変換:** 自動微分などの学習に必要な計算機構を備え、柔軟な開発が可能です。
+*   **NumPy/PyTorchライクなAPI:** 既存のPyTorch経験者が移行しやすいAPIを提供しています。
+
+MLXのエコシステムには、LLMのテキスト生成やファインチューニングを担う`mlx-lm`などが存在します。
+
+**GGUF (llama.cpp) との違い**
+*   **思想:** llama.cppは推論に特化したクロスプラットフォームなエンジンであるのに対し、MLXはApple Siliconに密結合した汎用機械学習フレームワークで、学習までを視野に入れています。
+*   **量子化方式:** GGUFのK-quantは層内でビット数を変えることで品質とファイルサイズのバランスを取りますが、MLXは一般的に層内で均等に圧縮します。NVFP4はNVIDIA由来の4bit量子化で、圧縮による品質劣化を抑えることを目指しています。
+
+**M2 Maxでの実機計測**
+MacBook Pro (M2 Max / 32GB) を使用し、gemma4 12BモデルをGGUF (q4_K_M) とMLX (NVFP4) で比較計測しました。
+
+*   **気づき1:** Ollamaで提供されている`-mlx`タグのモデルは、実体としてNVFP4量子化であり、MLXエンジンとNVFP4量子化の組み合わせであることが確認されました。
+*   **気づき2:** MLX (NVFP4) 版は、GGUF (q4_K_M) 版と比較してメモリ使用量が少なく、既定のコンテキスト長も大きく取られる傾向がありました。（ただし、GGUF版はマルチモーダル構成のため、単純比較は難しい部分もあります。）
+*   **気づき3:**
+    *   **デコード速度:** MLXとGGUFでほぼ同等でした。Ollama公式ブログのM5世代での報告ほどの差はM2世代では見られませんでした。
+    *   **プリフィル速度:** GGUFがMLXの約1.4倍速いという結果になりました。これは、長文入力時の処理速度に影響します。
+
+**結論**
+MLXは単なる推論レイヤーではなく、Apple Siliconの統合メモリと連携して設計された機械学習フレームワーク全体であることがわかりました。M2 Max世代では、OllamaのMLX (NVFP4) とGGUF (q4_K_M) の性能差は予想よりも小さく、どちらを選んでも体感速度は近いとのことです。
+
+メモリ使用量やコンテキスト長を重視する場合はMLX、モデルの幅広さや非Apple環境への展開を考慮する場合はGGUFという判断軸が考えられます。M5世代以降のチップでは、MLXの性能向上がより顕著になる可能性が示唆されています。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>[R] Compiling Agentic Workflows into LLM Weights: Near-Frontier Quality at Two Orders of Magnitude Less Cost</title>
+  <link rel="stylesheet" href="/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>[R] Compiling Agentic Workflows into LLM Weights: Near-Frontier Quality at Two Orders of Magnitude Less Cost</h1>
+<p><strong>Date:</strong> 2026-06-25</p>
+<p><strong>Source:</strong> reddit / MachineLearning</p>
+
+<p><a href="https://arxiv.org/abs/2605.22502">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">1.  **ポストの内容の説明**
+
+    このRedditのポストは、ある研究論文について共有しています。この論文では、「エージェント型ワークフロー」を「小規模言語モデル（SLM）」の重み（学習済みのモデルパラメータ）に直接コンパイル（組み込む）することで、以下のような利点が得られると主張しています。
+
+    *   **性能:** 最先端のLLM（大規模言語モデル）をオーケストレーション（連携させて動かす）した場合とほぼ同等の品質を達成できる。
+    *   **コスト:** コストを「2桁」少なく（つまり、100分の1程度に）抑えることができる。
+
+    投稿者は、自社の企業で「トークンベースの課金」（LLMの利用料が、処理したトークン数に応じてかかる仕組み）が原因で、SLMの再評価を迫られている状況を説明しています。そして、この論文で示されている「最先端モデルのオーケストレーションから得られた実行トレース（LLMの操作記録）を用いてSLMをファインチューニング（追加学習）する」という手法が、性能を維持しつつ大幅なコスト削減につながる可能性について言及し、「実際にこの手法を試した人はいるか？」と質問しています。
+
+    要するに、投稿者は「SLMに複雑なタスクの実行方法を直接学習させることで、高価なLLMを連携させるよりもずっと安く、同等の性能を出せるのではないか」という研究成果を紹介し、その実用性についてユーザーに問いかけているのです。
+
+2.  **興味深いコメント**
+
+    このポストに対するコメントの中で、特に興味深いのは以下の点です。
+
+    *   **論文の主張の正確な解釈と限界の指摘:** コメント主は、論文の主張を「SLMは、固定された合成ワークフローを十分に記憶・内面化し、安価に一部のオーケストレーションベースラインを上回ることができる」と正確に引用しています。しかし、同時に、「SLMが堅牢な汎用エージェントになる」「ワークフローの知識が未知の状況（OOD: Out-of-Distribution）でも転移する」「完全なファインチューニングが忘却から安全である」といった、論文が証明していない、あるいは示唆されていない点を明確に区別しています。この、研究成果の「できること」と「できないこと」を冷静に分析している点が非常に知的で参考になります。
+
+    *   **代替案の提案とコストパフォーマンスの比較:** コメント主は、論文で示されたアプローチの弱点（例えば、汎用性の低さや未知の状況への対応能力の限界）と、性能低下の可能性を考慮すると、単純に「より少し大きめのモデルを使用するか、あるいはより大きなモデルを量子化（軽量化）して使用する方が良いだろう」と提案しています。さらに、「巧妙なトークン圧縮、より良いKVキャッシュヒット率、またはエージェントのチーム化（複数のエージェントを連携させること）」といった、他の技術的なアプローチも、論文で示されたシミュレーションシナリオと同程度の価格帯で、より良いパフォーマンスを発揮する可能性があると推測しています。これは、単に論文を否定するのではなく、より現実的で、コストパフォーマンスに優れた代替手段を具体的に提示している点で示唆に富んでいます。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

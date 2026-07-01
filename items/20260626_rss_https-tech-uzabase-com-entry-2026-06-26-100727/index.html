@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Claude CodeのスキルでSLO対応を自動化したらめちゃくちゃ楽になった - Uzabase for Engineers</title>
+  <link rel="stylesheet" href="/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>Claude CodeのスキルでSLO対応を自動化したらめちゃくちゃ楽になった - Uzabase for Engineers</h1>
+<p><strong>Date:</strong> 2026-06-26</p>
+<p><strong>Source:</strong> rss / Hatena Bookmark AI</p>
+
+<p><a href="https://tech.uzabase.com/entry/2026/06/26/100727">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">## Claude CodeのスキルでSLO対応を自動化し、エンジニアの生産性を飛躍的に向上させた事例
+
+本記事は、NewsPicksのPlatform Engineeringチームの崔氏が、Claude Codeの「スキル」機能を活用してSLO（サービスレベル目標）違反調査の自動化を実現し、エンジニアの本来業務に充てる時間を創出した経験を共有するものです。
+
+**背景：エンジニアの貴重な時間を奪うSLO違反調査**
+
+従来、SLO違反が発生した場合、エンジニアはAWS CloudWatchやNew Relicといったオブザーバビリティツールを駆使して、メトリクスの分析、仮説構築、複数リポジトリのコード追跡といった泥臭い調査作業に数人日を費やしていました。この調査作業は、週次のモニタリングMTGでも頻繁に扱われ、1回のMTGで2〜10件以上の件数に対応するため、原因特定や方針策定に時間がかかり、予定していた開発タスクが後回しになるという課題を抱えていました。
+
+**解決策：Claude Codeのスキルによる自動化**
+
+崔氏は、このSLO違反調査フローそのものをClaude Codeの「スキル」として自動化することを目指しました。初期段階では、SlackアラートのURLをClaudeに渡し、普段の調査フローに沿って指示を出すことから始めました。単純なN+1問題などから始め、Claudeが想定通りの回答を導き出せるか検証した結果、概ね良好でした。
+
+**試行錯誤とルールの設定**
+
+しかし、複数の要因が連鎖する複雑な障害や、Claudeの推測、トークン消費量の過多といった問題に直面しました。これらを解決するため、以下の5つのルールを設定しました。
+
+1.  **推測禁止:** 根拠のない断定や、仕様を把握しない提案を防ぐ。
+2.  **仮説を出力してから動く:** 無駄な処理を避け、効率的な調査を促す。
+3.  **2Kトークンで止まる:** 特定のトークン数を超えた場合は、仮説を出力して人間の判断を仰ぐ。
+4.  **3回失敗で終了:** 3回試行しても原因特定に至らない場合は、素早く諦めて人間の判断を待つ。
+5.  **辿り道の記録:** コードの辿り道を省略せず、明確に出力させることで、原因究明の精度を高める。
+
+これらのルールと並行して、毎回の調査結果と対策をClaude Codeのメモリに記録し、過去のナレッジを参照できるようにすることで、将来的な問題発生時の早期解決を目指しました。
+
+**活用事例：動画検索機能の重度障害調査**
+
+具体例として、動画検索機能の応答時間が極端に悪化し、サービス全体が応答不能に至った重度障害の調査が紹介されています。この障害では、複数のエンジニアが異なるメトリクスを確認していましたが、Claude CodeはSlackスレッドのURLを渡すだけで、7分という短時間で根本原因（構造的なN+1問題）を特定しました。人間であれば数十分から数時間かかる分析を、Claude CodeはNRQLクエリ7本を用いて、複数のメトリクスを時刻を揃えて照合することで、短時間で完了させました。
+
+**今後の展望とナレッジ共有の重要性**
+
+崔氏は、スキルをLatency違反調査用とAvailability違反調査用に分割し、それぞれに特化したルールを持たせることで、より精度の高い調査が可能になると考えています。また、Claude Codeのメモリだけでなく、Notionなどの社内ドキュメントツールに調査結果を集約し、AIと人間双方にとって有益なナレッジとして共有することの重要性も強調しています。これにより、属人化の解消や、AIが利用できない場合の代替手段としての活用も期待できます。
+
+**まとめ**
+
+本記事は、Claude Codeの「スキル」機能が、エンジニアの煩雑なSLO違反調査業務を自動化し、開発に集中できる時間を創出する強力なツールとなり得ることを示しています。崔氏は、この経験を通じて「ものづくり」の楽しさを再認識し、他のエンジニアにもスキル開発による生産性向上への貢献を推奨しています。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

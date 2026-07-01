@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>【セッションレポート】 AI エージェントのオブザーバビリティ実践 [CNS317]</title>
+  <link rel="stylesheet" href="/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>【セッションレポート】 AI エージェントのオブザーバビリティ実践 [CNS317]</h1>
+<p><strong>Date:</strong> 2026-06-26</p>
+<p><strong>Source:</strong> rss / DevelopersIO</p>
+
+<p><a href="https://dev.classmethod.jp/articles/aws-ai-agent-observability/">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">AWS Summit 2023のセッション「AI エージェントのオブザーバビリティ実践」では、AIエージェント開発におけるオブザーバビリティ（可観測性）の重要性と、それを実現するための具体的な方法が解説されました。
+
+AIエージェントは非決定的に動作し、LLM（大規模言語モデル）やツールの呼び出しが複数ステップに及ぶため、従来のアプリケーション監視手法では十分な可観測性を確保することが困難です。本セッションでは、この課題に対し、OpenTelemetryをベースとした計装、Amazon CloudWatch generative AI observabilityによるメトリクス、トレース、ログの可視化、そしてAmazon Bedrock AgentCore Evaluationsを用いた応答品質の評価まで、包括的なアプローチが紹介されました。
+
+セッションでは、生成AIエージェント特有の課題として、「同じ入力でも毎回異なる動きをする」「複雑な呼び出し連鎖から原因を特定する必要がある」「呼び出しの収拾と分析が必要」「パフォーマンスから応答品質まで網羅的な評価が求められる」といった点が挙げられました。
+
+これらの課題解決のため、テレメトリデータの収集には、コンポーネント間の仕様を統一し、ベンダー依存せずに計装・送信・収集を実現できるOSSであるOpenTelemetryの活用が推奨されています。AWSではAWS Distro for OpenTelemetry (ADOT)が提供されています。
+
+Amazon CloudWatch generative AI observabilityでは、Bedrock AgentCoreを用いたケーススタディが紹介され、エージェントの実行環境に依存しないモニタリングが可能であることが示されました。特に重要なモニタリングメトリクスとして、「Model Invocations」などの詳細なトレースが品質評価につながることが強調されました。
+
+生成AIのログは、その再現性の低さから「何を入力し、何が返ったか」を記録することが重要であり、CloudWatch LogsやS3に出力されることが説明されました。また、ログ内の機密情報は自動検出・マスクされるものの、必要に応じて特定のIAMユーザーのみがマスク前の情報にアクセスできるよう権限を絞ることが可能であることも示されました。
+
+トレースに関しては、「セッション（一連の会話）」「トレース（1度のユーザー指示・応答）」「スパン（1つの作業単位）」「サブスパン（さらに詳細な作業単位）」といった構造が説明され、ユーザーのリクエストから最終的な応答までの処理全体を追跡するEnd-to-endトレースの重要性が強調されました。
+
+さらに、Amazon Bedrock AgentCore Evaluationsが、CloudWatch generative AI observabilityと組み合わせて利用できることが紹介されました。これは、AIエージェントの挙動分析や、14種類の組み込みEvaluatorによる継続的な品質評価を可能にし、LLM as a Judgeとして自動リスク評価が行われます。評価スコアが閾値を下回った場合にはCloudWatchアラームによる通知も可能です。
+
+セッションのデモでは、「おすすめのペットフードを提案してくれるAIエージェント」を例に、オブザーバビリティダッシュボードでセッションごとのログやスパンの詳細を確認し、エラー発生時にはツール呼び出しにおけるHTTP 500エラーの連鎖によるリトライ上限到達が原因であったことが特定される様子が示されました。
+
+まとめとして、OpenTelemetryで計装し、CloudWatch generative AI observabilityで挙動を可視化、そしてBedrock AgentCore EvaluationsでAIエージェントの品質を継続的に評価するという、基礎から応用まで網羅された実践的なアプローチが提示されたセッションでした。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

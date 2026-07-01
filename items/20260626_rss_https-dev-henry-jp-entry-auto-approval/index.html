@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AIにPull RequestのApprove権限を与えて数ヶ月、どのような効果があったか - 株式会社ヘンリー エンジニアブログ</title>
+  <link rel="stylesheet" href="/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>AIにPull RequestのApprove権限を与えて数ヶ月、どのような効果があったか - 株式会社ヘンリー エンジニアブログ</h1>
+<p><strong>Date:</strong> 2026-06-26</p>
+<p><strong>Source:</strong> rss / Hatena Bookmark Programming</p>
+
+<p><a href="https://dev.henry.jp/entry/auto-approval">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">株式会社ヘンリーでは、2023年1月にClaudeCodeを活用した開発の全自動化を推進した結果、Pull Request（PR）の数が約2倍に増加しました。これによりレビューコストが増大したため、AIにPull RequestのApprove（承認）権限を与えるという対策が講じられました。
+
+このAIによるApprove機能は、「AutoApproval」というラベルをPRに付与した場合にのみ有効となります。これは、バグ修正や簡単な機能追加など、難易度の低いPRに限定して利用することを想定しており、破壊的変更を伴うPRや複雑な実装を伴うPRは、引き続き人間のレビューを必須としています。ラベルを付けるかどうかの判断は、PRの作成者に委ねられています。
+
+組織への展開にあたっては、AIのレビューは完璧ではなく、最終的なコードの責任は人間に帰属することを明確に伝えるためのドキュメントが整備され、性善説に基づいて運用されています。
+
+AutoApproval導入後、約半年間の運用データによると、全体のPR数は増加したものの、AutoApprovalラベルが付与されたPRは約50%にとどまり、人間によるレビューが必要なPRも一定数存在することが確認されました。フロントエンドでは約70%、バックエンドでは約40%のPRでAutoApprovalが活用されており、バックエンドでの利用率が低いのは、破壊的変更のリスクを考慮した慎重なレビューが求められるためと考えられます。
+
+一方で、AutoApprovalによる安易なマージが原因で発生したヒヤリハット事象も一定数確認されており、リリースに影響するブランチでのAutoApprovalの無効化や、PR作成時の通知整備、linterなどの設定見直しといった改善策が実施されています。
+
+また、AIレビューの品質については、複雑な指摘やテスト不足、潜在的な問題に対する判定の甘さといった課題が残っており、レビュー用プロンプトの改善や、PRの規模・領域に応じたAIモデルの切り替えといった今後の検討課題も挙げられています。
+
+総括すると、AIによる自動Approve機能は、実装速度とレビューコストの両立に一定の効果をもたらしましたが、ヒヤリハットやレビュー品質といった課題も浮き彫りになりました。これらの課題に対し、AIを活用したさらなる改善を継続することで、変化する働き方への適応と効率化を目指していく方針です。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>OPID: On-Policy Skill Distillation for Agentic Reinforcement Learning</title>
+  <link rel="stylesheet" href="/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>OPID: On-Policy Skill Distillation for Agentic Reinforcement Learning</h1>
+<p><strong>Date:</strong> 2026-06-25</p>
+<p><strong>Source:</strong> paper / hf-papers</p>
+
+<p><a href="http://arxiv.org/abs/2606.26790v1">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body"># タイトル
+[View Paper](http://arxiv.org/abs/2606.26790v1)
+
+## 1. 問題意識：解決したい問題はなにか
+大規模言語モデル（LLM）をエージェントとして利用する際、長期的なタスクでは、最終的な報酬だけでは中間的な意思決定の良し悪しを判断するのが難しいという問題があります。従来の強化学習（RL）手法は、時折得られる稀な報酬に依存するため、エージェントの学習に時間がかかり、効率が悪くなる傾向があります。また、既存のスキル条件付き自己蒸留手法は、外部のスキルメモリや取得した特権コンテキストに依存するため、メンテナンスコストが高く、現在のポリシーの分布と一致しない可能性があるという課題がありました。
+
+## 2. 提案手法のアプローチ：どのようなアイデア・アプローチで問題を解決しようとしたか
+本研究では、**OPID (On-Policy Skill Distillation)** というフレームワークを提案しています。OPIDは、エージェントが生成した完了済みのオンポリシー軌道（学習中に生成された一連の行動と観測）から、直接スキルの監督信号を抽出します。
+
+OPIDのアプローチは以下の通りです。
+
+*   **階層的スキル抽出**: 軌跡の「後知恵（hindsight）」を、エピソードレベルのスキル（グローバルなワークフローや失敗回避ルール）とステップレベルのスキル（重要なタイムステップにおける局所的な意思決定知識）という階層的なスキルで表現します。
+*   **クリティカルファースト・ルーティング**: 意思決定の重要度に応じて、重要な決定時にはステップレベルのスキルを、それ以外の場合はエピソードレベルのスキルをデフォルトのガイダンスとして使用するルーティングメカニズムを導入します。
+*   **オンポリシー自己蒸留**: ルーティングされたスキルを対話履歴に注入し、古いポリシーが元のコンテキストとスキル拡張コンテキストの両方で同じ応答を再評価するようにします。これにより、トークンレベルの自己蒸留によるアドバンテージが得られます。
+*   **報酬との統合**: このトークンレベルのスキルアドバンテージと、元の軌跡レベルの報酬アドバンテージを組み合わせて、ポリシー最適化を行います。
+
+このアプローチにより、OPIDはRLを主要な学習目標として維持しつつ、分布にマッチした密な後知恵監督を導入します。
+
+## 3. 成果：提案手法により、何が達成できたのか
+OPIDは、ALFWorld、WebShop、Search-based QAといった長期的なエージェントタスクにおいて、以下のような顕著な成果を達成しました。
+
+*   **性能向上**: outcome-only RL（報酬のみに依存するRL）や既存のスキル蒸留ベースラインと比較して、エージェントのパフォーマンスを一般的に向上させました。
+*   **サンプル効率の改善**: より少ないデータで同等以上の性能を達成し、学習効率を大幅に向上させました。特に、データ量が少ない状況での恩恵が大きいことが示されました。
+*   **頑健性の向上**: 繰り返しの無効な行動や局所的なナビゲーションエラーを削減し、より直接的で効率的な行動シーケンスを学習させることができました。
+*   **推論時のコスト削減**: 訓練時のみにアナライザーや外部スキル取得、特権コンテキストを必要とし、推論時には通常の対話履歴のみで動作するため、追加の計算コストがかかりません。
+*   **スキル内化の促進**: 外部スキルに依存するのではなく、学習プロセスを通じてスキルをモデルのパラメータに内化させることで、推論時のパフォーマンス低下を防ぎました。
+
+## 4. 課題：本手法の限界・課題にはなにか。本文中で著者が言及しているものと、あなたが想定するもの
+
+**著者が言及している課題・限界:**
+
+*   **スキル抽出の品質**: スキル抽出にはLLMベースのアナライザーが使用されており、その性能はアナライザーの能力に依存します。アナライザーが不正確なスキルを抽出した場合、学習の質に影響を与える可能性があります。
+*   **クリティカルファースト・ルーティングの精度**: クリティカルファースト・ルーティングの性能は、重要度を判断するアナライザーの精度に依存します。アナライザーが重要でないステップを「クリティカル」と判断したり、重要なステップを「クリティカルでない」と判断したりすると、ルーティングの最適性が損なわれる可能性があります。
+*   **スキル表現の限界**: 現在のスキル表現（エピソードレベルとステップレベル）は、より複雑なタスクや、より高度な推論能力が求められるシナリオでは不十分である可能性があります。
+
+**想定される課題・限界:**
+
+*   **計算コスト**: 訓練時にスキルの抽出、ルーティング、再評価といった追加のステップが必要となるため、単純なoutcome-only RLに比べて訓練時の計算コストが増加する可能性があります。
+*   **ハイパーパラメータ調整**: $\lambda_{\mathrm{skill}}$（スキルアドバンテージの重み）などのハイパーパラメータの調整が、性能に影響を与える可能性があります。
+*   **汎化性能の限界**: 特定のドメインで抽出されたスキルが、全く異なるドメインやタスクでどの程度有効に機能するかは、さらなる検証が必要です。
+*   **「後知恵」のバイアス**: 完了した軌跡からスキルを抽出するため、本質的に「後知恵」に依存します。これは、未知の状況で適切な行動を探索する能力に影響を与える可能性が考えられます。
+
+## 5. 技術詳細：提案手法の技術的な詳細について、できるだけ詳しく。数式やアルゴリズム、モデル構造なども可能な限り詳しく
+
+OPIDは、以下の主要なコンポーネントとプロセスで構成されます。
+
+**1. 環境とポリシー:**
+*   エージェントは、部分観測マルコフ決定過程 (POMDP) でモデル化される環境で行動します。
+*   ポリシー $\pi_{\theta}$ は、現在の履歴 $h_t$ を入力として受け取り、次の応答 $y_{t,\ell}$ の確率分布を出力します。
+*   行動 $y_{t,\ell}$ は、トークン $\ell$ によって構成されます。
+
+**2. 階層的スキル抽出:**
+*   完了したオンポリシー軌跡 $\tau = \{(o_t, y_t, r_t)\}_{t=0}^{T-1}$ を用います。
+*   LLMベースのアナライザー $\mathcal{A}$ が、軌跡 $\tau$ を入力として、エピソードレベルスキル $s^{\mathrm{ep}}_\tau$ と、クリティカルなタイムステップ $\mathcal{C}_\tau$ におけるステップレベルスキル $\{s^{\mathrm{step}}_{\tau,t}\}_{t \in \mathcal{C}_\tau}$ を抽出します。
+    *   $s^{\mathrm{ep}}_\tau$: グローバルなワークフローや失敗回避ルール。
+    *   $s^{\mathrm{step}}_{\tau,t}$: タイムステップ $t$ における局所的な意思決定知識。
+
+**3. クリティカルファースト・ルーティング:**
+*   各タイムステップ $t$ において、ルーティング関数 $s_{\tau,t}$ がスキルを選択します。
+    *   $s_{\tau,t} = s^{\mathrm{step}}_{\tau,t}$ if $t \in \mathcal{C}_\tau$
+    *   $s_{\tau,t} = s^{\mathrm{ep}}_\tau$ otherwise
+*   このルーティングは、重要な決定にはより特化したステップレベルスキルを、それ以外にはより一般的なエピソードレベルスキルを適用することで、スキルの粒度を最適化します。
+
+**4. スキル拡張コンテキストと再評価:**
+*   ルーティングされたスキル $s_{\tau,t}$ を、元の対話履歴 $h_{\tau,t}$ に付加または前置して、スキル拡張履歴 $\tilde{h}_{\tau,t} = H(h_{\tau,t}, s_{\tau,t})$ を生成します。
+*   古いポリシー $\pi_{\theta_{\mathrm{old}}}$ を用いて、元の履歴 $h_{\tau,t}$ とスキル拡張履歴 $\tilde{h}_{\tau,t}$ の両方で、同じ応答 $y_{\tau,t}$ のトークンごとの対数尤度を再計算します。
+    *   $\ell^{\mathrm{old}}_{\tau,t,\ell} = \log \pi_{\theta_{\mathrm{old}}}(y_{\tau,t,\ell} \mid h_{\tau,t}, y_{\tau,t,&lt;\ell})$
+    *   $\ell^{\mathrm{skill}}_{\tau,t,\ell} = \log \pi_{\theta_{\mathrm{old}}}(y_{\tau,t,\ell} \mid \tilde{h}_{\tau,t}, y_{\tau,t,&lt;\ell})$
+*   **スキルアドバンテージ** $A^{\mathrm{skill}}_{\tau,t,\ell}$ は、この対数尤度の差から計算されます。
+    *   $A^{\mathrm{skill}}_{\tau,t,\ell} = (\ell^{\mathrm{skill}}_{\tau,t,\ell} - \ell^{\mathrm{old}}_{\tau,t,\ell}) \cdot m_{\tau,t,\ell}$
+    *   $m_{\tau,t,\ell}$ は応答マスクで、有効なトークン位置を示します。
+
+**5. ポリシー最適化:**
+*   **エピソードアドバンテージ** $A^{\mathrm{ep}}_{\tau}$ は、GRPO (Group Relative Policy Optimization) のような方法で計算されます。
+    *   $\mathcal{G}_q = \{\tau^{(1)}, \ldots, \tau^{(N)}\}$ は、同じプロンプトからサンプリングされた軌跡のグループ。
+    *   $R(\tau)$ は軌跡 $\tau$ の最終報酬。
+    *   $\mu_q = \text{mean}(\{R(\tau&#39;) \mid \tau&#39; \in \mathcal{G}_q\})$
+    *   $\sigma_q = \text{std}(\{R(\tau&#39;) \mid \tau&#39; \in \mathcal{G}_q\})$
+    *   $A^{\mathrm{ep}}_{\tau} = (R(\tau) - \mu_q) / \sigma_q$
+*   エピソードアドバンテージもトークンレベルにブロードキャストされます: $A^{\mathrm{ep}}_{\tau,t,\ell} = A^{\mathrm{ep}}_{\tau} \cdot m_{\tau,t,\ell}$
+*   **OPIDアドバンテージ** $A^{\mathrm{OPID}}_{\tau,t,\ell}$ は、エピソードアドバンテージとスキルアドバンテージの線形結合です。
+    *   $A^{\mathrm{OPID}}_{\tau,t,\ell} = A^{\mathrm{ep}}_{\tau,t,\ell} + \lambda_{\mathrm{skill}} A^{\mathrm{skill}}_{\tau,t,\ell}$
+*   ポリシー $\pi_{\theta}$ は、クリップされたポリシー最適化目的関数を最小化するように学習されます。
+    *   $\rho_{\tau,t,\ell}(\theta) = \exp(\log \pi_{\theta}(y_{\tau,t,\ell} \mid \ldots) - \log \pi_{\theta_{\mathrm{old}}}(y_{\tau,t,\ell} \mid \ldots))$
+    *   $\mathcal{L}_{\mathrm{policy}}(\theta) = -\mathbb{E}_{\tau,t,\ell} [\min(\rho_{\tau,t,\ell}(\theta) A^{\mathrm{OPID}}_{\tau,t,\ell}, \text{clip}(\rho_{\tau,t,\ell}(\theta), 1-\epsilon, 1+\epsilon) A^{\mathrm{OPID}}_{\tau,t,\ell})]$
+
+**アルゴリズム（疑似コード）:**
+
+```python
+# 初期化
+policy = PolicyNet(params)
+old_policy_params = policy.params
+
+# トレーニングループ
+for epoch in range(num_epochs):
+    # 1. オンポリシー軌跡の収集
+    trajectories = []
+    for _ in range(num_trajectories_per_epoch):
+        trajectory = collect_trajectory(env, policy)
+        trajectories.append(trajectory)
+
+    # 2. 階層的スキル抽出とルーティング
+    skills = {}
+    for traj in trajectories:
+        episode_skill, step_skills = analyzer.extract_skills(traj)
+        routed_skills = {}
+        for t, step_skill in step_skills.items():
+            routed_skills[t] = step_skill
+        for t in range(traj.max_len):
+            if t not in routed_skills:
+                routed_skills[t] = episode_skill
+        skills[traj.id] = routed_skills
+
+    # 3. アドバンテージ計算
+    episode_advantages = calculate_episode_advantages(trajectories) # GRPO-style
+    skill_advantages = []
+    for traj in trajectories:
+        for t, token in enumerate(traj.response):
+            skill_augmented_history = inject_skill(traj.history[t], skills[traj.id][t])
+            log_prob_old = policy.log_prob(token, traj.history[t])
+            log_prob_skill = policy.log_prob(token, skill_augmented_history) # using old policy weights
+            skill_adv = (log_prob_skill - log_prob_old) * traj.response_mask[t]
+            skill_advantages.append(skill_adv)
+            
+    # 4. ポリシー最適化
+    combined_advantages = combine_advantages(episode_advantages, skill_advantages, lambda_skill)
+    
+    # 5. パラメータ更新
+    policy.update(combined_advantages)
+    old_policy_params = policy.params # Update old policy for next iteration
+```
+
+**モデル構造:**
+*   ポリシーネットワークは、TransformerベースのLLMアーキテクチャ（例: GPT, Llama）を使用します。
+*   アナライザーは、別のLLM（または同じLLMをプロンプトで指示）を使用し、軌跡レコードを解析して自然言語スキルを生成します。
+*   スキル注入関数 $H$ は、ルーティングされたスキルを対話履歴に効率的に組み込む方法を定義します（例: 特定のトークンで連結）。
+
+**重要概念:**
+*   **オンポリシー**: 学習中にエージェント自身が生成したデータのみを使用する。
+*   **自己蒸留**: 学生モデル（現在のポリシー）が、同じモデル（古いポリシー）からの「教師」信号を用いて学習する。
+*   **後知恵 (Hindsight)**: 完了した軌跡の結果を基に、過去の決定を評価・改善する。
+*   **分布マッチング**: スキル拡張コンテキストと元のコンテキストで生成される応答の分布が近いことを期待する。
+
+## 6. この論文を140字以内のツイートで要約すると？
+LLMエージェントの学習効率向上！OPIDは、完了した軌跡から階層的スキルを抽出し、オンポリシー蒸留で再利用。報酬だけでは難しかった中間判断を強化し、学習を加速。推論時の追加コストなしで性能・効率・頑健性を改善。 #強化学習 #LLM #AI</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

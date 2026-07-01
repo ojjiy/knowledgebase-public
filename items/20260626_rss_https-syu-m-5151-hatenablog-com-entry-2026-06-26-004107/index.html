@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>git を捨てずに、git の手前に立つ - Jujutsu (jj) の概念と、乗り換えの損益分岐点 - じゃあ、おうちで学べる</title>
+  <link rel="stylesheet" href="/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>git を捨てずに、git の手前に立つ - Jujutsu (jj) の概念と、乗り換えの損益分岐点 - じゃあ、おうちで学べる</h1>
+<p><strong>Date:</strong> 2026-06-26</p>
+<p><strong>Source:</strong> rss / Hatena Bookmark Programming</p>
+
+<p><a href="https://syu-m-5151.hatenablog.com/entry/2026/06/26/004107">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">## Jujutsu (jj) の導入による Git 作業モデルの変革：乗り換えの損益分岐点を探る
+
+本記事は、バージョン管理ツール Git の代替ではなく、その手前に新たな作業モデルを構築する Jujutsu (jj) の概念を紹介し、Git から jj への乗り換えを検討する上での「損益分岐点」について考察するものです。
+
+### Git の課題と jj の解決策
+
+筆者は、Git の `rebase` 操作中に発生したコミットの衝突と、それに伴う「やり直しのできなさ」という恐怖に長年悩まされてきました。jj は、この「やり直しのできなさ」という根本的な課題に対し、以下の8つの概念を通じて Git の習慣を置き換えます。
+
+1.  **ワーキングコピーがコミットである（ステージングがない）**: Git の「作業ツリー」「ステージングエリア」「HEAD」という3段階を、jj ではワーキングコピー自体がコミットとして扱われます。`git add` や `git commit` の概念がなくなり、編集した瞬間からコミットとして扱われるため、コミットするかの迷いがなくなります。
+2.  **Change ID は書き換えても消えない（コミットを追い続けられる）**: Git のコミットIDは `rebase` や `amend` で書き換えると変更されますが、jj の Change ID はコミットを書き換えても不変です。これにより、論理的な変更を常に一貫したIDで追跡できます。
+3.  **Operation Log がある（操作そのものをやり直せる）**: Git の `reflog` がコミットの到達可能性を記録するのに対し、jj はリポジトリに対するあらゆる操作を Operation Log として記録します。これにより、`git rebase --abort` のような限定的な操作だけでなく、任意の操作を `jj undo` で簡単に巻き戻すことができます。
+4.  **コンフリクトは一級市民である（rebase が途中で止まらない）**: Git では `rebase` 中のコンフリクトで操作が停止しますが、jj ではコンフリクトが発生しても操作は継続され、コンフリクトした状態がコミットとして記録されます。これにより、作業を中断することなく、後から落ち着いてコンフリクトを解決できます。
+5.  **Bookmark と Git 連携（ブランチの考え方が変わる）**: Git のブランチに相当する jj の Bookmark は、コミットしても自動で進まず、明示的に操作しない限りその場に留まります。これにより、プッシュ直前に Bookmark を設定するなどの柔軟な運用が可能になります。また、Git との連携機能も充実しています。
+6.  **Workspace で並行作業する（worktree の考え方が変わる）**: Git の `worktree` に相当する jj の Workspace では、同一リポジトリに対して複数の独立したワーキングコピーを持つことができます。これにより、並行して異なる変更を進めることが容易になります。Operation Log は Workspace 間で共有されるため、全体の履歴を単一の時間軸で追跡できます。
+7.  **Revset で変更を選ぶ（コミット指定が式言語になる）**: jj では Revset という式言語を用いて、コミットの範囲指定や絞り込みを柔軟に行えます。これにより、`rebase -i` のような対話的な操作が、Revset とコマンドの組み合わせによる一行操作に置き換わります。
+8.  **Immutable Commits が共有履歴を守る（force-push 事故が構造的に防がれる）**: デフォルトでは、`trunk` や `tags` といった共有履歴を保護するため、これらのコミットは書き換え不可（immutable）として扱われます。これにより、不用意な `force-push` による事故を構造的に防ぐことができます。
+
+### 乗り換えの損益分岐点：個人とチームでの違い
+
+jj は、Git の内部ストレージをそのまま利用できるため、既存の Git リポジトリに `jj init --colocate` で共存させることができます。これにより、チーム全体の移行を伴わずに、個人レベルで jj を試すことが可能です。
+
+**個人の場合**:
+「自分の冷や汗が減る」という、操作のやり直しが容易になるというメリットが、新しい概念を覚える負担を上回った時点で乗り換えの価値があります。`rebase` 事故の低コスト化、コンフリクト時の作業中断防止、Change ID による追跡の容易さなどが、このメリットに該当します。
+
+**チームの場合**:
+個人のメリットに加え、チーム全体で発生する類似の痛みが、導入コストを上回る場合に損益分岐点に達します。`rebase` 事故、コミット整理、並行作業の衝突などが複数人に繰り返し発生し、それが共通の課題となっている場合に、jj の新しい語彙（Change ID、Workspace、Operation Log）を持ち込む理由が生まれます。
+
+### jj の将来性と注意点
+
+jj はまだバージョン1.0に達しておらず、仕様変更の可能性や、GUI、IDE連携、CIエコシステムにおける Git 前提の現状といった課題も存在します。しかし、筆者は「1.0を待つ」のではなく、「いま個人で試す」ことを推奨しています。その理由は、
+
+*   **可逆性**: `colocate` モードで導入できるため、気に入らなければ `.jj` ディレクトリを削除するだけで Git に戻れます。
+*   **将来性**: 複数の書き手（人間やエージェント）を抱える環境において、jj の設計思想（やり直しやすさ、並行作業の履歴追跡）の価値は増していくと予想されます。
+
+### 結論
+
+jj は、Git の「やり直しのできなさ」という根本的な課題に対し、操作の低コスト化という明確なメリットを提供します。乗り換えの判断は、「作れるか」ではなく「作るべきか」、「乗り換えられるか」ではなく「乗り換えるべきか」という視点で行うべきです。まずは既存リポジトリで `jj init --colocate` を実行し、個人のローカル環境で1週間試してみることを推奨します。そこで得られる「やり直せる安心感」が、乗り換えを検討する上での強力な後押しとなるでしょう。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

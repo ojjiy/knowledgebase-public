@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Gemini を Claude の「サブエージェント」に —— 大規模開発でコストを実測</title>
+  <link rel="stylesheet" href="/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>Gemini を Claude の「サブエージェント」に —— 大規模開発でコストを実測</h1>
+<p><strong>Date:</strong> 2026-06-25</p>
+<p><strong>Source:</strong> rss / Hatena Bookmark LLM</p>
+
+<p><a href="https://zenn.dev/google_cloud_jp/articles/63205d90345627">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">## Gemini を Claude の「サブエージェント」に据えることで、大規模開発におけるAIコーディングコストを27～64%削減（同品質）
+
+本記事は、AnthropicのClaude CodeとGoogleのAntigravity CLI（Gemini）を組み合わせた「ハイブリッド構成」をClaude Code Pluginとして実装し、大規模開発におけるコスト削減効果を実測した結果を報告するものです。
+
+**結論として、AIコーディングにおける「判断は優秀なモデル（Claude）、量産はコスパの良いモデル（Gemini）」という振り分けは、まとまった規模の仕事ほど効果を発揮します。**
+
+### ハイブリッド構成の概要とコンセプト
+
+この構成では、開発プロセスを「指揮層（Claude Code）」と「実行層（agy/Gemini）」の2層に分けます。
+
+*   **指揮層 (Claude Code):** 要件定義、設計、難易度の高い部分（約20%）、検証、レビューなど、判断が求められるタスクを担当します。
+*   **実行層 (agy/Gemini):** スキャフォールディング（ひな形作成）、定型実装、テスト生成、一次レビュー、Web/社内検索など、決定論的で量が多い作業を担当します。
+
+これにより、判断はClaudeに、量産はコスト効率の良いGeminiに振り分ける「インテリジェントモデルルーティング」を実現します。Claude Code Plugin「Antigravity for Claude Code」は、この委譲の仕組みを定義するSkill、およびBash制限付きの委譲専用サブエージェント、セッション開始時のコスト方針自動注入フックなどを同梱し、別途agyをヘッドレスで呼び出す薄いラッパーとして機能します。
+
+### 実測結果：大規模ビルドでのコスト削減効果
+
+Google ADKを用いた大規模ビルド（SDLCアシスタントのマルチエージェント構築）を題材に、Claude単独（high/max）とハイブリッド構成で比較実験を行いました。
+
+| 指標              | Claude 単独@high | Claude 単独@max | ハイブリッド構成 |
+| :---------------- | :--------------- | :-------------- | :--------------- |
+| turns             | 126              | 154             | 87               |
+| output            | 123,216          | 388,676         | 113,351          |
+| cache_read        | 10,188,140       | 20,453,600      | 5,654,552        |
+| COST-WEIGHTED（相対指標） | 2,615,077        | 5,341,042       | 1,912,300        |
+| est. USD（概算）  | $13.08           | $26.71          | $9.56            |
+
+結果として、ハイブリッド構成は**Claude単独@highと比較して27%、単独@maxと比較して64%のコスト削減**を達成し、かつ**同品質（adk evalを全件通過）**であることが確認されました。これは、重い処理をGemini側に逃がすことで、ターン数、出力、キャッシュ読み込みが大幅に削減されたためです。最も高コストだった「最強の単独（@max）」を投げるよりも、ハイブリッド構成の方が同品質で大幅に安価でした。
+
+### 効きどころ（適材適所）とコスト以外の価値
+
+このハイブリッド構成の効果は、**規模に依存**します。
+
+*   **効果が高いケース:** 大規模機能開発、一括移行、網羅的なテスト、複数エージェント構築、大量ドキュメント横断検索など、まとまった規模の仕事。
+*   **効果が薄いケース:** 小さな単発タスクは、委譲の往復コストが勝つため、Claude Code単独での利用が推奨されます。
+
+コスト削減以外にも、以下のような価値が期待できます。
+
+*   **社内データ検索 (Vertex AI Search):** 自社ドキュメントに基づいた検索が可能。
+*   **Web/Deep Research:** agyによる安価な情報収集とClaudeによる裏取りを定型化。
+*   **クロスモデル検証:** Geminiによる独立レビューで品質と信頼性を向上。
+*   **Google純正フロー:** ADKでのマルチエージェント構築からAgent Engineへのデプロイまで一貫して対応。
+
+### 使いこなしの勘所と安心設計
+
+効果を最大化するためには、以下の4点が重要です。
+
+1.  **分岐点の上で委譲:** まとまった量のある仕事に活用する。
+2.  **Claudeのコンテキストを薄く保つ:** agyの生成物は読み戻さず、要約のみを受け取る。
+3.  **単発バッチ:** 往復コストを削減する。
+4.  **diffだけレビュー:** 全文ではなく差分でレビューする。
+
+また、本Pluginは以下のような安心設計を備えています。
+
+*   **検証ゲート:** Claudeが実行内容を必ず確認し、自己申告を鵜呑みにしない。
+*   **構造化エラー:**Quota、認証、タイムアウトなどを終了コードで区別し、機械的な対処を可能にする。
+*   **実フィードバックの反映:** WSLでのI/O遅延など、実利用からのフィードバックを継続的に改善。
+*   **テスト・CI・doctor同梱:** 公式claude plugin validateも通過。
+
+### 始め方
+
+Pluginは以下のコマンドでインストール・セットアップできます。
+
+```bash
+/plugin marketplace add yuting0624/antigravity-for-claude-code
+/plugin install antigravity@antigravity-for-claude-code
+/antigravity:setup
+```
+
+インストール後は、セッション開始時にコスト方針が自動で注入されるため、すぐに利用を開始できます。
+
+### まとめ
+
+「判断は優秀なモデル、量産はコスパの良いモデル」という振り分けは、大規模開発におけるAIコーディングコストを大幅に削減しつつ、Claude単独では得られない能力も付加できる有効な戦略です。生成能力は既に解決済みであり、今後は検証と方向付けが重要となり、2つのAIを連携させるアプローチが現実的な最適解となり得ます。
+
+本稿で紹介した「Antigravity for Claude Code」は、MITのコミュニティプロジェクトとして提供されており、Issue、PR、スター評価を歓迎しています。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

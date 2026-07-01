@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Anatomy of a Failed (Nation-State?) Attack</title>
+  <link rel="stylesheet" href="/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>Anatomy of a Failed (Nation-State?) Attack</h1>
+<p><strong>Date:</strong> 2026-06-27</p>
+<p><strong>Source:</strong> rss / Hacker News Front Page</p>
+
+<p><a href="https://grack.com/blog/2026/06/25/dissecting-a-failed-nation-state-attack/">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">本稿は、開発者を標的とした国家・国家様攻撃の可能性について詳細に解説したものです。攻撃者は「PinpinRAT」と呼ばれるリモートアクセス型トロイの木馬（RAT）を仕掛け、巧妙な手口で被害者のシステムに侵入しようとしました。
+
+**攻撃の手口:**
+
+1.  **偽の投資話:** 攻撃者は、シンガポールを拠点とする架空のベンチャーキャピタル（VC）「Lua Ventures」の担当者を名乗り、被害者に接触しました。被害者は、実在する人物や企業と間違えやすい偽名を使用し、本物らしいLinkedInプロフィールや、過去の投資実績を装った情報を提供しました。
+2.  **偽の面接と「テスト」:** VC担当者は被害者とオンラインで面談を行いましたが、カメラはオフのままで、声も聞き取りにくいドイツ語訛りでした。面談後、「テスト」と称して、TypeScriptで書かれたリポジトリ（「Ticket Harbor」というフェリーチケットアプリを模したもの）が送られてきました。
+3.  **巧妙なバックドア:** このリポジトリには、一見無害なTypeScriptのパッチファイル（`typescript+5.9.2.patch`）の中に、悪意のあるコードが隠されていました。このコードはBase64エンコードされ、XOR暗号化されたペイロードを含んでおり、実行されるとシステムにバックドアを仕掛けます。
+4.  **検出回避:** 攻撃者は、`patch-package`というツールを使用し、さらに`git update-index --skip-worktree`コマンドでパッチファイルを隠蔽することで、Gitの追跡から除外していました。また、ペイロード自体も複数の層で難読化され、サンドボックス環境での自動検知を回避していました。
+5.  **多層的な自己削除:** 攻撃者は、検知をさらに困難にするため、被害者のシステム上で実行された後、自身が仕掛けたコードや一時ファイルを削除する仕組みも組み込んでいました。
+
+**PinpinRATの機能:**
+
+PinpinRATは、システム情報の収集、ファイル操作（アップロード、ダウンロード）、プロセスの実行、ファイルシステムの参照など、広範なリモート操作を可能にします。通信はRSA鍵ペアとAES-256-CBC暗号化で保護され、HMAC-SHA256で整合性が保たれていました。
+
+**筆者の分析と示唆:**
+
+筆者は、AI（Claude）を活用して短時間でペイロードの解析に成功しましたが、このRATの巧妙さと、開発者コミュニティ全体が標的となりうることを警告しています。特に、Rustの`build.rs`スクリプトのように、ビルドプロセスに悪意のあるコードが仕掛けられた場合、開発者が気付かずに実行してしまうリスクが高いことを指摘しています。
+
+**IoC (Indicators of Compromise):**
+
+本稿では、感染を特定するための兆候（IoC）として、C2サーバーのIPアドレス、Windowsでのスケジューリングタスク名、macOSでのプロセス名、環境変数、PNGチャンクのガード、アンカー文字列、一時ディレクトリなどが具体的に示されています。
+
+**筆者が気付くべきだった点:**
+
+筆者は、事後的に振り返り、以下のような点に当初から注意を払うべきだったと述べています。
+
+*   LLM（大規模言語モデル）特有の文体（AIによる生成の可能性）
+*   LinkedInプロフィールの不審な学位表記や活動履歴のなさ
+*   Webサイトのソーシャルメディアリンクの不自然な更新履歴
+*   企業ウェブサイトの過度な装飾と内容の薄さ
+*   VCからの不十分な面接招待（カレンダー招待がないなど）
+*   攻撃者の所在地、運用時間、ドメイン名の不一致
+
+**結論:**
+
+この攻撃は、ターゲットを絞り、説得力のある偽装、偽のウェブサイト、そして巧妙な技術を駆使した、高度なものでした。国家レベルまたはそれに準ずる組織による攻撃である可能性が示唆されています。開発者は、このような巧妙な手口に対して常に警戒し、不審なコードの実行には細心の注意を払う必要があります。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

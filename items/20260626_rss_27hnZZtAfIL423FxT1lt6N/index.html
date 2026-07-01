@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Prettierからoxfmtに乗り換えてimport sortの設定をする</title>
+  <link rel="stylesheet" href="/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>Prettierからoxfmtに乗り換えてimport sortの設定をする</h1>
+<p><strong>Date:</strong> 2026-06-26</p>
+<p><strong>Source:</strong> rss / DevelopersIO</p>
+
+<p><a href="https://dev.classmethod.jp/articles/ts-import-sorting-by-oxfmt/">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">この記事では、JavaScript/TypeScriptのコードフォーマッターであるPrettierからoxfmtへの乗り換えについて解説されています。
+
+**乗り換えの背景:**
+
+*   筆者がViteでWebアプリ開発中に、create-viteのデフォルトリンターがoxlintになったことを知った。
+*   oxlintの開発元が提供するoxfmtがimport sortに対応しており、Prettierのプラグインでimport sortを行っていたため、乗り換えを検討した。
+
+**oxfmtとは:**
+
+*   Rustで書かれたJavaScript/TypeScript向けの高速ツール群「Oxc」の一部。
+*   Prettier互換の高速フォーマッターであり、Prettierの30倍、Biomeの3倍の速度で動作するとされている。
+*   最大の利点は、import sortに組み込みで対応していること。
+
+**導入手順:**
+
+1.  **環境構築:** ViteでReact+TypeScriptのプロジェクトを作成。
+2.  **oxfmtのインストール:** `npm install -D oxfmt`
+3.  **初期設定:** `npx oxfmt --init` を実行し、`.oxfmtrc.json` を生成。
+4.  **import sortの設定:**
+    *   デフォルトではimport sortは無効。
+    *   `.oxfmtrc.json` に `sortImports` の項目を追加し、設定を行う。
+    *   `sortImports.newlinesBetween: true` でグループ間に空行を挿入。
+    *   `sortImports.customGroups` で `@/**` のようなカスタムグループを定義。
+    *   `sortImports.groups` で import のソート順を設定 (builtin, external, alias, parent, sibling, index, unknown)。
+
+**試用結果:**
+
+*   設定後、oxfmtを実行すると、import文のソートが意図した通りに行われた。
+*   Prettierと異なり、oxfmtはパスを指定しなくても対象ファイルを自動で探し、更新してくれる。
+
+**まとめ:**
+
+*   oxfmtはデフォルトでimport sortに対応しており、Prettierからの乗り換えが容易である。
+*   PrettierやBiomeの設定ファイルをインポートする `--migrate` コマンドも提供されている。
+
+**おまけ:**
+
+*   `npx oxfmt --migrate=&lt;SOURCE&gt;` コマンドでPrettierやBiomeの設定をインポートできる。ただし、筆者の場合はプラグイン設定のため、うまく機能しなかった。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

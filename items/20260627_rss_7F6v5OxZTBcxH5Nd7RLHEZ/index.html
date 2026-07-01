@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AWS ParallelCluster の GPU ヘルスチェックを G4dn インスタンスで試してみた</title>
+  <link rel="stylesheet" href="/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>AWS ParallelCluster の GPU ヘルスチェックを G4dn インスタンスで試してみた</h1>
+<p><strong>Date:</strong> 2026-06-27</p>
+<p><strong>Source:</strong> rss / DevelopersIO</p>
+
+<p><a href="https://dev.classmethod.jp/articles/aws-parallelcluster-gpu-healthcheck/">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">AWS ParallelCluster 3.6.0 以降で導入された GPU ヘルスチェック機能について、g4dn.xlarge インスタンスを用いて検証した結果が共有されています。この機能は、GPU インスタンスでの長時間トレーニングジョブ中に発生しうる GPU 障害によるジョブ失敗を防ぐことを目的としています。
+
+GPU ヘルスチェックは、ジョブ実行直前の Slurm prolog として動作し、NVIDIA Data Center GPU Manager (DCGM) を使用して GPU の健全性を診断します。g4dn.xlarge インスタンスでは、この診断が約18秒で完了しました。診断項目には、NVIDIA ソフトウェアスタック、PCIe/NVLink ステータス、GPU メモリ機能、GPU メモリ帯域が含まれます。
+
+ヘルスチェックに失敗したノードは DRAIN 状態になり、新規ジョブは受け付けなくなります。一方、ヘルスチェックに失敗したジョブは再キューされ、`nohold_on_prolog_fail` 設定により、別の健全な GPU インスタンスで実行されることが確認されました。
+
+この機能は、クラスター設定ファイルで `HealthChecks.Gpu.Enabled` を `true` に設定することで有効化できます。ログはコンピュートノード上の `/var/log/parallelcluster/slurm_health_check.log` および CloudWatch Logs で確認可能です。
+
+ただし、一部のインスタンスタイプ（例: p4d.24xlarge、p5.48xlarge）ではヘルスチェックに時間がかかり、Slurm の `BatchStartTimeout` を超える可能性があるため、タイムアウトの調整が必要になる場合があります。また、合計 GPU メモリが327680 MiBを超えるインスタンスタイプでの GPU ヘルスチェックの有効化は推奨されていません。
+
+総じて、GPU ヘルスチェックは、ジョブ開始前に GPU の健全性を確認し、問題のあるノードへのジョブ割り当てを防ぎ、失敗時には自動的に健全なノードで再実行する仕組みを提供し、GPU ジョブの安定稼働に貢献する機能であることが示されています。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

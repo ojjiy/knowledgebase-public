@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AWS Resilience Hub v2 の料金は日割りされないので検証時は注意</title>
+  <link rel="stylesheet" href="/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>AWS Resilience Hub v2 の料金は日割りされないので検証時は注意</h1>
+<p><strong>Date:</strong> 2026-06-27</p>
+<p><strong>Source:</strong> rss / DevelopersIO</p>
+
+<p><a href="https://dev.classmethod.jp/articles/resilience-hub-v2-price-hiwari/">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">AWS Resilience Hub v2 では、サービス料金が日割り計算されないため、検証時に注意が必要です。筆者が v2 の機能を検証するためにサービスを作成したところ、UTC の日付で月をまたいだため、数時間の利用にも関わらず、2ヶ月分の料金（合計 $30）が発生しました。
+
+AWS Resilience Hub v2 の料金体系は以下の通りです。
+
+*   **サービス基本料金**: 150 リソース以下、月 2 回の評価を含む場合で $15/サービス/月
+*   **150 リソース超の追加料金**: $0.10/リソース/評価
+*   **依存関係検出（オプション）**: $10/サービス/月
+
+公式ドキュメントによると、サービスが Resilience Hub で作成された時点から課金が開始され、削除された時点で停止します。しかし、「日割り」に関する記載はなく、サービスが存在した月に対して $15 が全額課金される仕様です。
+
+このため、検証目的で利用する際には以下の点に留意する必要があります。
+
+*   **検証は月初（UTC）に行う**: 月末ギリギリに利用すると、月をまたいでしまい、料金が倍額になるリスクがあります。
+*   **検証後は速やかにサービスを削除する**: 短時間の利用でも月額料金が発生します。
+*   **依存関係検出は不要なら無効にする**: オプション料金が発生します。
+
+筆者は、気軽に試した結果、意図せずコストが発生したことに驚き、この仕様を共有しています。金額自体は大きくないものの、「日割りされない」「UTCの月またぎに注意」という点は、検証で利用する際に把握しておくべき重要なポイントです。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

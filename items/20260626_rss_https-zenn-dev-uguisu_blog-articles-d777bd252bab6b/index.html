@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>会議中に Claude が“次に聞くべきこと”を提案してくれる議事録アプリを作った</title>
+  <link rel="stylesheet" href="/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>会議中に Claude が“次に聞くべきこと”を提案してくれる議事録アプリを作った</h1>
+<p><strong>Date:</strong> 2026-06-26</p>
+<p><strong>Source:</strong> rss / Zenn LLM</p>
+
+<p><a href="https://zenn.dev/uguisu_blog/articles/d777bd252bab6b">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">このアプリは、会議や商談中にリアルタイムで発言を文字起こしし、Claude が「次に聞くべきこと」を提案、会議終了後には自動で議事録を作成するWebアプリ「AI-Giziroku」です。
+
+**主な特徴と機能:**
+
+*   **ロール別フィードバック (主役機能):** 会議中に「営業」「エンジニア」などの専門家視点から、Claudeがリアルタイムで「次に確認すべきこと」「リスク」「次の一手」などを提案します。これは、複数の専門家が会議に同席し、耳打ちしてくれるような感覚で、議事録作成ツールとは一線を画す機能です。
+*   **会議作成:** 会議のタイトル、目的、フィードバックを求めるロール（専門視点）を設定できます。
+*   **リアルタイム文字起こし:** 自身のマイク入力と、オンライン会議のシステム音声（相手側）を別系統で取り込み、リアルタイムに文字起こしします。
+*   **複数話者の自動分離 (ダイアライゼーション):** 1本のミックス音声から、AmiVoiceの話者ダイアライゼーション機能を用いて、相手の発言を「相手1」「相手2」のように分離します。誤認識された場合は、手動での修正も可能です。
+*   **議事録の自動生成:** 会議終了後、会議中の提案メモなども反映されたMarkdown形式の議事録がバックグラウンドで自動生成されます。
+
+**技術的背景と実装:**
+
+*   **音声認識:** AmiVoice Cloud PlatformのリアルタイムWebSocket APIを使用し、リアルタイム性を優先するため、ブラウザから直接接続しています。
+*   **音声処理:** Web Audio APIのAudioWorkletを使用し、マイクやシステム音声のFloat32サンプルをAmiVoiceが要求するPCM形式に変換しています。
+*   **話者分離:** AmiVoiceのダイアライゼーション機能を活用し、認識結果に付与される話者ラベル（speaker0, speaker1...）を元に発言を分離しています。声質が近い場合などの誤分離は、感度調整スライダーや発言ごとの話者付け替え機能で補っています。
+*   **LLM連携 (Claude):**
+    *   **ロール別フィードバック:** 設定されたロールの「視点」をシステムプロンプトに注入し、直近の会話ログ（既定40発話）を渡すことで、リアルタイムかつ低コストな提案を実現しています。プロンプトキャッシュも活用しています。
+    *   **議事録生成:** 会議終了後、ユーザーを待たせないよう、Next.jsの`after()`関数を用いてバックグラウンドで非同期に生成しています。
+*   **アーキテクチャ:** 音声認識はブラウザから直接WebSocketに接続し、確定した発言テキストのみをAPI経由でDBに保存します。LLM連携（提案・議事録生成）はサーバー側で行います。
+
+**開発の意図と学び:**
+
+*   **「言った・言わない」問題の解決:** 商談や会議で発生しがちな後々の問題を、リアルタイム文字起こしと議事録自動生成で解消します。
+*   **会議中の能動的なサポート:** 議事録作成だけでなく、会議中に「次に聞くべきこと」を提案することで、会議の質を向上させることを目指しています。
+*   **UI/UXの配慮:**
+    *   複数話者分離の精度低下に対して、感度調整スライダーと手動修正機能を提供しています。
+    *   会議中に画面共有ダイアログが再表示されるといった、UXを損なう細部を避けるため、ストリーム取得と認識セッションのライフサイクルを分離しています。
+    *   LLM連携の重い処理はバックグラウンド化し、状態管理をステータス列で行うことで、安定したUXを提供しています。
+
+このアプリは、リアルタイムなLLMによる会議支援と、複数話者分離による正確な記録を両立させた、革新的な議事録作成ツールと言えます。ソースコードはGitHubで公開されています。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

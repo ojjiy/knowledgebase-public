@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>手動診断でしか見つからない脆弱性の話 - エムティーアイ エンジニアリングブログ</title>
+  <link rel="stylesheet" href="/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>手動診断でしか見つからない脆弱性の話 - エムティーアイ エンジニアリングブログ</h1>
+<p><strong>Date:</strong> 2026-06-27</p>
+<p><strong>Source:</strong> rss / Hatena Bookmark Technology Hotentry</p>
+
+<p><a href="https://tech.mti.co.jp/entry/ac2026summer/0626">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">## 手動診断でしか見つからない脆弱性とは：自動スキャンとの違いと手動診断の重要性
+
+本記事では、エムティーアイのエンジニアが、脆弱性診断における手動診断の重要性と、自動スキャナーでは見つけにくい脆弱性の種類について解説しています。
+
+**自動スキャンの得意なことと限界**
+
+自動スキャンは、既知のパターンマッチング、設定不備、バージョン検出、ディレクトリ・ファイル列挙などを高速かつ網羅的に行うのに優れています。CI/CDへの組み込みも容易で、ベースラインのセキュリティ維持に不可欠です。しかし、自動スキャンはアプリケーションの「意図」を理解できず、文脈依存の問題や複雑なシナリオを見落とす傾向があります。自動スキャンが「問題なし」と判断しても、それは「安全だから」ではなく「判断できないから」である場合が多いと指摘されています。
+
+**自動・手動・コードレビューの役割分担**
+
+脆弱性診断には、自動スキャン、手動診断、コードレビューの3つのアプローチがあり、それぞれ得意な領域と苦手な領域が異なります。これらは互いの弱点を補完し合う関係にあり、組み合わせることでより包括的な診断が可能になります。
+
+*   **自動スキャン:** 既知パターン、設定不備、網羅的な探索
+*   **手動診断:** ロジック欠陥、攻撃連鎖、タイミング問題
+*   **コードレビュー:** セカンドオーダー、内部ロジックの欠陥
+
+**自動スキャンが見落とす6つの脆弱性タイプ**
+
+手動診断でなければ発見が難しい、あるいは手動診断が大幅に有利となる脆弱性として、以下の6つが挙げられています。
+
+1.  **ビジネスロジックの脆弱性:** アプリケーションの仕様や意図を理解しないと発見できない脆弱性です。例として、価格改ざん、ポイント・クーポンの二重利用、ワークフローのステップ飛ばしなどが挙げられます。
+2.  **複雑なIDOR（水平権限昇格）:** IDの操作により他ユーザーのリソースにアクセスできる脆弱性です。単純なID変更だけでなく、間接的な参照を介するケースや、アプリケーションの文脈なしには判断できないケースが多く、手動での相互検証が必要です。
+3.  **競合状態:** 処理のタイミングを突く攻撃で、チェックと実行の間に生まれる隙間を利用します。残高チェックと消費処理の間に隙間が生まれ、残高が負になるケースなどが典型例です。自動スキャンでは、その結果が不正かどうかを判定できません。
+4.  **多段階の攻撃チェーン:** 単体では低リスクでも、複数の問題が組み合わさることで深刻な脆弱性となるケースです。診断員がアプリケーションの仕様を読み解き、エンドポイントをまたいだ因果関係を発見する必要があります。
+5.  **認証フローのバイパス:** パスワードリセットや多要素認証など、複数ステップを持つ認証フローにおいて、ステップ間の状態管理の不備を突く脆弱性です。意図的にステップをスキップしたり、パラメータを差し替えたりする探索は、仕様を理解した人間が手動で行う必要があります。
+6.  **SSRFの複雑なケース:** サーバーに任意のURLへリクエストを送らせる脆弱性です。単純なケースは自動スキャンでも検出できますが、フィルタリングロジックの迂回など、複雑なケースでは人間の判断が必要です。
+
+**手動診断のアプローチ**
+
+手動診断は、単にリクエストを変えてみるのではなく、アプリケーションの理解、攻撃対象面の整理、仮説の立案と検証というプロセスを経て行われます。単体では報告しにくい小さな発見も組み合わせることで、大きな問題につながる可能性を常に考慮します。
+
+**手動診断の限界と役割分担**
+
+手動診断は、時間とコストがかかる、診断員のスキルに依存する、スコープ外は見られない、診断時点の状態しか評価できないといった限界があります。手動診断は「全脆弱性を発見する」ものではなく、「自動では見つけにくい問題に集中して調べる」ためのものです。自動スキャンと手動診断は競合ではなく、役割分担であり、コードレビューと合わせて3層で補完し合うことが重要です。
+
+**まとめ**
+
+自動スキャンは既知パターンや設定不備の発見に強く、手動診断はビジネスロジックや攻撃連鎖、タイミング、認証フローなどに強いという特徴があります。両者は互いに補完し合い、安全なサービスを作り続けるための手段として活用されるべきです。脆弱性診断はゴールではなく、開発時のセキュリティ意識を高めるためのきっかけとなることが期待されます。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

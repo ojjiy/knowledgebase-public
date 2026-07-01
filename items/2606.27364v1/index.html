@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>PhysiFormer: Learning to Simulate Mechanics in World Space</title>
+  <link rel="stylesheet" href="/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>PhysiFormer: Learning to Simulate Mechanics in World Space</h1>
+<p><strong>Date:</strong> 2026-06-25</p>
+<p><strong>Source:</strong> paper / hf-papers</p>
+
+<p><a href="http://arxiv.org/abs/2606.27364v1">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body"># タイトル
+[View Paper](http://arxiv.org/abs/2606.27364v1)
+
+## 1. 問題意識：解決したい問題はなにか
+物理的に妥当な3次元物体の動きを、既存のビデオベースの世界モデルが苦手とする「視点依存のピクセル空間」ではなく、「ワールド座標系」で直接シミュレーションする技術を開発したい。特に、剛体や弾性体の物理挙動を、正確かつ多様な未来予測を可能にする方法論を確立したい。
+
+## 2. 提案手法のアプローチ：どのようなアイデア・アプローチで問題を解決しようとしたか
+本論文では、**PhysiFormer**という拡散トランスフォーマーを提案する。この手法は、3次元オブジェクトをワールド座標系で表現された3Dメッシュとして扱い、初期の頂点位置、速度、および材質（剛体か弾性体か）を入力として、将来の頂点軌道をサンプリングする。
+従来のニューラル物理アプローチが、しばしば特定の隠れ空間や、剛性・因果関係の明示的な強制に依存していたのに対し、PhysiFormerはこれらの**帰納的バイアスを排除**し、頂点軌道予測を**単一のデノイジング拡散プロセス**として、直接ワールド座標空間で定式化することで、優れた結果を得られることを示している。
+確率的定式化により、学習されたダイナミクスにおける不確実性を捉え、初期条件から多様で妥当な未来を生成できる。
+さらに、時間、空間、オブジェクト間で注意機構をファクタライズすることで、効率的な処理と、明示的なオブジェクトエンコーディングなしでの置換不変なマルチオブジェクト推論を可能にしている。
+
+## 3. 成果：提案手法により、何が達成できたのか
+- **物理的に妥当な3次元物体運動のシミュレーション**: 剛体および弾性体の物理挙動を生成できる。
+- **多様な未来予測**: 確率的定式化により、初期条件から不確実性を捉えた多様な妥当な未来を生成できる。
+- **一般化能力**: 混合材料設定、未知の実世界ジオメトリ、およびオブジェクト数の増加に対応できる。
+- **性能向上**: 軌道精度、剛性維持、運動量に基づく物理的一貫性において、自己回帰型ベースラインを大幅に上回る。
+- **効率的なマルチオブジェクト推論**: 時間、空間、オブジェクトにファクタライズされた注意機構により、効率的かつ置換不変な推論が可能。
+- **座標空間拡散の有効性実証**: ワールド座標空間での拡散モデルが、視点不変でジオメトリを考慮した世界モデリングの有望なステップであることを示した。
+
+## 4. 課題：本手法の限界・課題にはなにか。本文中で著者が言及しているものと、あなたが想定するもの
+**本文中で著者が言及しているもの:**
+- 文中には、現時点での手法の限界や課題について明確に言及されている箇所は見当たらない。成果が強調されている。
+
+**あなたが想定するもの:**
+- **計算コスト**: 拡散モデルは一般的に、学習および推論に高い計算リソースを要する可能性がある。特に、高解像度なメッシュや長時間のシミュレーションにおいては、計算コストが課題となる可能性がある。
+- **現実世界の物理現象の複雑さ**: 本手法はシミュレーションデータで学習されているため、現実世界に存在する、より複雑で予測困難な物理現象（例: 流体、粉体、複雑な相互作用）への適用には、さらなる改善が必要となる可能性がある。
+- **データセットのバイアス**: 学習データセット（100kを超えるシミュレーション軌道）の質や多様性が、モデルの汎化性能に影響を与える可能性がある。現実世界の多様なシナリオを網羅したデータセットの構築が重要になる。
+- **材質の表現**: 現在は「剛体」か「弾性体」という二項分類だが、より多様な材質特性（塑性、粘性など）を表現するためには、モデルの拡張が必要になるかもしれない。
+
+## 5. 技術詳細：提案手法の技術的な詳細について、できるだけ詳しく。数式やアルゴリズム、モデル構造なども可能な限り詳しく
+PhysiFormerは、**拡散モデル**と**トランスフォーマー**を組み合わせたモデルである。
+
+**1. 表現方法:**
+- **ワールド座標系での3Dメッシュ**: オブジェクトは、頂点群 $V = \{v_1, v_2, \dots, v_N\}$ で表現される3Dメッシュとして扱われる。各頂点 $v_i$ は3次元座標 $(x_i, y_i, z_i)$ を持つ。
+- **入力**:
+    - 初期頂点位置 $V_0 = \{v_{i,0}\}_{i=1}^N$
+    - 初期頂点速度 $U_0 = \{\dot{v}_{i,0}\}_{i=1}^N$
+    - オブジェクトの材質タイプ (例: 剛体, 弾性体)
+
+**2. 拡散モデルのフレームワーク:**
+PhysiFormerは、ノイズが付加されたデータから元のデータを復元する**デノイジング拡散確率モデル (DDPM)**の枠組みを利用する。
+- **順方向プロセス (Forward Process)**: 頂点軌道 $X = (V_0, V_1, \dots, V_T)$ に対して、徐々にガウスノイズを付加していくプロセス。
+    $q(X_t | X_{t-1}) = \mathcal{N}(X_t; \sqrt{1 - \beta_t} X_{t-1}, \beta_t I)$
+    ここで、$X_t$ は時刻 $t$ での軌道、$\beta_t$ はノイズスケジュール。
+- **逆方向プロセス (Reverse Process)**: ノイズが付加された軌道 $X_t$ から、前の時刻の軌道 $X_{t-1}$ を予測するプロセス。これを学習する。
+    $p_\theta(X_{t-1} | X_t) = \mathcal{N}(X_{t-1}; \mu_\theta(X_t, t), \Sigma_\theta(X_t, t))$
+    モデル $\mathcal{N}_\theta$ は、ノイズ $\epsilon$ を予測するように学習される。
+    $X_0$ を予測するためには、ノイズ $\epsilon$ を予測するように学習する。
+    $\epsilon_\theta(X_t, t) \approx \epsilon$
+
+**3. トランスフォーマーアーキテクチャ:**
+頂点軌道予測タスクのために、トランスフォーマーアーキテクチャが用いられる。
+- **入力埋め込み**:
+    - **時間埋め込み**: 各時刻 $t$ に対応する位置埋め込み。
+    - **空間埋め込み**: 各頂点の3次元座標 $(x, y, z)$ を埋め込む。
+    - **オブジェクト埋め込み**: オブジェクトの材質タイプなどの情報を埋め込む。
+- **注意機構 (Attention Mechanism)**:
+    - **時間注意**: 異なる時間ステップ間の頂点情報の関係性を捉える。
+    - **空間注意**: 同じ時間ステップにおける異なる頂点間の関係性を捉える。
+    - **オブジェクト注意**: 複数のオブジェクト間の相互作用を捉える。
+    - **ファクタライズされた注意 (Factorised Attention)**: これらの注意機構を効率化するために、時間、空間、オブジェクトの次元に沿って注意をファクタライズする。これにより、計算量を削減しつつ、オブジェクト間の依存関係を捉える。
+    - **置換不変性 (Permutation Invariance)**: トランスフォーマーの標準的な実装により、入力頂点の順序によらず同じ結果を出力する。明示的なオブジェクトエンコーディングは不要。
+- **モデル構造**:
+    - 入力埋め込み層
+    - 複数のトランスフォーマーエンコーダー/デコーダーレイヤー（ファクタライズされた注意機構を含む）
+    - 出力層（ノイズ $\epsilon$ または $X_0$ を予測）
+
+**4. 目的関数 (Objective Function):**
+典型的なDDPMと同様に、モデルはノイズ項 $\epsilon$ を予測するように学習される。
+$\mathcal{L} = \mathbb{E}_{t \sim U(1, T), X_0 \sim q(X_0), \epsilon \sim \mathcal{N}(0, I)} [\| \epsilon - \epsilon_\theta( \sqrt{\bar{\alpha}_t} X_0 + \sqrt{1-\bar{\alpha}_t} \epsilon, t) \|^2]$
+ここで、$\bar{\alpha}_t$ はノイズスケジュールの累積項。
+
+**5. 推論 (Inference):**
+学習済みのモデル $\epsilon_\theta$ を使用して、ノイズ $X_T$ から逆方向プロセスを逐次的に実行し、最終的な軌道 $X_0$ を生成する。
+$X_{t-1} = \frac{1}{\sqrt{\alpha_t}} (X_t - \frac{\beta_t}{\sqrt{1-\bar{\alpha}_t}} \epsilon_\theta(X_t, t)) + \sigma_t z$
+ここで、$z$ は標準正規分布からのサンプリング。
+
+**6. 複数オブジェクトの扱い:**
+個々のオブジェクトを明示的にエンコードすることなく、全ての頂点を単一のシーケンスとして扱い、トランスフォーマーの注意機構がオブジェクト間の関係性を学習する。
+
+## 6. この論文を140字以内のツイートで要約すると？
+物理シミュレーションの新手法 #PhysiFormer 登場！3Dオブジェクトの動きを、視点に依存せずワールド座標で直接予測する拡散トランスフォーマー。剛体・弾性体、多様な未来を精度高く生成。ロボティクス・CGへの応用期待！ #AI #物理シミュレーション</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

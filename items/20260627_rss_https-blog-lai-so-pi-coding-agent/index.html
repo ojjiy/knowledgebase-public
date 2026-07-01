@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>作って使うAIエージェント —— Pi Coding Agentで足りない機能を自作しよう</title>
+  <link rel="stylesheet" href="/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>作って使うAIエージェント —— Pi Coding Agentで足りない機能を自作しよう</h1>
+<p><strong>Date:</strong> 2026-06-27</p>
+<p><strong>Source:</strong> rss / Hatena Bookmark LLM</p>
+
+<p><a href="https://blog.lai.so/pi-coding-agent/">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">「Pi Coding Agent」は、Mario Zechner氏が開発するOSSのターミナル型コーディングエージェントです。近年のAIエージェント開発では、モデル自体の性能だけでなく、継続実行ループ、サブエージェント、メモリ、外部ツールなどをどのように組み合わせるか、という「ハーネス層」の重要性が増しています。これは、最先端モデルの提供が段階的になったり、アクセス制限が課されたりする状況も背景にあります。
+
+Pi Coding Agentは、「最初から全部入り」の機能的なエージェントではなく、TypeScriptの拡張機能（extension）によってユーザーが不足している機能を自作し、カスタマイズしていくことを前提とした「minimal terminal coding harness（最小限のターミナルコーディングハーネス）」として位置づけられています。
+
+**Pi Coding Agentの主な特徴と利点:**
+
+*   **拡張性の高さ:** TypeScriptのextension APIを通じて、スラッシュコマンド、LLMが呼び出すツール（tool）、実行中のイベントに反応するフック（hook）、UI表示、モデルプロバイダーなどを追加できます。これにより、一般的なコーディングエージェントよりもさらに低レイヤーのランタイム部分を拡張できます。
+*   **抽象レイヤーの薄さ:** LLM APIに最小限のツールを渡し、その結果をそのまま扱うシンプルな構成のため、新しいモデルやプロバイダーを試す際に、モデル自体の挙動を観察しやすいという利点があります。OpenAI Chat Completions互換APIなどを採用しているモデルであれば、provider設定を追加するだけで容易に試すことができます。
+*   **「作って使う」思想:** 既存の機能を追加するだけでなく、はてなブックマーク検索、Web検索、X検索、メモリレイヤー（cman）、Tailscale内のローカルLLM連携などの機能を、extensionや外部CLIとして自作し、自分のワークフローに合わせて組み込むことができます。これにより、汎用エージェントから自分専用のハーネスへと進化させることができます。
+*   **MCPやSkillsとの違い:** SkillsがLLMに渡す情報を増やすのに向いているのに対し、PiのextensionはPiのプロセス内でTypeScriptモジュールとして読み込まれるため、toolの追加だけでなく、実行途中の処理の挟み込み（hook）やUI更新、プロバイダー追加など、より広範な拡張が可能です。
+*   **セキュリティへの注意:** extensionはTypeScriptコードとして実行されるため、信頼できないextensionやPi packageの導入は、ローカルファイル、シェル、認証情報へのアクセスにつながる可能性があり、注意が必要です。APIキーの扱いやログに記録する内容、外部APIに送る情報についても、自己責任での管理が求められます。
+
+**具体的な拡張例:**
+
+*   **はてなブックマーク検索:** 日本語圏のコミュニティの反応やまとめ記事を取得するために、はてなブックマーク検索のRSSを利用したextensionを作成。
+*   **Web検索:** Brave Search API、Serper、Tavily、Exa、SearXNGなど、自分で選んだ検索バックエンドをextensionとして差し込める。
+*   **X検索:** xAIの`x_search`ツールをAPIキー方式で利用するextensionを作成。
+*   **メモリレイヤー:** 過去のセッションログを検索して作業を思い出させる`cman`ツールをPi packageとして追加。
+*   **Tailscale連携:** 自宅のGPUマシンで動かすローカルLLMとの連携を、extensionや共有ファイル参照といった形で実現。
+
+Pi Coding Agentは、単なる高機能なコーディングエージェントではなく、AI機能をユーザー自身が自由に開発・統合するための柔軟な基盤（ハーネス）として、モデル単体の性能だけでなく、それらをどのように組み合わせるかという実験を容易にするツールと言えます。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

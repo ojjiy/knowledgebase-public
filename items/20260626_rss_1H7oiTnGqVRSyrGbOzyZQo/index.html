@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AWS Organizations なしで「タグ必須」を守らせる ─ IaC・IAM・AWS Config による多層防御</title>
+  <link rel="stylesheet" href="/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>AWS Organizations なしで「タグ必須」を守らせる ─ IaC・IAM・AWS Config による多層防御</h1>
+<p><strong>Date:</strong> 2026-06-26</p>
+<p><strong>Source:</strong> rss / DevelopersIO</p>
+
+<p><a href="https://dev.classmethod.jp/articles/required-tags-without-aws-organizations/">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">AWS Organizationsが利用できない環境でも、IaC（Infrastructure as Code）、IAM（Identity and Access Management）、AWS Configを組み合わせることで、リソースへの必須タグ付与を実効的に運用する多層防御の仕組みが提案されています。
+
+この仕組みは、リソースの作成方法に応じて以下の3段階で構成されます。
+
+1.  **予防（作成時）**:
+    *   **IaC中心の場合（ケースA）**: TerraformなどのIaCツールでリソースを作成する際は、AWS Providerの`default_tags`機能を利用します。これにより、コード上に明示的にタグを記述しなくても、定義された共通タグが自動的に付与されるため、タグの付け忘れを防ぎます。
+    *   **コンソール中心の場合（ケースB）**: AWS Management Consoleからリソースを作成する際には、IAMポリシーの条件キー`aws:RequestTag`を使用します。「指定した必須タグを付けずに作成しようとした場合」に作成を拒否（Deny）する設定を行います。ただし、この方法は対応するAPIアクションを個別に指定する必要があり、全ての作成アクションを一括でブロックすることはできません。そのため、IaCによる広範なカバーとIAMによるコンソールからの特定アクションのブロックを分担します。
+    *   **注意点**: IAMポリシーで「タグなし作成を拒否」する場合、`Action: &#34;*&#34;`とタグのNull条件を組み合わせると、読み取り系のAPIまで評価対象となりアカウント全体がロックされる可能性があるため、作成アクションを個別に列挙する必要があります。また、ルートユーザーにはIAMポリシーが適用されないため、運用ルールでルートユーザーの使用を制限することが推奨されます。
+
+2.  **検知（作成後）**:
+    *   **AWS Configの`required-tags`ルール**: 予防策をすり抜けたリソース（対応外サービス、移行リソース、検証時の消し忘れなど）を検知するために、AWS Configのマネージドルール`REQUIRED_TAGS`を使用します。このルールはOrganizationsがなくてもアカウント単位で有効化でき、指定したタグキーが付与されているかをチェックします。ただし、このルールはリソースの作成を阻止するのではなく、未タグのリソースを可視化するのみです。また、`required-tags`ルールの対象となるリソースタイプは限定的であり、全てのリソースを網羅できるわけではありません。
+
+3.  **是正（通知・対応）**:
+    *   **EventBridgeとSNSによる通知**: AWS Configで`NON_COMPLIANT`（必須タグ未設定）と判定されたリソースを検知すると、EventBridgeがこれをトリガーとしてSNSに通知を送信します。
+    *   **EventBridge Input Transformerによる日本語整形**: EventBridgeのターゲット設定でInput Transformerを使用することで、AWS Configから送信される英語の生イベントJSONを、リソースID、リソース種別、ルール名、検知時刻などが含まれた日本語の分かりやすい本文に整形して通知できます。これにより、担当者は迅速かつ正確に状況を把握し、対応に移ることができます。
+    *   **自動是正について**: `required-tags`ルールには標準の自動是正機能がないため、自動化するには独自のSSM Automationを作成する必要があります。
+
+**まとめ**:
+Organizationsが利用できない環境でも、IaCの`default_tags`、IAMポリシーの条件、AWS Configの`required-tags`、そしてEventBridgeとSNSを組み合わせた通知フローを構築することで、「タグ必須」というガバナンス要件を実質的に守らせるための運用体制を構築できることが示されています。この多層防御アプローチは、完璧な強制ではないものの、予防、検知、是正の流れを整備することで、十分に実用的なタグ管理を実現できると結論付けています。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

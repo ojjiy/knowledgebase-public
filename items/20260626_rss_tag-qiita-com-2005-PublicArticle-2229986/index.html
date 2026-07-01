@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AIエージェントを“セキュリティのプロ”に変える817個のスキル集 — Claude Code / Codex / Cursor / Copilot対応OSSを読み解く</title>
+  <link rel="stylesheet" href="/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>AIエージェントを“セキュリティのプロ”に変える817個のスキル集 — Claude Code / Codex / Cursor / Copilot対応OSSを読み解く</h1>
+<p><strong>Date:</strong> 2026-06-26</p>
+<p><strong>Source:</strong> rss / Qiita Trend</p>
+
+<p><a href="https://qiita.com/nogataka/items/8f99cc6fc97541a14b76?utm_campaign=popular_items&amp;utm_medium=feed&amp;utm_source=popular_items">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">本記事では、AIエージェントをセキュリティの専門家として活用するためのオープンソースリポジトリ「Anthropic-Cybersecurity-Skills」について詳細に解説しています。このリポジトリは、AIエージェントが理解・実行できる形式で構造化された817個のサイバーセキュリティスキルを収録しています。
+
+**Anthropic-Cybersecurity-Skillsの概要:**
+
+*   **目的:** AIエージェントに、ペネトレーションテストやインシデント対応といった実務で必要とされる「シニアアナリストの判断ワークフロー」を与えること。
+*   **内容:** 攻撃側（レッドチーム）と防御側（ブルーチーム）の両面をカバーする817個のセキュリティスキル。各スキルは、MITRE ATT&amp;CKをはじめとする6つの業界フレームワークにマッピングされています。
+*   **重要事項:** 「Anthropic」と名前についていますが、Anthropic社の公式プロダクトではなく、個人（mukul975氏）が主導するコミュニティプロジェクトです。
+
+**「Agent Skill」の仕組み:**
+
+*   Agent Skillは、AIエージェントに専門知識やワークフローをファイルとして外付けする仕組みです。
+*   汎用的なLLMではカバーできない、特定領域の細かい手順をMarkdownファイル（SKILL.md）として提供します。
+*   「段階的読み込み（progressive disclosure）」により、817個ものスキルがあってもAIエージェントのコンテキストウィンドウを圧迫せず、効率的に関連スキルを検索・利用できます。
+
+**SKILL.mdの構造:**
+
+1.  **YAMLフロントマター:**
+    *   スキルの名称、説明、タグ、バージョン、作成者、ライセンス、およびMITRE ATT&amp;CK、NIST CSF、MITRE ATLAS、D3FEND、NIST AI RMF、MITRE F3といった6つのフレームワークIDなどが記述されています。
+    *   AIエージェントがスキルの関連性を判断するためのメタ情報として機能します。
+2.  **Markdown本文:**
+    *   シニアアナリストの作業手順が段階的に記述されています。
+    *   「Overview」「When to Use」「Prerequisites」「Workflow」「Tools and Resources」「Detection Indicators」「Validation Criteria」といったセクションが含まれます。
+    *   攻撃手順だけでなく、防御側の検知指標も併記されている点が特徴です。
+
+**独自性とフレームワークマッピング:**
+
+*   このプロジェクトの大きな独自性は、収録されている全スキルを以下の6つの主要なセキュリティフレームワークにマッピングしている点です。
+    *   MITRE ATT&amp;CK: 攻撃者の戦術・技術
+    *   NIST CSF 2.0: 組織のセキュリティ態勢
+    *   MITRE ATLAS: AI/ML特有の敵対的脅威
+    *   MITRE D3FEND: 防御的な対策技術
+    *   NIST AI RMF 1.0: AIのリスク管理
+    *   MITRE F3: サイバー起因の金融不正
+*   これにより、組織のセキュリティ運用状況の棚卸しや、コンプライアンス対応の根拠付けに役立ちます。
+
+**収録ドメインと品質について:**
+
+*   スキルは「クラウドセキュリティ」「脅威ハンティング」「ネットワークセキュリティ」「AIセキュリティ」など、29のドメインに分類されています。
+*   クラウドセキュリティが最も多くのスキルを擁していますが、ドメインによってはスキルの数が少ない場合もあります。
+*   **品質のばらつき:** 一部のスキルには、テンプレート的な汎用文が混入しているなど、品質にばらつきが見られます。重要な用途で利用するスキルについては、個別にSKILL.mdの内容を確認することが推奨されます。
+
+**導入方法:**
+
+*   `npx skills add mukul975/Anthropic-Cybersecurity-Skills` コマンドによる追加。
+*   Git cloneによるリポジトリのローカル保存。
+*   Claude Codeのプラグインとしても利用可能です。
+
+**総括:**
+
+Anthropic-Cybersecurity-Skillsは、AIエージェントに高度なセキュリティスキルを付与するための強力なオープンソースリソースです。その構造、フレームワークマッピング、段階的読み込みの設計は、AIエージェントの活用において注目すべき点です。ただし、コミュニティプロジェクトであること、およびスキルの品質にはばらつきがあることを理解した上で、個別に内容を確認しながら活用することが重要です。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

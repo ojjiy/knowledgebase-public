@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Authorization Design as a User Story：権限設計を通して学ぶ、業務フローとユーザーストーリーのポイント - freee Developers Hub</title>
+  <link rel="stylesheet" href="/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>Authorization Design as a User Story：権限設計を通して学ぶ、業務フローとユーザーストーリーのポイント - freee Developers Hub</h1>
+<p><strong>Date:</strong> 2026-06-26</p>
+<p><strong>Source:</strong> rss / Hatena Bookmark Technology Hotentry</p>
+
+<p><a href="https://developers.freee.co.jp/entry/authorization-design-as-a-user-story">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">この記事は、freee Developers HubのPdM（プロダクトマネージャー）であるsentokun氏が、権限設計という複雑なタスクを、業務フローとユーザーストーリーの整理という観点から解説したものです。
+
+**要約のポイント:**
+
+1.  **権限設計のゴールは「業務フロー」と「ユーザーストーリー」の明確化:**
+    権限設計の目的は、単に仕様書を作成することではなく、「誰が、どのような立場で、何ができるか」という具体的な業務フローとユーザーストーリーを明らかにすることにあります。これは、「その業務は誰が、どんな役割で行うことができるか」という権限の本質と密接に関連しています。
+
+2.  **権限設計における「業務フローとユーザーストーリー」の重要性:**
+    相談を受ける際、まず業務フローやユーザーストーリーの把握に努めることが重要です。例として、freee会計で事業所と税理士が契約し、税理士がfreee上で代行業務を行う流れを挙げ、そこから「事業所Aオーナーは、事業所Bに会計つよしを管理者として招待する」といったユーザーストーリーを導き出しています。
+
+3.  **権限設計ならではの重要ポイント:**
+    通常の業務整理と異なり、権限設計では業務の各ステップにおいて、「役割（例: 管理者かどうか）」や「条件（例: ユーザーがエンタープライズプランを契約しているか）」を強く意識することが肝となります。これにより、「誰が、どのような立場で、どんな条件で」業務を行えるのかを具体化します。
+
+4.  **ゴールへ向かうための3つの深掘りポイント:**
+    *   **【Point 1】「誰が、どんな立場で」その業務を行うかを整理する:** 「ユーザー」という主語を具体化し、業務上の役割（例: 経費精算を行いたい所員）を明確にします。
+    *   **【Point 2】「その業務は、どんな条件で許可されるか」を突き詰める:** 既存のオペレーションに囚われず、業務が成立する前提条件（所属、アクセス対象など）を紐解きます。
+    *   **【Point 3】業務で満たすべき「利便性」と「安全性」のラインを見極める:** ユーザー操作を減らす利便性と、情報へのアクセス制御を担保する安全性のバランスを取り、ユーザーの行動特性とデータの制約を検証します。
+
+5.  **4つの「きっかけ」から見るゴールに近づくための深掘り方法:**
+    相談の開始地点（解決したい業務、提供したい機能、解決したい課題、技術的構造）に応じて、3章の深掘りポイントをどのように適用するかを解説しています。どのきっかけであっても、登場人物、役割、業務の境界を曖昧にせず、技術的な話に終始しないことが重要です。
+
+6.  **まとめ:**
+    権限設計の肝は、「必要な観点で業務を具体化すること」にあります。「どんな立場で業務を行うか？」「どのような条件により業務が行えるのか？」「見せたくないデータの壁はどこか？」といった観点を業務整理に組み込むことで、権限設計はほぼ完了すると述べています。
+
+この記事は、権限設計を単なる技術的な課題として捉えるのではなく、ユーザーの業務プロセスや行動を深く理解することの重要性を強調し、具体的なアプローチを提示しています。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

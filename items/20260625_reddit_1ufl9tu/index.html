@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Kuma: compiling PyTorch models into self-contained WebGPU executables [P]</title>
+  <link rel="stylesheet" href="/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>Kuma: compiling PyTorch models into self-contained WebGPU executables [P]</h1>
+<p><strong>Date:</strong> 2026-06-25</p>
+<p><strong>Source:</strong> reddit / MachineLearning</p>
+
+<p><a href="https://www.reddit.com/r/MachineLearning/comments/1ufl9tu/kuma_compiling_pytorch_models_into_selfcontained/">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">1.  このポストは、**Kuma**という、PyTorchモデルをWebGPUで実行可能な自己完結型の実行ファイルにコンパイルするプロジェクトに関するものです。
+
+    投稿者は、このプロジェクトが実用的かどうか、特にデプロイメントシステムに携わった経験のある人からのフィードバックを求めています。
+
+    **Kumaの仕組み:**
+    *   PyTorchモデルを、グラフ、バイナリ形式の重み、バックエンドカーネル（現在はWGSL）、ランタイムメタデータを含む自己完結型パッケージにコンパイルします。
+    *   このパッケージは、ブラウザ上でWebGPUを使って直接実行されます。Pythonやサーバー推論、重いランタイムへの依存は不要です。
+
+    **主なモチベーション:**
+    *   当初はニューラルビデオ表現（テストが容易なため）のデモに使われていますが、本来はオペレーターネットワークや科学的ML（機械学習）分野で、単一のポータブルな成果物として配布したいという考えがあります。
+
+    **投稿者が悩んでいる点:**
+    *   バックエンドカーネルを実行ファイルに埋め込むことは、悪いアイデアではないか？
+    *   これは実際のデプロイメントの問題を解決しているのか、それともONNX Runtimeを再発明しているだけなのか？
+    *   似たようなアプローチをとっている既存のシステムで、学ぶべきものはあるか？
+    *   もし今日、デプロイメントフォーマットを設計するなら、何を変えるか？
+
+    特に、ONNX、IREE、TVM、ExecuTorch、MLIRなどのコンパイラ/ランタイムプロジェクトに携わった経験のある人からの意見を求めています。
+
+2.  このポストに対するコメントで興味深いのは、以下の点です。
+
+    *   **「If it’s a fun project and you’re learning, keep working on it. But if you’re trying to build something for production use ONNX runtime or LiteRT (I’ve been very happy with my last few LiteRT experiments).」**
+        *   このコメントは、プロジェクトの目的によってアプローチを分けるべきだと指摘しています。
+        *   もし「楽しいプロジェクト」や「学習のため」であれば、そのまま進めることを推奨しています。
+        *   しかし、「本番環境で使うもの」を作ろうとしているのであれば、既存の「ONNX Runtime」や「LiteRT」を使うことを強く勧めています。特に「LiteRT」については、最近の実験で非常に満足していると述べており、具体的な代替案を提示しています。
+        *   これは、投稿者が「これは解決するべき real deployment problem なのか？」と疑問に思っている点に対して、実践的な観点からの示唆を与えています。
+
+    *   **「Yeah, that probably should have been my starting point, haha.」**
+        *   これは、前のコメントへの返信であり、投稿者自身が「ONNX RuntimeやLiteRTが最初の選択肢であるべきだった」と、コメントの内容を肯定的に受け止めていることを示しています。ユーモアを交えつつ、自身のプロジェクトの立ち位置や、既存技術との比較について、再考するきっかけになったようです。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

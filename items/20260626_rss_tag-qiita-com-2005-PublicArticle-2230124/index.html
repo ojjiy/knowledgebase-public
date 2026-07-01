@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ティックデータから推定するOrder Imbalanceの性質</title>
+  <link rel="stylesheet" href="/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>ティックデータから推定するOrder Imbalanceの性質</h1>
+<p><strong>Date:</strong> 2026-06-26</p>
+<p><strong>Source:</strong> rss / Qiita Trend</p>
+
+<p><a href="https://qiita.com/newleaf/items/9f0b7adc57b99a998879?utm_campaign=popular_items&amp;utm_medium=feed&amp;utm_source=popular_items">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">本記事では、ティックデータからOrder Imbalance（OI）を推定する際の「ティックルール」の精度と、それにより算出された推定OIの性質について、FLEX MBO Historicalデータを用いて分析した結果を報告しています。
+
+**ティックルールの精度:**
+* ティックルールによる約定方向の推定精度は全体で約80%でした。
+* 誤りは主に「ゼロティック（同値約定）」で発生し、正解率は約70%と低くなりました。
+* 約定回数が増えるにつれて、ティックルールの正解率はわずかに上昇する傾向がありました。
+* アップティック、ダウンティックでは約92-93%の高い正解率を示しましたが、ゼロティックでは約70%に低下しました。これは、ゼロティックでは約定価格に変化がないため、直前の判定を引き継ぐ必要があり、誤判定が生じやすいためです。
+
+**推定OIの性質（減衰性）:**
+* **推定OIの50%への収束（減衰）:** 推定OIは、真のOIと比較して常に50%に近づく傾向が見られました。これは、ティックルールの誤分類が原因で発生する系統的なバイアスによるものです。
+* **減衰のメカニズム:**
+    1. **対称な誤分類:** たとえ買い注文を売り注文と誤判定する確率と、売り注文を買い注文と誤判定する確率が同じ（対称）であっても、推定OIは50%方向に縮むことが数式で示されました。これは、正解率が100%でない限り、推定値が真の値から乖離する性質によるものです。
+    2. **非対称な誤分類:** さらに、 OIの方向と日中リターンの方向が一致しない（例：上昇トレンドなのに売り注文が多い）場合に、多数派クラス（この例では買い注文）の正解率が少数派クラスよりも低くなる現象が観測されました。これにより、対称な誤分類だけでは説明できない、推定OIの50%方向への「余分な圧縮」が生じます。
+* **減衰への寄与:** 約定回数が少ない場合（100-499回）は、対称な誤分類による減衰が大部分を占めますが、約定回数が増えるにつれて非対称な誤分類による減衰の寄与が増加し、約4割に達することが示されました。
+* **OI方向と価格方向の一致・不一致:** OIの方向と価格の方向が一致しない（mismatched）場合に、非対称な誤分類による減衰が大きくなることが確認されました。
+
+**結論:**
+ティックルールによる推定OIは、真のOIに対して50%方向に収束する「減衰」という性質を持ちます。この減衰は、ティックルールの誤分類が対称である場合と、OIの方向と日中価格の方向が一致しない場合に発生する非対称な誤分類の二つのメカニズムによって引き起こされます。これらのメカニズムにより、異なる銘柄や日付間で推定OIの大小を比較しても、必ずしも真のOIの大小関係と一致するとは限らないため、注意が必要です。より正確なOIを求めるためには、Bulk Volume Classificationなどの他の手法の検討や、本記事で示された減衰の性質を理解した上での分析が重要となります。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

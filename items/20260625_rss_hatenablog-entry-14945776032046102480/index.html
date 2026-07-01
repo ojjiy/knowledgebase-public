@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>セールスのオンボーディング期間を3分の1に短縮した内製の「AIロープレ」</title>
+  <link rel="stylesheet" href="/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>セールスのオンボーディング期間を3分の1に短縮した内製の「AIロープレ」</h1>
+<p><strong>Date:</strong> 2026-06-25</p>
+<p><strong>Source:</strong> rss / LayerX blog</p>
+
+<p><a href="https://tech.layerx.co.jp/entry/2026/06/25/162902">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">LayerXのバクラク事業部では、組織拡大とプロダクト増加に伴うセールスメンバーのオンボーディングにおける課題を解決するため、内製の「AIロープレ」システムを開発しました。
+
+**課題:**
+*   **プロダクト数の増加:** 請求書、経費精算、法人カード、稟議など13個以上のバックオフィス向けサービスを提供しており、新メンバーは経理・総務の専門知識、法制度、そして多数のプロダクト仕様を習得する必要がある。プロダクトは今後も増加予定。
+*   **既存メンバーへの負担:** 新プロダクトリリース毎に既存メンバーも商談練習が必要となり、組織拡大とプロダクト増加の同時進行下で、常にアップデートし続ける環境にあった。
+*   **従来のオンボーディングの限界:**
+    *   **品質担保のための「ランチングチェック」（対人ロープレ）:** 実施回数が多く（月10回以上）、事業責任者やトップセールスといった既存社員の業務時間を圧迫していた。
+    *   **スケジュールの遅延:** 新メンバーが多い時期は、既存社員との予定調整が難しく、「先輩待ち」によるオンボーディング期間の長期化を招いていた。
+    *   **新メンバーの心理的負担:** 忙しい先輩の時間を奪うことや、自信のない状態での失敗へのプレッシャーがあった。
+
+**内製「AIロープレ」システム開発の理由:**
+1.  **実戦プロセスの再現:** SaaSセールスにおいて最も重要な「画面共有をしてデモを見せながら提案する」というプロセスをリアルに再現することにこだわった。
+2.  **「バクラクでよくある商談シナリオ」の自動生成:** 13個のプロダクトに関連する無限の商談シナリオを、運用コストほぼゼロで自動生成できるようにした。
+3.  **社内プロダクト「SalesPortal」基盤への統合:** 既存の認証基盤やUIコンポーネントを共通化し、開発を迅速化。さらに、SalesPortal内の豊富な学習コンテンツ（動画や資料）とAIロープレを連携させ、課題発見から学習までをシームレスに完結できるエコシステムを構築した。
+
+**AIロープレの仕組み:**
+*   使い慣れたオンライン会議ツールと変わらないUIで、ユーザーは画面共有しながらデモ環境を動かし、AI（お客様役）に話しかける。
+*   AIは音声と商談コンテキストをリアルタイムに理解し、音声でリアルなレスポンスを返す。
+*   技術スタックはNext.js、AzureのSTT（音声認識）/TTS（音声合成）モデル、LLM（会話生成・商談評価）を使用。
+
+**導入成果:**
+1.  **圧倒的な「打席数」による高速PDCA:**
+    *   従来の対人ロープレ（多くて10回程度）に対し、AIロープレ導入後、新メンバーは1週間で最大30回近く実施。
+    *   誰に気兼ねすることなく、AIからのフィードバックと学習コンテンツを往復しながら、納得いくまで練習・改善できる心理的安全性が確保された。
+2.  **オンボーディング期間の短縮と対人ロープレの削減:**
+    *   ランチングチェック（最終実技テスト）をクリアするまでの期間が、約1～2ヶ月から約3週間に短縮。
+    *   2回目のランチングチェックまでの期間も、約3ヶ月から約1ヶ月に短縮。
+    *   対人ロープレ回数は10回以上から約3回に削減。
+    *   「先輩待ち」によるスケジュールの遅延が完全に解消された。
+
+**今後の課題:**
+*   AIによる、より正確で高度なロープレ評価とフィードバックの実現。
+*   単なる説明能力だけでなく、デモ操作の流暢さ、適切な「間」の取り方、対話を通じた課題引き出し能力といった、より実践的でハイレベルな営業スキルを評価・コーチングできるシステムの構築。
+*   熟練セールスの暗黙知をシステムに落とし込み、「量」だけでなく「質」の面でもさらなるアップデートを図る。
+
+AIロープレの内製化により、新メンバーは圧倒的な練習機会を得て早期に即戦力化し、既存メンバーはより高度なフィードバックに集中できるようになった。今後もLayerXは、「AI前提」の社内オペレーション構築と、新メンバーが活躍し、既存メンバーが気持ちよくサポートできる開発・オンボーディング体験の追求を目指していく。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

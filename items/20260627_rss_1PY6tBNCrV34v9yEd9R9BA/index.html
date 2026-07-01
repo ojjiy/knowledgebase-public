@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AI を活用して Tailwind CSS の設定ファイルを v4 形式へ移行し、生成される CSS の正当性を保証してみた</title>
+  <link rel="stylesheet" href="/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>AI を活用して Tailwind CSS の設定ファイルを v4 形式へ移行し、生成される CSS の正当性を保証してみた</h1>
+<p><strong>Date:</strong> 2026-06-27</p>
+<p><strong>Source:</strong> rss / DevelopersIO</p>
+
+<p><a href="https://dev.classmethod.jp/articles/tailwind-v4-config-to-theme-migration/">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">この記事は、Tailwind CSS を v3 の JS 設定ファイル（`tailwind.config.js`）から v4 の CSS 設定（`@theme` ディレクティブ）へ移行した際の経験について書かれています。特に、AI（Claude Code）を活用して移行作業を効率化しつつ、移行によるデザイン崩れを防ぐために生成される CSS の正当性を機械的に保証した方法に焦点を当てています。
+
+**移行の背景と目的:**
+
+*   Tailwind CSS v4 では、設定を CSS 内の `@theme` ディレクティブに記述する「CSS-first」が標準になりました。
+*   v3 から v4 への移行には、JS 設定をそのまま利用する互換モード（`@config`）と、CSS に設定を記述するネイティブモード（`@theme`）の2つの方法があります。
+*   著者は、v4 の本来の書き方を採用するために、互換モードからネイティブモードへ移行することを決定しました。
+*   `fontSize` のように複数の値（サイズ、行間、ウェイト）を持つ設定を移行する際には、見た目が以前とまったく同じである保証を得ることが難しいという懸念がありました。
+*   移行作業の大部分を AI に任せたため、生成された CSS の正当性をどう保証するかが最も重要な課題となりました。
+
+**移行方法:**
+
+1.  **AI による設定の書き換え:** `tailwind.config.js` の `theme` セクション（`fontSize`, `colors`, `boxShadow`, `fontFamily` など）を読み込み、CSS の `@theme` ディレクティブ形式で出力するスクリプトを AI に作成させ、利用しました。
+    *   特に、v3 で1つのタプルで定義されていた `fontSize` の「サイズ・行間・ウェイト」は、v4 の `@theme` では `--text-{名前}`（本体）、`--text-{名前}--line-height`（行間）、`--text-{名前}--font-weight`（ウェイト）という3つの CSS 変数に分解してマッピングされました。
+    *   `colors` や `fontFamily` なども、CSS 変数として定義されるように変換されました。
+2.  **`@config` および `tailwind.config.js` の削除:** 互換モードで利用していた `@config` ディレクティブと `tailwind.config.js` ファイルを削除し、v4 ネイティブの CSS-first 構成にしました。v4 では `content` の指定も自動検出されるようになったため、これも不要になりました。
+
+**生成 CSS の正当性保証:**
+
+移行作業を AI に任せたことで工数は削減できましたが、生成された CSS が移行前と完全に一致することを確認する必要があります。これを保証するために、以下の回帰テストを実施しました。
+
+1.  **ダミーファイルによる全カスタムクラスのスキャン:** 移行前後の両方で、Tailwind にスキャンさせるためのダミーファイルを用意し、すべてのカスタムクラス（`text-XXX`、`bg-XXX`、`shadow-XXX`、`font-XXX` など）が生成されるようにしました。
+2.  **移行前後の CSS 生成と実値比較:**
+    *   移行後（`@theme`）の CSS をビルドして取得します。
+    *   一時的に移行前（`@config` + `tailwind.config.js`）の状態に戻して CSS をビルドし、取得します。
+    *   生成された2つの CSS ファイルを、クラスごとに実値で比較します。
+3.  **差分検出スクリプト:**
+    *   `fs` モジュールを使用して CSS ファイルを読み込みます。
+    *   CSS から `:root` などに定義されたテーマ変数（`--text-*`、`--color-*` など）を抽出します。
+    *   各クラスの CSS 宣言から、テーマ変数を解決した実値を抽出・正規化します。この際、実行時に決まる変数（`--tw-leading` など）はそのまま残し、移行前後で共通の比較対象とします。
+    *   移行前後の CSS 宣言をクラスごとに比較し、1文字でも差分があれば検出します。
+
+**結果:**
+
+*   ビルド、Storybook、lint、型チェックはすべて正常に完了しました。
+*   全56クラスについて実値比較を行った結果、生成された CSS には**差分がゼロ**でした。
+    *   `font-size`、`line-height`、`font-weight`、カスタムカラー（`camelCase` のものも含む）、`boxShadow`、`fontFamily` など、すべての設定値が移行前後で完全に一致していることを確認しました。
+*   AI に任せた移行作業でも、出力の同一性を機械的に確認できる仕組みを構築することで、安心してマージすることができました。
+
+**結論:**
+
+AI を活用して Tailwind v4 への移行を効率化することは可能ですが、それに伴う生成コードの正当性保証は、機械的な検証プロセスを確立することで実現できます。目視での確認は非現実的であるため、移行前後の出力を実値で比較する回帰テストを自動化することが重要です。これにより、デザインの意図しない変更を防ぎ、安全に移行を進めることができます。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

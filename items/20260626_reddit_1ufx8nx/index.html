@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Showcase: geolocating a dashcam video without GPS, only from the footage [P]</title>
+  <link rel="stylesheet" href="/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>Showcase: geolocating a dashcam video without GPS, only from the footage [P]</h1>
+<p><strong>Date:</strong> 2026-06-26</p>
+<p><strong>Source:</strong> reddit / MachineLearning</p>
+
+<p><a href="https://www.reddit.com/r/MachineLearning/comments/1ufx8nx/showcase_geolocating_a_dashcam_video_without_gps/">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">1. **このポストの内容を説明してください。**
+
+このRedditのポストは、「Third Eye」という、GPSデータを使わずに映像の内容のみで動画が撮影された場所を特定するプロジェクトについて共有しています。投稿者は、このプロジェクトがどのように機能するかを説明しています。
+
+*   **映像解析の仕組み:**
+    *   **フレームごとの場所認識:** 映像の各フレームを、ストリートビューなどの画像インデックスと照合して、撮影場所を特定します。
+    *   **軌跡検索:** 特定された場所の情報を繋ぎ合わせ、一貫した移動経路を生成します。
+    *   **幾何学的検証:** 誤った認識を排除し、正確な経路を検証します。
+*   **信頼性:** 各フレームの認識精度（信頼度）を評価し、低精度のフレームは除外またはフラグ付けすることで、不正確な結果を避けるように設計されています。
+*   **実証:** 投稿者は、このシステムを実際のドライブレコーダーの映像に適用し、かなりの精度で移動経路を追跡できたと述べています。
+*   **課題と貢献:** ドメイン（映像の種類や撮影環境）を跨いでの画像認識は非常に難しく、このプロジェクトの多くの作業は、不確実性に対する正直さ（つまり、どの程度確信が持てるかを明確にする）に費やされたと述べています。
+*   **フィードバックの募集:** 特に、場所の認識と軌跡の特定に関するフィードバックを求めています。
+*   **デモ:** プロジェクトの動作を示すYouTube動画へのリンクが提供されています。
+*   **対象エリア:** 投稿されたデモ動画のインデックスは、ニューヨーク市周辺の12平方キロメートルの範囲をカバーしています。
+
+要するに、このポストは、**ドライブレコーダーの映像からGPSなしで撮影場所と経路を特定する革新的な技術（Third Eye）を発表し、その技術的な側面と実証結果を共有し、コミュニティからの意見を求めている**ものです。
+
+2. **このポストに対するコメントのうち、特に興味深いものを教えてください。**
+
+このポストに対するコメントの中で、特に興味深いものは以下の3つです。
+
+*   **「please try to use your powers for good.」**
+    このコメントは、投稿者が開発した技術の潜在的な能力の高さを認めつつ、その技術が倫理的で有益な目的に使われることを願う、ユーモラスかつ示唆に富むものです。技術の応用範囲の広さや、それに伴う責任について考えさせられます。
+
+*   **「how did you build this index?」**
+    このコメントは、プロジェクトの根幹をなす「ストリートビューなどの画像インデックス」の構築方法について、技術的な関心を示しています。投稿者の技術の核となる部分に触れており、読者も同様にその構築方法に興味を持っていることが伺えます。
+
+*   **「This is intresting. Whenever (if) you can ever list and reveal whole logic behind it that would be great! All the best to your research.」**
+    このコメントは、プロジェクト全体への強い関心と、より詳細な技術的解説（ロジックの開示）への期待を表しています。投稿者の研究成果を高く評価しており、将来的にさらに詳しい情報が共有されることを望んでいます。これは、この技術が多くの研究者や開発者にとって刺激的であることを示しています。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

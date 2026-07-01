@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>生産性向上を「個人レベル」から「組織レベル」へ　15人のデザイナーで「Claude Code × GitHub」で組織運営をした結果｜Goodpatch Blog グッドパッチブログ</title>
+  <link rel="stylesheet" href="/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>生産性向上を「個人レベル」から「組織レベル」へ　15人のデザイナーで「Claude Code × GitHub」で組織運営をした結果｜Goodpatch Blog グッドパッチブログ</h1>
+<p><strong>Date:</strong> 2026-06-25</p>
+<p><strong>Source:</strong> rss / Hatena Bookmark AI</p>
+
+<p><a href="https://goodpatch.com/blog/2026-06-github">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">Goodpatchブログの記事「生産性向上を「個人レベル」から「組織レベル」へ　15人のデザイナーで「Claude Code × GitHub」で組織運営をした結果」では、15人のデザイナーチームが、個人の生産性向上に留まらず、組織全体の生産性向上を目指すために、GitHubとClaude Codeを活用した組織運営の事例が紹介されています。
+
+記事によると、生成AIの活用は個人の作業効率を向上させるものの、その成果が個人に閉じてしまい、組織全体への波及が難しいという課題がありました。特に、プロジェクトの背景や議論といった「コンテキスト」が共有されにくく、受け取った側のアウトプットの質やスピードが伸び悩むことがボトルネックとなっていたのです。
+
+この課題を解決するため、グッドパッチのデザイナーチームはGitHubを土台に、日々の議事録、検討プロセス、アウトプットといったコンテキストをチーム全体で共有・接続し続ける仕組みを構築しました。GitHubの利用経験が少ないデザイナーでも扱えるよう、運用は可能な限りシンプルに保たれました。
+
+具体的には、以下のような工夫が施されています。
+
+*   **シンプルなフォルダ構成:** メンバー一人ひとりに「members/名前/」という自由な作業スペースを用意しつつ、AIが個人の散らかった作業ファイルまで読み込まないように「claude.ignore」ファイルを配置しました。また、「meeting-notes/（議事録）」「docs/（正式なアウトプット）」「sprints/（スプリント振り返り）」といった共有フォルダをチームごとに用意し、誰がどこを見れば良いか分かりやすくしました。
+*   **フロントマターの活用:** 共有フォルダに置かれるMarkdownファイルには、AIが「どのチームの、何の文書か」を一目で把握できるよう、ID、タイトル、依存関係、最終更新日などの情報を含むフロントマターを付記しました。
+*   **GitHub利用ハードルの低減:** メンバーにはGitHubアカウントの作成とGitHub Desktopの導入のみを依頼し、コンテキストの集約や報告負担の軽減といった利用背景を丁寧に伝えました。ターミナル操作などのハードルを排除しました。
+*   **シンプルな運用ルール:** GitHub上での作業はmainブランチに直接行えるようにし、作業場所を「members/名前/」内の日付フォルダに限定することで、コンフリクトの発生を抑制しました。
+*   **議事録の自動化とコンテキスト化:** Google Apps Script（GAS）とGitHub Actionsを連携させ、Google Meetから自動生成された議事録をGitHubリポジトリに連携し、会議名のキーワードに応じて各チームのフォルダへ自動的に振り分ける仕組みを構築しました。
+*   **朝のbriefingによる全体把握:** 自動化された議事録やコミット状況をmorning-briefingスキルと連携させ、Slackで毎日受け取れるようにしました。これにより、未完了のToDo、前日の議事録ハイライト、直近3日間のGitコミット状況を朝の数分で把握できるようになりました。
+
+この取り組みを始めて2ヶ月が経過し、メンバーはGitHubの利用に慣れつつあり、Slackで手作業でファイルを送る代わりに「GitHubからpullして確認」と言えるようになりました。報告会などの準備にかかる時間も減少し、時間をかけて積み上げたものが組織としての生産性向上に繋がっている感覚が得られています。
+
+筆者は、生成AI時代においてGitHubはエンジニアだけでなく、全てのホワイトカラーにとって必須のツールとなると結論づけており、コンテキストが蓄積されることで、より質の高いアウトプットが生まれることを実感しています。今後も、より良い運用の形を目指して挑戦を続けていく意向が示されています。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

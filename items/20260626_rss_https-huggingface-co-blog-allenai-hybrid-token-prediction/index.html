@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Which tokens does a hybrid model predict better?</title>
+  <link rel="stylesheet" href="/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>Which tokens does a hybrid model predict better?</h1>
+<p><strong>Date:</strong> 2026-06-26</p>
+<p><strong>Source:</strong> rss / Hugging Face Blog</p>
+
+<p><a href="https://huggingface.co/blog/allenai/hybrid-token-prediction">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">本研究では、Transformerモデルとハイブリッドモデル（Attention層とRecurrent層を組み合わせたモデル）のトークン予測能力を比較し、両者のアーキテクチャの違いに起因する性能差を詳細に分析した。
+
+具体的には、Olmo 3 (Transformer) と Olmo Hybrid (ハイブリッド) という、データ、トークナイザー、学習レシピを可能な限り一致させた7Bパラメータモデルを用いて、各トークンタイプにおける予測精度の差を「ロスギャップ」として定量化した。
+
+分析の結果、ハイブリッドモデルは、名詞、動詞、形容詞といった**意味を持つトークン（コンテンツワード）**や、文脈を追跡する必要がある**代名詞の指示対象**などの予測において、Transformerモデルよりも優れた性能を発揮することが明らかになった。これは、Recurrent層が持つ順次的な情報処理能力や状態追跡能力が、これらのトークンの予測に寄 wirkenしていると考えられる。
+
+一方で、ハイブリッドモデルの優位性がほとんど見られなくなる、あるいは弱まるケースも特定された。一つは、**単純に既出の単語やフレーズをそのまま繰り返すトークン**の予測である。この場合、TransformerモデルのAttention機構が、入力全体から該当するトークンを効率的に参照できるため、強みを発揮する。もう一つは、**閉じ括弧**の予測であり、これはAttention機構のみでも十分な予測が可能であることを示唆している。
+
+さらに、1BパラメータのTransformer、ハイブリッド、純粋なRecurrentモデルを用いた実験では、意味を持つ非繰り返しトークンにおいてはハイブリッドモデルと純粋RecurrentモデルがTransformerを上回り、特にハイブリッドモデルが最も高い性能を示した。一方、繰り返しトークンにおいては、Attention機構を持たない純粋RecurrentモデルはTransformerやハイブリッドモデルに遅れをとった。
+
+これらの結果から、モデルアーキテクチャの比較には、全体的な平均ロスだけでなく、特定の能力をテストする**フィルタリングされたロス**を用いることが有効であることが示唆された。また、ハイブリッドモデルは特にオープンクラスのトークン（意味を持つトークン）において強みを持つ可能性があり、これはRecurrent層の状態追跡能力と関連していると考えられる。
+
+本研究は、トークンレベルでの詳細な分析を通じて、ハイブリッドモデルがTransformerモデルに対して持つ固有の強みと弱みを明らかにし、今後のAIモデル開発におけるアーキテクチャ設計の指針となる知見を提供している。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

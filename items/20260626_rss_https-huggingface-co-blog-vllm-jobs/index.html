@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Run a vLLM Server on HF Jobs in One Command</title>
+  <link rel="stylesheet" href="/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>Run a vLLM Server on HF Jobs in One Command</h1>
+<p><strong>Date:</strong> 2026-06-26</p>
+<p><strong>Source:</strong> rss / Hugging Face Blog</p>
+
+<p><a href="https://huggingface.co/blog/vllm-jobs">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">Hugging Face (HF) Jobs を使用すると、単一のコマンドで vLLM サーバーを起動し、プライベートな OpenAI 互換の LLM エンドポイントを構築できます。これにより、サーバーのプロビジョニングや Kubernetes の設定が不要になり、従量課金制（秒単位）で利用できます。構築されたエンドポイントは、ラップトップ、ノートブック、またはその他の場所からクエリできます。これは、テスト、評価、またはバッチ生成のためにモデルを迅速にセットアップするのに最適です。
+
+**前提条件:**
+
+*   支払い方法または正のプリペイドクレジット残高（HF Jobs はハードウェア使用量に基づいて分単位で請求されます）。
+*   `huggingface_hub` ライブラリのバージョン 1.20.0 以上がインストールされていること。
+*   ローカル環境で `hf auth login` を実行してログインしていること。
+
+**サーバーの起動:**
+
+`hf jobs run` コマンドを使用します。これは、HF インフラストラクチャ上での `docker run` のようなものです。公式の `vllm/vllm-openai` イメージを使用し、`--flavor` で GPU を指定し、`--expose` で vLLM のポートを公開します。
+
+例：
+```bash
+hf jobs run --flavor a10g-large --expose 8000 --timeout 2h \
+  vllm/vllm-openai:latest \
+  vllm serve Qwen/Qwen3-4B --host 0.0.0.0 --port 8000 --expose 8000
+```
+
+このコマンドは、コンテナのポートを HF の公開ジョブプロキシを通じてルーティングします。起動後、サーバーの URL が表示されます。
+
+```
+✓ Job started
+  id: 6a381ca1953ed90bfb947332
+  url: https://huggingface.co/jobs/qgallouedec/6a381ca1953ed90bfb947332
+Hint: Exposed ports are reachable at (requires an HF token with read access to the job):
+https://&lt;job_id&gt;--8000.hf.jobs
+```
+
+`&lt;job_id&gt;` はジョブ ID に置き換えてください。モデルのダウンロードと起動に数分かかる場合があります。ログに「Application startup complete」と表示されれば、サーバーは稼働しています。
+
+**クエリの実行:**
+
+vLLM は OpenAI API と互換性があるため、リクエストには HF トークンをベアラートークンとして含める必要があります。
+
+**curl を使用する場合:**
+
+```bash
+curl https://&lt;job_id&gt;--8000.hf.jobs/v1/chat/completions \
+  -H &#34;Authorization: Bearer $(hf auth token)&#34; \
+  -H &#34;Content-Type: application/json&#34; \
+  -d &#39;{
+    &#34;model&#34;: &#34;Qwen/Qwen3-4B&#34;,
+    &#34;messages&#34;: [{&#34;role&#34;: &#34;user&#34;, &#34;content&#34;: &#34;Hello!&#34;}],
+    &#34;chat_template_kwargs&#34;: {&#34;enable_thinking&#34;: false}
+  }&#39;
+```
+
+**Python (OpenAI クライアント) を使用する場合:**
+
+```python
+from huggingface_hub import get_token
+from openai import OpenAI
+
+client = OpenAI(
+    base_url=&#34;https://&lt;job_id&gt;--8000.hf.jobs/v1&#34;,
+    api_key=get_token(),
+)
+
+resp = client.chat.completions.create(
+    model=&#34;Qwen/Qwen3-4B&#34;,
+    messages=[{
+        &#34;role&#34;: &#34;user&#34;,
+        &#34;content&#34;: &#34;Hello!&#34;
+    }],
+    extra_body={
+        &#34;chat_template_kwargs&#34;: {
+            &#34;enable_thinking&#34;: False
+        }
+    },
+)
+print(resp.choices[0].message.content)
+```
+
+**ヘルスチェック:**
+```bash
+curl https://&lt;job_id&gt;--8000.hf.jobs/v1/models -H &#34;Authorization: Bearer $(hf auth token)&#34;
+```
+
+**セキュリティ:**
+エンドポイントは保護されており、公開されていません。すべてのリクエストには、ジョブの名前空間への読み取りアクセス権を持つ HF トークンが必要です。URL を共有したり、トークンを信頼できない場所に貼り付けたりしないように注意してください。
+
+**サーバーの停止:**
+
+ジョブが完了したら、リソースの課金を停止するためにサーバーをキャンセルします。
+
+```bash
+hf jobs cancel &lt;job_id&gt;
+```
+
+`--timeout` を設定すると、安全ネットとして自動停止しますが、明示的なキャンセルがより経済的です。
+
+**より大きなモデルの利用:**
+
+より大きなモデルを使用するには、`--flavor` でより強力な GPU を指定し、`--tensor-parallel-size` でモデルを複数の GPU に分散させます。
+
+例（Qwen3.5-122B モデルを 2x H200 GPU で実行）:
+```bash
+hf jobs run --flavor h200x2 --expose 8000 --timeout 2h \
+  vllm/vllm-openai:latest \
+  vllm serve Qwen/Qwen3.5-122B-A10B \
+  --host 0.0.0.0 --port 8000 --tensor-parallel-size 2 \
+  --max-model-len 32768 --max-num-seqs 256
+```
+`--tensor-parallel-size` は、選択したフレーバーの GPU 数と一致させる必要があります。
+
+**UI でのチャット:**
+
+Gradio を使用して、ブラウザベースのチャットインターフェースを作成できます。
+
+**SSH でサーバーに接続:**
+
+デバッグやインタラクティブなログ監視のために、実行中のジョブに SSH で接続できます。起動時に `--ssh` オプションを追加します。
+
+**コーディングエージェントとしての利用:**
+
+`--enable-auto-tool-choice` と適切な `--tool-call-parser` を使用して、Pi のようなコーディングエージェントのバックエンドとしてエンドポイントを利用できます。
+
+**HF Jobs または Inference Endpoints の選択:**
+
+*   **HF Jobs:** 最大限の柔軟性と制御が必要な場合。実験、一時的な評価、バッチ生成に最適。秒単位の従量課金。
+*   **Inference Endpoints:** 本番環境に対応した、より管理されたサービスが必要な場合。より細かいアクセス制御、スケールトゥゼロ機能を提供。
+
+このガイドは vLLM に焦点を当てていますが、他の OpenAI 互換サーバーにも同様のパターンを適用できます。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

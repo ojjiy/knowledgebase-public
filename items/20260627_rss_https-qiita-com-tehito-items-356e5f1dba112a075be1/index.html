@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>正直に言う。お前のClaude Codeの使い方は間違っている - Qiita</title>
+  <link rel="stylesheet" href="/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>正直に言う。お前のClaude Codeの使い方は間違っている - Qiita</h1>
+<p><strong>Date:</strong> 2026-06-27</p>
+<p><strong>Source:</strong> rss / Hatena Bookmark Technology Hotentry</p>
+
+<p><a href="https://qiita.com/tehito/items/356e5f1dba112a075be1">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">この記事は、AIコーディングアシスタント「Claude Code」の利用方法が間違っていると指摘し、その原因となる7つのミスと具体的な改善策を提示しています。
+
+**Claude Codeの利用における7つのミスと改善策**
+
+1.  **CLAUDE.md を「全部入りの聖書」にしている:**
+    *   **ミス:** 命名規約、過去の経緯、ディレクトリ構成などを全てCLAUDE.mdに記述し、2000行にも及ぶ大作にしている。これにより、毎回のプロンプトで大量のトークンが消費され、AIの効率が低下する。
+    *   **改善策:** CLAUDE.mdには必要最低限の情報を記述し、「特定の作業のときだけ要る知識」はAgent Skills（.claude/skills/）に分離する。CLAUDE.mdは「憲法」、Skillsは「六法全書」のように使い分ける。
+
+2.  **1つの指示に作業を全部詰め込んでいる:**
+    *   **ミス:** 「テスト修正、リファクタ、ドキュメント更新、PR作成」のように、複数の作業を一度に指示すると、AIが混乱し、コンテキストの中盤で注意力が低下する「lost in the middle」現象を引き起こす。
+    *   **改善策:** 作業をサブエージェントに切り出し、それぞれの専門分野に特化させる。例えば、「レビュー専任」「テスト実行」など。メインの会話は「指揮官」として、具体的な指示に徹する。
+
+3.  **実装の途中で /compact を打っている:**
+    *   **ミス:** コンテキストが膨らむと反射的に `/compact` を実行すると、AIが「これから何をするつもりだったか」を忘れてしまい、以前の設計を無視して実装を進めてしまう。
+    *   **改善策:** `/compact` は作業の区切り（コミット直後など）でのみ使用する。長い作業は、まず `PLAN.md` に計画を書き出させ、コンテキストが失われても計画が残るようにする。
+
+4.  **MCPサーバーを「全部盛り」で常時つないでいる:**
+    *   **ミス:** Slack、GitHub、Notionなど、便利そうなツールを全て常時接続していると、それらのツール定義自体がコンテキストを消費し、AIの判断力を削ぐ。
+    *   **改善策:** その日のタスクに必要なツールだけを接続する。多数のツールを接続したい場合は、スキーマを遅延ロードする「Deferred Tool Loading」対応を利用する。
+
+5.  **設計まで丸投げしている:**
+    *   **ミス:** 「いい感じにアプリ作って」のように設計までAIに丸投げすると、表面上は動くが、寿命や所有権、スレッドの問題など、見えない地雷が潜んだコードが生成される。
+    *   **改善策:** 設計は人間が行い、AIは「どう書くか」の高速な手足として利用する。ループエンジニアリング（小さく投げる→検証→直す）で回し、特にネイティブ層、並行処理、ライフサイクルが絡む箇所は、生成後に人間が所有権とスレッドを目視確認する。
+
+6.  **レビューを人間がサボっている:**
+    *   **ミス:** 「AIが書いたから大丈夫」と過信し、人間によるレビューを怠ると、生成速度が上がった分だけバグの流入速度も上がり、品質保証が追いつかなくなる。
+    *   **改善策:** レビュー専任のサブエージェントに一次レビューを任せ、人間は最終確認に集中する。PRは小さく保ち、「テストが通った」だけでなく「テストが何を保証していないか」もAIに確認する。
+
+7.  **「同じ会話」を朝から晩まで引きずっている:**
+    *   **ミス:** 1つのセッションで長時間作業を続けると、コンテキストが際限なく伸び、応答がズレてトークンが無駄に消費される。
+    *   **改善策:** タスクが変わったらセッションを切り、長期的な文脈は会話ではなくファイル（CLAUDE.md / Skills / PLAN.md）に永続化する。「会話を育てる」のではなく、「仕組みを育てる」という発想に転換する。
+
+結論として、Claude Codeを「コードを書く」ためのツールではなく、「タスクを委任する」ための優秀だが記憶を失いやすい天才として捉え、上記7つのミスを避けることが、その能力を最大限に引き出す鍵であると述べています。7つのうち3つ以上当てはまる場合は、今日まで時間を無駄にしていた可能性が高いとし、CLAUDE.mdの削減から始めることを推奨しています。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

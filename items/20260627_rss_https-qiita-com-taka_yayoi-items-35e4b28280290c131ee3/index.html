@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Databricks Genie Ontologyとは何か セマンティックレイヤー・ナレッジストアとの関係を整理する - Qiita</title>
+  <link rel="stylesheet" href="/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>Databricks Genie Ontologyとは何か セマンティックレイヤー・ナレッジストアとの関係を整理する - Qiita</h1>
+<p><strong>Date:</strong> 2026-06-27</p>
+<p><strong>Source:</strong> rss / Hatena Bookmark Technology Hotentry</p>
+
+<p><a href="https://qiita.com/taka_yayoi/items/35e4b28280290c131ee3">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">Databricks Genie Ontologyは、2026年6月16日に発表された、AIエージェントに業務文脈をまとめて提供するための「コンテキストレイヤー」です。Genie Ontologyは、社内のデータや業務アプリケーションから知識の断片（スニペット）を自動で抽出し、「知識のネットワーク」として整理することで、AIエージェントがより正確で信頼性の高い回答を生成できるよう支援します。
+
+**主な特徴と仕組み:**
+
+*   **自動抽出されるスニペット:** Genie Ontologyは、テーブル、クエリ、ダッシュボード、ドキュメント、接続アプリケーション（Slack、Jira、Salesforceなど50以上）から、メトリクス定義、権威あるソース、ビジネスルールといったスニペットを自動的に抽出します。
+*   **ontorankによる権威付け:** Web検索のPageRankに着想を得た「ontorank」という仕組みにより、各スニペットの信頼度を自動で順位付けします。出典の素性、利用頻度、新しさなどを考慮し、同じ用語に複数の定義が存在する場合でも、最も信頼できる定義を選択します。
+*   **Unity Catalogとの連携:** 各スニペットはUnity Catalogの権限によって管理され、ユーザーが閲覧を許可されているソースのみが回答に使用されます。
+*   **「生きたグラフ（Living Graph）」:** 抽出・整理された知識は、会社がどのように動いているか、データが実際に何を意味するかを表す「生きたグラフ」として表現されます。
+*   **コンテキストレイヤーとしての役割:** AIエージェントに必要な業務文脈（用語の意味、データの正しさ、アクセス権限など）をまとめて提供します。これは、従来の意味定義層である「セマンティックレイヤー」よりも広い概念を包含します。
+
+**セマンティックレイヤー（metric view）との関係:**
+
+Genie Ontologyは、セマンティックレイヤー（Databricksではmetric viewとして実装）を自動生成するものではありません。metric viewは、KPIの定義などを人が意図的に作成する成果物であり、Genie Ontologyはそのmetric viewを「高権威アンカー」として参照・拡張します。つまり、人が定義したセマンティック基盤がGenie Ontologyに供給され、Genie Ontologyはそれを活用して全体の文脈を底上げします。
+
+**既存のナレッジストアとの関係:**
+
+従来のGenie Space（現Genie Agents）で利用されていたナレッジストアは、Space単位のローカルな知識として共存します。Genie Ontologyは、Spaceの境界を越えてアカウント横断で文脈を構築します。Space内のナレッジストアの設定は、Export to metric view機能を通じてmetric viewへ昇格させ、Genie Ontologyの高権威アンカーとして全体に効かせることも可能です。
+
+**「手動キュレーション不要」論の正確な理解:**
+
+Databricksは、Genie Ontologyによって手作業での文脈設定が不要になると主張していますが、これは「全部を作り込む」必要がなくなり、重要な定義のアンカー付けや誤りの修正に役割がシフトするという意味合いが正確です。
+
+**適用範囲とベンチマーク:**
+
+Genie Ontologyは、Genie OneおよびGenie Agents（旧Genie Spaces）の両方を支える基盤となります。Databricks社内ベンチマークでは、Genieは複雑なデータ分析タスクにおいて高い正答率と速度を示していますが、これはベンダー公称値であり、第三者による検証はまだ十分ではありません。また、定義のランク付けと計算の妥当性は別の問題である点も考慮が必要です。
+
+**現状と将来性:**
+
+Genie Ontology自体はプレビュー段階であり、利用には申請が必要です。しかし、metric viewやナレッジストア、ナレッジマイニングといった関連機能は一般提供されており、現時点で体験可能です。Genie Ontologyは、AIエージェントの能力を飛躍的に向上させる可能性を秘めており、今後の進化が期待されます。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

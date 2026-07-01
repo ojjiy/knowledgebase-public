@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>LISA: Likelihood Score Alignment for Visual-condition Controllable Generation</title>
+  <link rel="stylesheet" href="/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>LISA: Likelihood Score Alignment for Visual-condition Controllable Generation</h1>
+<p><strong>Date:</strong> 2026-06-25</p>
+<p><strong>Source:</strong> paper / hf-papers</p>
+
+<p><a href="http://arxiv.org/abs/2606.27192v1">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body"># タイトル
+LISA: Likelihood Score Alignment for Visual-condition Controllable Generation
+[View Paper](http://arxiv.org/abs/2606.27192v1)
+
+## 1. 問題意識：解決したい問題はなにか
+視覚的条件（例: ポーズ、深度マップ、セグメンテーションマップ）に基づいた画像や動画の生成は、近年注目されている分野です。この生成タスクで広く用いられている「デュアルブランチパラダイム」という手法では、条件をエンコードするサイドブランチと、画像生成の核となるメインネットワークを組み合わせています。しかし、このサイドブランチの役割や、その訓練効率については十分に探求されていませんでした。特に、サイドブランチが条件制御をどのようにもたらしているのか、そしてそれをより効率的かつ効果的に訓練する方法が課題でした。
+
+## 2. 提案手法のアプローチ：どのようなアイデア・アプローチで問題を解決しようとしたか
+本論文では、デュアルブランチパラダイムを「スコアベース生成モデリング」の観点から再考します。この観点から、メインネットワークは「事前無条件スコア」を提供して知覚品質を維持し、サイドネットワークは「尤度スコア」を暗黙的に提供して条件制御を行うと捉えます。この洞察に基づき、提案手法「LISA (Likelihood Score Alignment)」を考案しました。LISAは、サイドネットワークの中間特徴量と「近似尤度スコア」を明示的に整合させる正則化手法です。具体的には、サイドネットワークから特徴量を抽出し、軽量なデコーダーを通してスコア潜在空間にマッピングします。次に、近似尤度スコアを構築し、デコーダーの出力との距離を計算して追加の正則化損失とします。これにより、サイドネットワークとデコーダーを、標準的な拡散損失とLISAの正則化損失の両方で jointly に最適化します。
+
+## 3. 成果：提案手法により、何が達成できたのか
+LISAを画像・動画生成タスク、様々なネットワークアーキテクチャ、拡散モデルやフローモデルに適用した実験の結果、以下の成果が得られました。
+*   **訓練収束の加速と最終合成結果の向上:** LISAを導入することで、訓練がより速く収束し、生成される画像の品質が向上しました。
+*   **サイドネットワーク特徴量の分解性向上:** サイドネットワークの特徴量が、条件モデリングのために「より分解（disentangled）」されるようになりました。これにより、より細やかな制御が可能になります。
+*   **低コストでの効果:** 追加の訓練コストはほとんどなく、推論時には追加のコストが全くかかりません。
+*   **多様なタスクでの有効性:** ポーズ、深度マップ、低解像度画像、セグメンテーションマップ、ポーズ動画など、様々な条件とタスクで一貫して有効であることが示されました。
+*   **アーキテクチャ非依存性:** U-Netだけでなく、Diffusion Transformer (DiT)などの異なるアーキテクチャや、フローマッチングモデルでも有効でした。
+*   **構成的制御能力の向上:** 複数の視覚条件を組み合わせる（ compositional control ）能力も向上しました。
+
+## 4. 課題：本手法の限界・課題にはなにか。本文中で著者が言及しているものと、あなたが想定するもの
+### 本文中で著者が言及している課題:
+*   **ハイパーパラメータの調整:** 尤度スコア整合の重み ($\lambda$) の調整が重要であり、強すぎると構造的な整合性が損なわれる可能性があることが示唆されています。
+*   **特徴量の深さの選択:** 整合に使用するサイドネットワークの特徴量の深さも重要で、浅すぎると構造的な対応関係を捉えきれず、深すぎるとさらなる改善が見られない、あるいは冗長な制約を導入する可能性があることが示されています。
+
+### あなたが想定する課題:
+*   **計算コスト:** LISAは訓練時には軽量なデコーダーを追加しますが、推論時には不要になるため、推論時の計算コストは増加しません。しかし、デコーダーの設計によっては、訓練時の計算コストが無視できないレベルになる可能性も考えられます。
+*   **近似尤度スコアの精度:** LISAは「近似」尤度スコアを使用しています。この近似の精度が、最終的な生成結果や訓練効率にどの程度影響を与えるかは、さらなる検討の余地があるかもしれません。
+*   **汎用性:** 提案手法はデュアルブランチパラダイムに特化していますが、それ以外の生成モデルのパラダイム（例: End-to-endの生成モデル）への適用可能性や、その有効性については、本論文では直接的に扱われていません。
+
+## 5. 技術詳細：提案手法の技術的な詳細について、できるだけ詳しく。数式やアルゴリズム、モデル構造なども可能な限り詳しく
+### 1. バックグラウンド: スコアベース生成モデリングとデュアルブランチパラダイム
+
+*   **スコアベース生成モデリング:** diffusion model や flow matching model は、データ分布 $p(\mathbf{x}_0)$ を学習します。これは、ノイズ付加プロセス（forward SDE）とノイズ除去プロセス（reverse SDE）を定義し、特に reverse SDE の勾配 $\nabla_{\mathbf{x}_t}\log p_t(\mathbf{x}_t)$（無条件スコア）を学習するモデル $s_\theta(\mathbf{x}_t, t)$ を訓練することで実現されます。目標は、$\mathbb{E}[\|s_\theta(\mathbf{x}_t, t) - \nabla_{\mathbf{x}_t}\log p_t(\mathbf{x}_t)\|_2^2]$ を最小化することです。
+*   **デュアルブランチパラダイム:**
+    *   **メインネットワーク:** 事前学習済みの拡散モデル（例: U-Net）を凍結し、無条件スコア $\nabla_{\mathbf{x}_t}\log p_t(\mathbf{x}_t)$ を提供します。
+    *   **サイドネットワーク:** 条件エンコーダーとして機能し、条件 $\mathbf{c}$ を入力として受け取り、中間特徴量 $r_\phi(\mathbf{x}_t, \mathbf{c}, t)$ を生成します。これらの特徴量がメインネットワークに注入され、条件付き生成を実現します。
+
+### 2. LISAの理論的基盤：スコアの分解
+
+条件付きスコア $\nabla_{\mathbf{x}_t}\log p_t(\mathbf{x}_t|\mathbf{c})$ は、ベイズの定理より以下のように分解できます。
+$\nabla_{\mathbf{x}_t}\log p_t(\mathbf{x}_t|\mathbf{c}) = \nabla_{\mathbf{x}_t}\log p_t(\mathbf{x}_t) + \nabla_{\mathbf{x}_t}\log p_t(\mathbf{c}|\mathbf{x}_t)$
+
+ここで、
+*   $\nabla_{\mathbf{x}_t}\log p_t(\mathbf{x}_t)$: 無条件スコア（メインネットワークの役割）
+*   $\nabla_{\mathbf{x}_t}\log p_t(\mathbf{c}|\mathbf{x}_t)$: 尤度スコア（サイドネットワークが担うべき役割）
+
+デュアルブランチパラダイムでは、サイドネットワークは条件 $\mathbf{c}$ をエンコードし、メインネットワークの無条件スコアに付加される形で、暗黙的にこの尤度スコアを学習していると解釈できます。LISAは、このサイドネットワークの尤度スコア学習を明示的に正則化します。
+
+### 3. LISAの提案手法：近似尤度スコアの構築と整合
+
+#### 3.1. 近似尤度スコア ($\widehat{\ell}_t(\mathbf{c}|\mathbf{x}_t)$) の構築
+
+尤度スコア $\nabla_{\mathbf{x}_t}\log p_t(\mathbf{c}|\mathbf{x}_t)$ は直接計算が困難ですが、以下の関係を利用します。
+$\nabla_{\mathbf{x}_t}\log p_t(\mathbf{c}|\mathbf{x}_t) = \nabla_{\mathbf{x}_t}\log p_t(\mathbf{x}_t|\mathbf{c}) - \nabla_{\mathbf{x}_t}\log p_t(\mathbf{x}_t)$
+
+ここで、
+*   $\nabla_{\mathbf{x}_t}\log p_t(\mathbf{x}_t|\mathbf{c})$: 条件付きスコア。これは、データ $\mathbf{x}_0$ が与えられた場合の条件付きスコアの期待値 $\mathbb{E}_{\mathbf{x}_0|\mathbf{x}_t,\mathbf{c}}[\nabla_{\mathbf{x}_t}\log p_t(\mathbf{x}_t|\mathbf{x}_0)]$ で近似できます。この $\nabla_{\mathbf{x}_t}\log p_t(\mathbf{x}_t|\mathbf{x}_0)$ は、拡散モデルの学習ターゲットとして既知です。
+*   $\nabla_{\mathbf{x}_t}\log p_t(\mathbf{x}_t)$: 無条件スコア。これは、凍結されたメインネットワーク $s_\theta(\mathbf{x}_t, t)$ で近似できます。
+
+したがって、近似尤度スコアは以下のように定義されます。
+$\widehat{\ell}_t(\mathbf{c}|\mathbf{x}_t) = \nabla_{\mathbf{x}_t}\log p_t(\mathbf{x}_t|\mathbf{x}_0) - s_\theta(\mathbf{x}_t, t)$
+
+#### 3.2. サイドネットワーク特徴量との整合
+
+1.  **特徴量のフック:** サイドネットワークの指定された層（例: $k$番目の層）から中間特徴量 $r_\phi^k(\mathbf{x}_t, \mathbf{c}, t)$ を取得します。
+2.  **軽量デコーダー $\mathcal{D}_\psi$:** 取得した特徴量 $r_\phi^k$ を、時間 $t$ やノイズ付きサンプル $\mathbf{x}_t$ と共に、軽量なデコーダー $\mathcal{D}_\psi$ に入力します。このデコーダーは、数層の畳み込み、活性化、アップサンプリング層などで構成され、特徴量をスコア潜在空間にマッピングします。出力は $\widetilde{\ell}_\psi^k(\mathbf{c}|\mathbf{x}_t) = \mathcal{D}_\psi(r_\phi^k(\mathbf{x}_t, \mathbf{c}, t), t, \mathbf{x}_t)$ です。
+3.  **LISA 正則化損失:** デコーダーの出力 $\widetilde{\ell}_\psi^k$ と、近似尤度スコア $\widehat{\ell}_t$ との L2 距離を正則化損失 $\mathcal{L}_{\text{LISA}}$ とします。ここでは、ターゲットの $\widehat{\ell}_t$ には勾配を伝播させないように `stop_gradient` (sg) を適用します。
+    $\mathcal{L}_{\text{LISA}} = \mathbb{E} [ \| \widetilde{\ell}_\psi^k(\mathbf{c}|\mathbf{x}_t) - \operatorname{sg}[\widehat{\ell}_t(\mathbf{c}|\mathbf{x}_t)] \|_2^2 ]$
+
+#### 3.3. 統合された目的関数と最適化
+
+最終的な目的関数は、標準的な拡散損失 $\mathcal{L}_{\text{main}}$ とLISA正則化損失 $\mathcal{L}_{\text{LISA}}$ の重み付き和となります。
+$\mathcal{L}_{\text{total}} = \mathcal{L}_{\text{main}} + \lambda \mathcal{L}_{\text{LISA}}$
+
+*   $\mathcal{L}_{\text{main}} = \mathbb{E}_{\mathbf{x}_0, \mathbf{c}, t, \mathbf{x}_t} [\| s_{\theta,\phi}(\mathbf{x}_t, \mathbf{c}, t) - \nabla_{\mathbf{x}_t}\log p_t(\mathbf{x}_t|\mathbf{x}_0) \|_2^2]$
+*   $s_{\theta,\phi}(\mathbf{x}_t, \mathbf{c}, t)$ は、メインネットワークとサイドネットワークを合わせた条件付きスコア予測器です。
+
+最適化では、メインネットワークのパラメータ $\theta$ は固定し、サイドネットワークのパラメータ $\phi$ とデコーダーのパラメータ $\psi$ を $\mathcal{L}_{\text{total}}$ を最小化するように学習します。
+
+#### 3.4. アルゴリズム概要 (Python風疑似コード)
+
+```python
+# 仮定:
+# main_network: 凍結された事前学習済みモデル (例: U-Net)
+# side_network: 学習可能な条件エンコーダー
+# decoder: 軽量な学習可能デコーダー
+# diffusion_loss: 標準的な拡散モデルの損失関数
+# data_loader: (x0, c) のバッチを供給
+
+# ハイパーパラメータ
+lambda_lisa = 0.1 # LISA損失の重み
+feature_layer_index = ... # サイドネットワークから特徴量を抽出する層のインデックス
+
+for batch in data_loader:
+    x0, c = batch
+    t = sample_time_step() # 時間ステップをランダムにサンプリング
+    xt = add_noise(x0, t) # x0にノイズを追加してxtを生成
+
+    # 1. 標準的な拡散損失の計算
+    # メインネットワークで無条件スコアを計算
+    unconditional_score_pred = main_network(xt, t)
+    # サイドネットワークで条件付きスコアを計算 (仮)
+    # side_features = side_network(xt, c, t)
+    # conditional_score_pred = combined_model(xt, side_features, t) # モデル構造による
+    # ただし、ここでは簡単のため、直接学習ターゲットを計算
+    denoising_target = compute_denoising_target(x0, xt, t) # 実際にはnabla_xt_log_pt_xt_x0
+
+    # 2. 近似尤度スコアの構築
+    # サイドネットワークから特徴量を抽出
+    side_features = side_network.get_feature(xt, c, t, layer_idx=feature_layer_index)
+    # 近似尤度スコアのターゲットを計算 (sg = stop_gradient)
+    approx_likelihood_score_target = sg(denoising_target - unconditional_score_pred)
+
+    # 3. LISA正則化損失の計算
+    # デコーダーでサイド特徴量をスコア空間にマッピング
+    decoder_output = decoder(side_features, xt, t)
+    # LISA損失を計算
+    lisa_loss = mse_loss(decoder_output, approx_likelihood_score_target)
+
+    # 4. 最終的な目的関数
+    # 標準的な条件付きスコア予測器の損失 (ここではdenoising_targetとの比較)
+    # side_network の特徴量を注入したモデルで予測
+    conditional_score_pred_with_side = main_network.predict_with_side(xt, side_features, t) # 仮の関数
+    diffusion_loss_val = mse_loss(conditional_score_pred_with_side, denoising_target)
+
+    total_loss = diffusion_loss_val + lambda_lisa * lisa_loss
+
+    # 5. パラメータの更新 (サイドネットワークとデコーダーのみ)
+    optimizer.zero_grad()
+    total_loss.backward()
+    optimizer.step()
+
+# 推論時:
+# デコーダーは使用せず、学習済みのside_networkとmain_networkを組み合わせる
+# generated_samples = generate(main_network, trained_side_network, condition)
+```
+
+#### 3.5. モデル構造の補足
+
+*   **デコーダー:** 入力はサイドネットワークの中間特徴量 $r_\phi^k$、時間埋め込み、ノイズ付きサンプル $\mathbf{x}_t$ です。出力は、$\nabla_{\mathbf{x}_t}\log p_t(\mathbf{c}|\mathbf{x}_t)$ と同じ次元のスコアベクトルです。層構成は Conv + Activation + Upsampling などが考えられます。
+*   **特徴量抽出層:** 論文では、U-Net の中間の畳み込み層（例: 4x4空間解像度）から特徴量を抽出することが示唆されています。
+
+#### 3.6. 計算コスト
+
+*   **訓練時:** デコーダーによる追加のフォワードパスとバックプロパゲーションが発生しますが、デコーダーは軽量なため、追加の計算コストは「ほぼ無視できる」とされています。
+*   **推論時:** デコーダーは使用されないため、追加の計算コストは「ゼロ」です。
+
+## 6. この論文を140字以内のツイートで要約すると？
+視覚条件付き生成で、サイドネットの役割を尤度スコアと定義！提案手法LISAは、サイドネット特徴量と近似尤度スコアを整合させ、訓練高速化と生成品質向上を低コストで達成。構成的制御も強化！#生成AI #拡散モデル</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

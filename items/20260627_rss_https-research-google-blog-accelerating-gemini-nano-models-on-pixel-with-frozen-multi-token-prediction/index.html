@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Accelerating Gemini Nano models on Pixel with frozen Multi-Token Prediction</title>
+  <link rel="stylesheet" href="/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>Accelerating Gemini Nano models on Pixel with frozen Multi-Token Prediction</h1>
+<p><strong>Date:</strong> 2026-06-27</p>
+<p><strong>Source:</strong> rss / Google Research Blog</p>
+
+<p><a href="https://research.google/blog/accelerating-gemini-nano-models-on-pixel-with-frozen-multi-token-prediction/">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">Googleは、Pixelデバイス上でGemini Nanoモデルの推論速度を大幅に向上させる新しい技術、「Frozen Multi-Token Prediction (MTP)」を発表しました。この技術は、既存の「フローズン（凍結された）」モデルにMTPを適用することで、外部のドラフターモデルに頼ることなく、オンデバイスでの推論効率を改善します。
+
+従来の言語モデルは、一度に1つのトークン（単語や記号）ずつ生成する「自己回帰的」な方式をとっており、これがモバイルデバイスの限られたリソース（電力、メモリ）ではボトルネックとなっていました。この問題を解決するため、MTPは、独立した小さなドラフターモデルを使用するのではなく、メインモデルの最終層に軽量な「MTPヘッド」を追加するアーキテクチャを採用しています。これにより、メインモデルが既に計算した豊富な内部状態（隠れ状態やKVキャッシュ）を直接活用し、追加のメモリ消費や計算リソースを必要とせずに、将来のトークンを予測します。
+
+この「ゼロコピーアーキテクチャ」により、ドラフターが独自のKVキャッシュを維持する必要がなくなり、メモリ使用量が削減され、プレフィックスの推論（モデルがプロンプトを処理する時間）も不要になります。実験では、Pixel 9デバイスにおいて、同等のパラメータ数を持つスタンドアロンなドラフターと比較して、50%以上の速度向上を実現しました。
+
+MTPは、メインモデルの重みを凍結したまま、MTPヘッドのみを訓練するため、基盤となるモデルの能力や安全性に影響を与えずに効率を最適化できます。また、検証段階で誤ったドラフトは破棄されるため、最終的な出力は元のモデルと完全に同一であり、後方互換性も確保されています。
+
+このMTP技術は、Pixel 9およびPixel 10シリーズに既に導入されており、AI通知要約や校正機能などのリアルワールドのアプリケーションにおいて、テキスト生成速度の向上とエネルギー消費の削減に貢献しています。Googleは、今後もMTP技術をさらに進化させ、将来のPixelデバイスへの統合や、並列デコーディングなどの代替アーキテクチャの探求を進める予定です。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>
