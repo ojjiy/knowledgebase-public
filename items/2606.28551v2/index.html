@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>DataComp-VLM: Improved Open Datasets for Vision-Language Models</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>DataComp-VLM: Improved Open Datasets for Vision-Language Models</h1>
+<p><strong>Date:</strong> 2026-06-26</p>
+<p><strong>Source:</strong> paper / hf-papers</p>
+
+<p><a href="http://arxiv.org/abs/2606.28551v2">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body"># タイトル
+[DataComp-VLM: Improved Open Datasets for Vision-Language Models](http://arxiv.org/abs/2606.28551v2)
+
+## 1. 問題意識：解決したい問題はなにか
+現代のビジョン・言語モデル (VLM) の性能向上には、大規模な学習データセットの慎重なキュレーションが不可欠である。しかし、VLMコミュニティでは、このようなデータキュレーション戦略を評価するための体系的なベンチマークが存在しない。そのため、どのデータキュレーション手法が効果的であるかを理解することが困難であり、再現性も低いという問題がある。
+
+## 2. 提案手法のアプローチ：どのようなアイデア・アプローチで問題を解決しようとしたか
+この問題に対して、研究者たちは「DataComp for VLMs (DCVLM)」というベンチマークを提案した。DCVLMは、VLM学習を改善するための、管理されたデータ中心の実験を可能にするプラットフォームである。具体的には、以下の3つのアプローチを取った。
+
+1.  **大規模かつ多様なデータセットの構築:** 160個の既存データセットを収集し、画像-キャプションペア、マルチモーダルインターリーブド文書、テキストのみ、指示チューニングデータの4つのデータタイプを網羅する、6兆（6T）マルチモーダルートークンからなるコーパスを構築した。
+2.  **データキュレーション戦略の評価:** 参加者は、10億から80億（1B-8B）パラメータのモデルと62.5億から2000億（6.25B-200B）トークンの予算で、フィルタリング、ミキシング、フォーマット、サンプリングといったデータキュレーション戦略をテストできる。
+3.  **包括的な評価:** モデルは、9つのドメインにわたる最大52個の下流ベンチマークから厳選されたスイートで評価される。
+
+このベンチマークを通じて、データミックスがフィルタリングよりも高品質な学習データセットの鍵であることを発見した。特に、指示チューニングデータが多い混合データは、キャプションが多いデータよりもスケールしやすく、大規模になるほどその差が広がることを明らかにした。
+
+## 3. 成果：提案手法により、何が達成できたのか
+DCVLMベンチマークを用いた実験により、以下の成果が達成された。
+
+*   **データミックスの重要性の発見:** データフィルタリングよりも、データタイプ間の混合比率の最適化がVLMの性能向上に大きく寄与することが明らかになった。特に、指示チューニングデータが多い混合（instruction-heavy mixtures）が、キャプションが多い混合（caption-heavy ones）よりも優れていることが示された。
+*   **DCVLM-Baseline Datasetの構築:** 上記の知見に基づいて構築されたDCVLM-Baselineデータセットにより、80億（8B）VLMを33タスクのコアスイートで63.6%の精度に到達させることができた（学習トークン数2000億）。これは、既存の最先端オープンVLM学習データセットであるFineVisionと比較して、+5.4パーセントポイントの改善である。
+*   **データキュレーション戦略の普遍性の検証:** データミックスの優位性は、モデルスケール（1B〜8B）やトークン予算（6.25B〜200B）に依存せず、一貫して見られた。また、これらの発見は、モデルのファインチューニング後（SFT）の性能や、異なる言語モデルバックボーン（Qwen2.5-BaseとQwen2.5-Instruct）に対しても頑健であることが示された。
+*   **再現可能な研究基盤の提供:** DCVLMベンチマーク、データプール、評価スイート、および関連する実験インフラストラクチャが公開され、将来のVLMデータキュレーション研究のための再現可能なテストベッドとして機能する。
+
+## 4. 課題：本手法の限界・課題にはなにか。本文中で著者が言及しているものと、あなたが想定するもの
+### 著者が言及している課題：
+*   **フィルタリングの有効性の限界:** 既存のVLMデータセットは既に一定のアップストリームキュレーションを経ているため、追加のダウンストリームフィルタリングは、期待されるほどの効果が見られない、あるいは逆効果になる場合があることが示唆されている。
+*   **データミックスのスケール依存性:** 小規模スケールで最適とされたデータミックスが、大規模スケールでは最適でなくなる可能性がある。そのため、複数のスケールで混合選択を検証する必要がある。
+*   **大規模データセットの計算コスト:** DCVLMは6兆トークンという膨大なデータを含んでおり、これらのデータセット全体を網羅的に実験するには、依然として多大な計算リソースが必要となる。
+
+### 想定される課題：
+*   **データソースのライセンスと利用可能性:** 160個のデータセットは多様なライセンスを持っており、一部は研究目的のみ、あるいはアクセスに条件がある。これらが研究の普及や商用利用に制約を与える可能性がある。
+*   **「理想的な」データミックスの一般化:** Instruction-heavy mixが有効であったが、これは特定のタスクやデータセットの組み合わせにおいて最適化された結果である。全てのVLMタスクやドメインに対して、このミックスが常に最適であるとは限らない。
+*   **評価ベンチマークの網羅性:** 52個のベンチマークが選定されているが、VLMの能力は多岐にわたるため、未評価の能力領域や、将来出現する新しいタスクに対する評価の網羅性には限界がある可能性がある。
+*   **データキュレーションの自動化と解釈性:** データミックスの最適化は重要だが、その「なぜ」が完全に解明されているわけではない。より自動化され、かつ解釈性の高いデータキュレーション手法の開発が今後の課題となる可能性がある。
+
+## 5. 技術詳細：提案手法の技術的な詳細について、できるだけ詳しく。数式やアルゴリズム、モデル構造なども可能な限り詳しく
+DCVLMは、VLMのデータキュレーション戦略を体系的に評価するためのベンチマークであり、以下の主要なコンポーネントと手法で構成されています。
+
+### 5.1. DataComp-VLM (DCVLM) データプール
+*   **データタイプ:** 4種類
+    *   **Image-Caption Pairs:** 画像とそれに対応するキャプションのペア。ウェブクロールデータ（例: DataComp-1B, LLaVA-OneVision-1.5）や、人間が作成・合成したキャプションデータ（例: PixMo-Cap）が含まれます。
+    *   **Multimodal Interleaved Documents:** ウェブページ、PDF、学術論文など、画像とテキストが混在する文書。これらは一般的にキュレーション度が低いソースです（例: MINT-1T-HTML, Multimodal-Textbook）。
+    *   **Text-only Data:** テキストのみのデータ。指示チューニングデータ（例: Dolly, FLAN）、長文コンテキスト（例: LongAlpaca）、コード/数学推論データ（例: Numina-Math）などが含まれます。
+    *   **Instruction-tuning Data:** マルチモーダルな指示チューニングデータ。画像と関連付けられた質問応答、命令実行などのデータが含まれ、8つの能力カテゴリ（知識、チャート・テーブル理解、一般QA、グラウンディング・カウント、数学、OCR、OCR-QA、科学）に分類されます。
+*   **規模:**
+    *   サンプル数: 39億 (3.9B)
+    *   マルチモーダル・トークン数: 6兆 (6T)
+    *   平均トークン/サンプル: 1.5K
+*   **トークナイザ:** InternVL-2.5 tokenizer を使用。
+*   **データソース:** 160個の公開データセットを収集。
+*   **データ密度:**
+    *   Image-Caption: サンプル数 74%、トークン数 83% (1-2K tok/sample)。画像あたりの固定コスト（256視覚トークン）が影響。
+    *   Multimodal Documents: サンプル数 12%、トークン数 13% (3-6K tok/sample)。複数画像と長文テキストを含むため高密度。
+    *   Text-only: サンプル数 19%、トークン数 5% (100-15K tok/sample)。短文指示データと長文コンテキストで大きなばらつき。
+    *   Instruction-tuning: サンプル数 4%、トークン数 7% (1-3K tok/sample)。多ターン/複数画像データは高密度。
+
+### 5.2. VLMアーキテクチャと学習設定
+*   **アーキテクチャ:** モジュラーアーキテクチャを採用。
+    *   **Vision Encoder:** InternViT-300M-448px-V2.5。4つのスケール全てで固定（ただし、全パラメータが学習される）。
+    *   **Language Model (LM) Backbone:** Qwen2.5 アーキテクチャをベースにした4つのサイズ (1B, 2B, 4B, 8B)。
+    *   **Connector (Projector):** 2層のMLP（Multi-Layer Perceptron）。ランダム初期化され、学習の開始時にのみ学習されます。
+*   **学習方式:**
+    *   **Single-stage Pretraining:** Vision Encoder, Connector, LM Backbone の全パラメータを同時に共同で学習します。凍結されたエンコーダーや、コネクターのみのウォームアップ段階はありません。
+    *   **Dynamic High-Resolution Input:** InternVL-2.5/3 の手法に従い、画像を複数のタイルに分割し、ピクセルシャッフル後、各タイルを256視覚トークンとしてLMに入力します。サムネイル画像も連結されます。
+*   **学習ハイパーパラメータ:** InternVL-2.5 の設定をベースに、学習率のスイープを実施。
+    *   Optimizer: AdamW
+    *   Batch Size: 1024 (グローバル)
+    *   Scheduler: Cosine decay with 3% warmup.
+    *   Learning Rate (LR): モデルスケールごとに調整 (e.g., 1B: 2e-4, 2B: 1e-4, 4B: 5e-5, 8B: 3e-5)。LRスイープでは、5つの値を試行しました。
+
+### 5.3. データキュレーション戦略の評価
+DCVLMでは、参加者は以下のデータキュレーション戦略をテストできます。
+*   **Filtering:**
+    *   **Quality-based Filtering:** CLIPスコア（SigLIP-2, CLIP ViT-L/14など）、テキスト品質評価器（fastText, Nemotron, Mixtral）、UniFilterモデル、Perplexity（テキストのみ、マルチモーダル）、Conditional Mutual Information (CMI) など、様々なフィルタリング手法が試されています。
+    *   **Filtering Paradigms:**
+        *   **Local Filtering:** 各ソースデータセット内で独立にフィルタリング閾値を計算。
+        *   **Global Filtering:** フィルタリング対象全体で単一の閾値を計算。
+    *   **Diminishing Returns:** アップストリームでキュレーションされたデータセットに対して、追加のダウンストリームフィルタリングは効果が薄い（あるいは負の影響）であることが示されています。
+*   **Mixing:**
+    *   **Data Type Ratios:** 画像-キャプション、マルチモーダル文書、テキストのみ、指示チューニングデータの比率を調整。
+    *   **Instruction-heavy vs. Caption-heavy:** 指示チューニングデータが多い混合が、キャプションが多い混合よりもスケール特性が良いことが発見されました。
+    *   **Data Repetition:** 指示チューニングデータの繰り返し（repetition factor）が性能に与える影響も調査。2倍の繰り返しで約0.5-1.0%の性能低下が見られました。
+*   **Sampling:** データセットからのサンプル抽出方法。
+*   **Formatting:** データのフォーマット方法。
+
+### 5.4. 評価
+*   **Downstream Benchmarks:** 9ドメイン、最大52個のベンチマークから構成。
+    *   **Tiers:** Validation, Core (33 benchmarks), Extended (52 benchmarks) の3段階。
+    *   **Domains:** General Understanding, Knowledge-Centric, OCR &amp; Charts, Vision-Centric, Multilingual, Text-Only, Safety, Hallucination, Reasoning.
+*   **Decontamination:** トレーニングデータとテストデータ間の重複（汚染）を防ぐため、以下の手法が用いられています。
+    *   **Multimodal Samples:** ResNet-50 SSCD (Similarity-based semantic content detection) embedding モデルを使用してフィルタリング。
+    *   **Text-only Samples:** MinHash (Approximate string matching) を使用。
+
+### 5.5. アルゴリズム/疑似コード例（データミックスの概念）
+データミックスの概念を疑似コードで表すと以下のようになります。
+
+```python
+# データプール (data_pool): 画像-キャプション、マルチモーダル文書、テキストのみ、指示チューニングデータを含む
+# 希望するデータタイプごとの割合 (target_ratios): {&#39;image-caption&#39;: 0.1, &#39;multimodal-doc&#39;: 0.05, &#39;text-only&#39;: 0.15, &#39;instruction-tuning&#39;: 0.7}
+# 合計トークン予算 (token_budget): 200B
+
+# 各データタイプからランダムにサンプルを抽出し、目標トークン量に達するように構成する
+def create_mixed_dataset(data_pool, target_ratios, token_budget):
+    mixed_dataset = []
+    total_tokens_allocated = 0
+    
+    for data_type, ratio in target_ratios.items():
+        # データタイプごとの目標トークン量を計算
+        type_token_goal = token_budget * ratio
+        
+        # データプールから該当データタイプをフィルタリング
+        type_specific_data = [sample for sample in data_pool if sample[&#39;type&#39;] == data_type]
+        
+        # データタイプごとに、目標トークン量に達するまでサンプルをランダムに選択
+        # （実際には、サンプルのトークン数や品質も考慮される）
+        current_type_tokens = 0
+        samples_for_type = []
+        while current_type_tokens &lt; type_token_goal and type_specific_data:
+            # ランダムにサンプルを選択
+            selected_sample = random.choice(type_specific_data)
+            samples_for_type.append(selected_sample)
+            current_type_tokens += calculate_sample_tokens(selected_sample) # サンプルのトークン数を計算する関数
+            type_specific_data.remove(selected_sample) # 複数回選択されないように削除
+            
+        mixed_dataset.extend(samples_for_type)
+        total_allocated_tokens += current_type_tokens # 実際に割り当てられたトークン数を加算
+        
+    # 注意：実際には、ランダムサンプリングだけでなく、
+    # サンプルの品質、重複排除、カリキュレーション戦略（フィルタリング）なども考慮される。
+    # また、トークン予算を厳密に守るための調整や、
+    # データタイプ間のサンプリング比率も考慮される。
+    
+    return mixed_dataset
+
+# calculate_sample_tokens の例
+def calculate_sample_tokens(sample):
+    # サンプルの内容に基づいてトークン数を計算（視覚トークン + テキストトークン）
+    # 例：画像1枚あたり256視覚トークン + キャプションのテキストトークン
+    if sample[&#39;type&#39;] == &#39;image-caption&#39;:
+        return 256 + len(sample[&#39;caption&#39;].split()) # 仮のテキストトークン数
+    elif sample[&#39;type&#39;] == &#39;multimodal-doc&#39;:
+        # 複数画像とテキストがあるので、より複雑な計算
+        return sample[&#39;num_images&#39;] * 256 + len(sample[&#39;text&#39;].split()) # 仮
+    else: # text-only, instruction-tuning
+        return len(sample[&#39;text&#39;].split())
+```
+
+## 6. この論文を140字以内のツイートで要約すると？
+VLM学習のデータキュレーション、ベンチマーク不足を解決！6Tトークン規模のDCVLMベンチマークで、フィルタリングよりデータミックスが重要と判明。指示データ多めのミックスがスケールし、+5.4pp改善。研究基盤を公開！ #VLM #データキュレーション #AI</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

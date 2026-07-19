@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>【実測比較】日本語RAGのOCR、結局どれを使う？ glm-ocr / dots.ocr / Unlimited-OCR / MinerU を社内ドライブの実データでガチ評価</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>【実測比較】日本語RAGのOCR、結局どれを使う？ glm-ocr / dots.ocr / Unlimited-OCR / MinerU を社内ドライブの実データでガチ評価</h1>
+<p><strong>Date:</strong> 2026-07-07</p>
+<p><strong>Source:</strong> rss / Qiita Trend</p>
+
+<p><a href="https://qiita.com/engchina/items/6dff7010af1b28e8c30a?utm_campaign=popular_items&amp;utm_medium=feed&amp;utm_source=popular_items">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">## 日本語RAGにおけるOCRエンジン実測比較：glm-ocr、dots.ocr、Unlimited-OCR、MinerUの評価
+
+本記事では、RAG（検索拡張生成）システムにおいて重要な役割を果たすOCR（光学文字認識）エンジンの日本語性能を、社内ドライブの実データを用いて詳細に比較評価しています。RAGシステムは、社内ドライブに混在するテキスト層のないPDF、スクリーンショット、図表など、多様な形式のドキュメントを処理する必要があります。OCR処理が失敗すると、これらのドキュメントはRAGの根拠から除外されてしまうため、OCRエンジンの精度はRAGの性能に直結します。
+
+評価対象となったのは、以下の4種類のOCR/文書解析エンジンです。
+
+*   **glm-ocr**: 画像全体を読み取る視覚モデル系OCR。
+*   **dots.ocr**: レイアウト検出機能付きの文書パーサー。
+*   **Unlimited-OCR**: 構造化（HTMLテーブル）出力に強みを持つドキュメントパーサー。
+*   **MinerU**: PDF/文書解析の定番。Markdown+HTMLテーブル形式で出力。
+
+比較にあたっては、社内ドライブから性質の異なる6種類のファイルを抽出し、同一条件で各エンジンを実行しました。
+
+### 各エンジンの特徴と実測結果
+
+**1. スクリーンショットの表（日英混在＋表構造）**:
+glm-ocrは文字精度が高く、表も人間やLLMが読みやすい形式で出力しました。Unlimited-OCRとMinerUはHTMLテーブル形式で表構造を忠実に再現しましたが、dots.ocrは表がセル単位でバラバラになり、行の対応が崩れる結果となりました。
+
+**2. 相関ヒートマップ（図中の数値マトリクス）**:
+matplotlibで生成された図中の数値マトリクスを読み取る能力では、glm-ocrが唯一、行・列ラベルと100個の数値を完全に復元しました。他の3エンジンは図を画像として素通りするか、一部のタイトルしか読み取れませんでした。
+
+**3. 会議録PDF（日本語長文・4ページ）**:
+テキスト主体のPDFでは、4エンジンとも実用レベルの精度を示しました。速度と出力形式に差が見られ、MinerUが最速かつMarkdown構造で最も扱いやすい結果となりました。glm-ocrはPDFを画像化する必要があるため遅延が見られました。
+
+**4. 棒グラフ（棒に焼き込まれた件数）**:
+棒グラフのタイトル、軸、および棒の上に焼き込まれた件数ラベルを読み取れたのはglm-ocrのみでした。RAGで「多数派クラスの件数」のような情報に回答させる場合、glm-ocrの利用が不可欠です。
+
+**5. ヒストグラム6面（小さいラベルが大量）**:
+密度の高い図においても、glm-ocrは全タイトル、件数、目盛りを正確に取得しました。dots.ocrは図の中身を読まずに英語の説明文を生成するという誤答をし、RAGでの利用には危険性が示唆されました。
+
+**6. 提案スライド（テキスト層なし・図主体）**:
+SmartArt風のフロー図や概念ボックスに文字が埋め込まれたドキュメントでは、glm-ocrが唯一、図中テキストをほぼ全て復元しました。テキスト層のないPDFが多い環境では、glm-ocrの能力が決定的に重要となります。
+
+### 総合評価と推奨事項
+
+実測の結果、OCRエンジンは大きく以下の2系統に分類できることがわかりました。
+
+*   **glm-ocr**: 図、チャート、スクリーンショット、SmartArtに焼き込まれた数値やテキストを読み取る「視覚OCR」。PDFの画像化が必要な場合やテキストPDFでは処理速度が低下する側面もあります。
+*   **dots.ocr, Unlimited-OCR, MinerU**: テキスト文書や表の解析に強い「レイアウト解析器」。図は一枚の画像として扱いますが、MinerUは最速かつMarkdown構造、Unlimited-OCRとMinerUはHTMLテーブル出力に強みがあります。dots.ocrは図に対して誤った英語の説明文を生成するリスクがありました。
+
+**結論として、単独のエンジンで全てをカバーすることは難しく、「用途で2系統に割って混合採用」することを推奨します。**
+
+*   **テキスト主体のPDF、文書、表**: **MinerU**を主力とし、最速かつ構造化された出力を活用します。表の厳密さが求められる場合は **Unlimited-OCR** も候補となります。
+*   **図、チャート、スクリーンショット、テキスト層のない提案スライド**: **glm-ocr** を使用し、図中の数値やSmartArtの文字を確実に取得します。
+
+実装においては、いきなり全エンジンを並列実行するのではなく、**優先ラダー（fallback）方式** を採用することが効率的です。例えば、PDFはまずMinerUで解析し、テキストが取得できなかったページや画像ファイルのみをglm-ocr（またはdots.ocr/Unlimited-OCR）に回すといった段構えが考えられます。
+
+「まず速くて構造化の効くMinerUで大半を処理し、図や取りこぼしをglm-ocrで拾う」という運用が、コストと精度のバランスに優れた最適解であると結論づけられています。
+
+本記事は、実際の社内ドライブの生データでの挙動を重視しており、ベンチマーク数値だけでなく、各エンジンの特性を理解し、自身の環境に合わせて最適なOCR戦略を構築することの重要性を示唆しています。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

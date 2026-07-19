@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>【アップデート】 Amazon Aurora DSQL の Change Data Capture が一般提供になりました</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>【アップデート】 Amazon Aurora DSQL の Change Data Capture が一般提供になりました</h1>
+<p><strong>Date:</strong> 2026-07-09</p>
+<p><strong>Source:</strong> rss / DevelopersIO</p>
+
+<p><a href="https://dev.classmethod.jp/articles/amazon-aurora-dsql-cdc-ga/">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">Amazon Aurora DSQL の Change Data Capture (CDC) 機能が、プレビュー発表から約 2 ヶ月後の 2026 年 7 月 8 日に一般提供 (GA) となりました。この機能は、コミット済みのデータベース変更を Amazon Kinesis Data Streams へ準リアルタイムで配信するものです。
+
+**主な特徴:**
+
+*   **配信先:** Amazon Kinesis Data Streams (BYOT: Bring Your Own Target モデル)
+*   **対象:** クラスター内の全ユーザーテーブルの行レベル変更
+*   **レコード形式:** 構造化 JSON
+*   **配信保証:** 少なくとも 1 回 (at-least-once)
+*   **順序:** UNORDERED (コミット順に近いが厳密な保証なし)
+*   **マルチリージョン:** 1 リージョンの単一ストリームで全リージョンの変更をキャプチャ
+*   **性能影響:** データベースワークロードへの影響なし
+
+**ユースケース:**
+
+*   ダウンストリームシステムの同期 (検索インデックス、キャッシュ、データウェアハウス、分析システムへのレプリケーション)
+*   イベント駆動アーキテクチャ (データベース変更をトリガーとしたワークフロー、通知、マイクロサービスの起動)
+*   監査証跡 (コンプライアンス、デバッグ、履歴分析)
+*   プロデューサーとコンシューマーの疎結合化 (CQRS など)
+
+**プレビューからの変更点:**
+
+GA 版の最も重要な変更点は、CDC レコードの `op` フィールドで `UPDATE` が `c` (INSERT と区別不可) から `u` へと区別されるようになったことです。これにより、ダウンストリーム側で変更種別を正確に判別できるようになりました。
+
+また、トランザクション内の複数操作を 1 レコードにまとめる「write-set compaction」の動作が明文化されました。同一トランザクション内で INSERT された行を UPDATE した場合、`op: &#34;c&#34;` の 1 レコードのみが発行され、`after` フィールドには最終状態が含まれます。INSERT された行を同一トランザクション内で DELETE した場合は、正味の変化がないためレコード自体が配信されません。
+
+**注意点:**
+
+*   配信保証は `at-least-once` のため、重複レコードが発生する可能性があります。`source.ts_ns` と主キー値の組み合わせで重複を検出できます。
+*   順序は `UNORDERED` なため、厳密な順序が必要な場合は `source.ts_ns` を使用して受信側で並べ替える必要があります。同一トランザクションのレコードグループ化には `source.txId` を使用します。
+*   主キーのないテーブルでは、ダウンストリームでの重複排除や削除対象行の特定が困難になるため、CDC 対象テーブルには必ず主キーを定義する必要があります。
+*   Kinesis Data Streams の `MaxRecordSizeInKiB` はデフォルトの 1 MiB ではなく 10240 (10 MiB) を設定することが推奨されます。9 MiB を超えるレコードは分割されるため、受信側での再組み立てが必要です。
+*   1 クラスターあたりの CDC ストリーム数には上限があります。
+
+**料金:**
+
+CDC の料金は、キャプチャしたデータ量に基づいて StreamDPU として計測されます。StreamDPU は通常の DPU と同じレートで課金されます。変更がない場合は StreamDPU の課金はなく、Kinesis Data Streams 標準料金が別途発生します。
+
+**まとめ:**
+
+Amazon Aurora DSQL の CDC 機能は、プレビュー時の課題が解消され、write-set compaction の動作も明確になったことで、イベント駆動アーキテクチャの起点として本番採用が現実的になりました。`at-least-once` および `UNORDERED` という特性を理解し、ダウンストリーム側で重複排除と順序付けを実装することで、検索インデックスの同期や監査証跡などのユースケースに幅広く活用できます。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>売上は DB、ログは S3、契約書は SharePoint、バラバラなデータを AI で使う方法を調べてみてみた</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>売上は DB、ログは S3、契約書は SharePoint、バラバラなデータを AI で使う方法を調べてみてみた</h1>
+<p><strong>Date:</strong> 2026-07-07</p>
+<p><strong>Source:</strong> rss / Qiita Trend</p>
+
+<p><a href="https://qiita.com/shirok/items/0e42854634b2c5a371fa?utm_campaign=popular_items&amp;utm_medium=feed&amp;utm_source=popular_items">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">この記事は、売上データ（DB）、ログデータ（S3）、契約書（SharePoint）など、分散している様々なデータをAIで活用するための方法について、Oracle Autonomous AI Lakehouseを中心に解説しています。
+
+**Lakehouseで扱えるデータ:**
+
+Lakehouseは、従来のData Warehouseが扱う構造化データ（売上、顧客情報など）に加え、JSON、ログ、PDF、画像、音声、動画、IoTデータ、イベントデータ、Embeddingといった多様なデータをまとめて扱えます。データの成熟度に応じて、Raw（生）、Cleaned（整形済）、Curated（整理済）、AI-ready（AI活用準備済）のレイヤーで整理することが推奨されています。
+
+**Oracle AI Databaseから見たLakehouse:**
+
+Oracle AI Databaseは、構造化データだけでなく、JSON、Text、Vector、Spatial、Graphなども統合的に扱えるデータ基盤です。Object StorageやIceberg上のデータを外部表として直接問い合わせたり、SharePoint上のドキュメントからVector Indexを直接作成したりすることが可能です。これにより、複数のコンポーネントを組み合わせる一般的なLakehouseアーキテクチャとは異なり、Oracle AI Databaseを中心にデータを活用するアプローチが取れます。Lake CacheやData Lake Acceleratorといった機能により、外部データのクエリ高速化も図れます。
+
+**Oracle Autonomous AI Lakehouseとは:**
+
+Oracle Autonomous AI Lakehouseは、Oracle Autonomous AI DatabaseとApache Icebergを組み合わせた、オープンでマルチクラウド対応のLakehouseプラットフォームです。Icebergテーブルへの接続方法として、metadata.jsonを直接指定する方法、Iceberg REST Catalogを経由する方法、Catalog全体をマウントする方法の3つが紹介されています。
+
+**Autonomous AI Databaseで広がるデータ接続:**
+
+Object StorageやIcebergだけでなく、SharePoint、SaaS、業務アプリケーション、他社製クラウドデータベース（Snowflake、BigQueryなど）とも連携できます。特にSharePoint連携では、DBMS_CLOUDとDBMS_CLOUD_PIPELINEを利用してファイルにアクセスし、DBMS_CLOUD_AI.CREATE_VECTOR_INDEXで直接Vector Indexを作成できる点が強調されています。これにより、SharePoint上の文書をRAG（Retrieval-Augmented Generation）の対象とすることが可能になります。また、他社製データベースへはDatabase Link経由で参照専用のクエリを実行できます。
+
+**どこに何を置くべきか:**
+
+データ配置の基準として、以下の点が示されています。
+
+*   **原本・大量・低頻度アクセス:** Object Storage、Iceberg、SharePoint、外部ストレージ。
+*   **品質保証済み・再利用:** Database TableまたはIceberg Table (Silverレイヤー)。
+*   **BI・KPI・ダッシュボード用:** Table、View、Materialized View、Analytic View (Goldレイヤー)。
+*   **AI-ready:** Chunk Table、VECTOR Table、Metadata Table、Vector Indexなど (Database側に寄せると扱いやすい)。
+
+**まとめ:**
+
+Oracle Autonomous AI Lakehouseは、単にデータを集める基盤ではなく、「つなげて使う」ための基盤です。Oracle AI Databaseの強みを活かし、Object Storage、Iceberg、SharePoint、SaaS、他社製データベースなど、分散したデータをOracle AI DatabaseからSQL、BI、AI、RAGといった機能で活用できる点が特徴です。これにより、AI時代の「全てをつなぐ」データ基盤としての可能性が示唆されています。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

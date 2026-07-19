@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>最上位 AI モデルが「完全従量課金」になる日 〜 Claude Code で始めるモデルルーティング入門</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>最上位 AI モデルが「完全従量課金」になる日 〜 Claude Code で始めるモデルルーティング入門</h1>
+<p><strong>Date:</strong> 2026-07-08</p>
+<p><strong>Source:</strong> rss / Hatena Bookmark AI</p>
+
+<p><a href="https://blog.asial.co.jp/6980/">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">## 最上位AIモデル「Claude Fable 5」の従量課金化と「モデルルーティング」によるコスト最適化入門
+
+本記事は、Anthropic の最上位AIモデル「Claude Fable 5」が2026年7月以降、サブスクリプションプランでの無制限利用から「完全従量課金」へと移行する状況を踏まえ、AI利用におけるコスト最適化戦略として「モデルルーティング」の重要性と具体的な導入方法について解説します。
+
+### 1. 「Claude Fable 5」の提供条件変更とその影響
+
+2026年7月、Claude Code にて最上位モデル「Claude Fable 5」の提供条件が変更されました。当初、サブスクリプションプランで週次利用上限の50%まで利用可能でしたが、それを超えると従量課金となる旨の案内がありました。この提供条件は流動的であり、当初の期限が延長されるなどの動きもありましたが、根本的な「最上位モデルの無制限利用はできなくなった」という事実は変わりません。
+
+Fable 5 のAPI料金は、Opus 4.8 の2倍（入力 $10/MTok、出力 $50/MTok）であり、特に大量の出力を伴うタスクでは、サブスクリプション料金に加えて月額10万円以上の従量課金が発生する可能性があります。これは、AIエージェントに複数のタスクを任せるだけでも容易に到達する利用量であり、以前のように最上位モデルを常用すると、予期せぬ高額請求に繋がるリスクがあります。
+
+### 2. 「モデルルーティング」とは何か？
+
+「モデルルーティング」とは、タスクの難易度と失敗コストに応じて、AIモデルを適切に振り分ける考え方です。これは、組織において役職に応じた仕事の割り振りが自然に行われるのと同様に、AI利用においても「最も賢いモデルに全てのタスクを任せる」のではなく、コスト効率の良いモデルを適切に活用することを指します。
+
+Claude のモデルで考えると、以下のようなタスク分担が考えられます。
+
+*   **Fable 5**: アーキテクチャ設計、技術選定、難所の突破、高難度レビューなど、高度な判断と創造性が求められるタスク。
+*   **Opus 4.8**: 実装、テスト、カバレッジ改善、リファクタリングなど、設計書に基づいた作業や品質向上のためのタスク。サブスクリプション枠内であれば追加コストがかかりません。
+*   **Sonnet 5**: 軽めの実装や修正、ドキュメント作成、調査結果の整理など、比較的単純なタスク。
+*   **Haiku 4.5**: ファイル探索、コード検索、要約、定型作業など、最も低コストで高速に処理できるタスク。
+
+AIは自ら「このタスクは下位モデルで十分」とは言ってくれないため、開発者自身がモデルの使い分けを意識し、設計することが不可欠となります。
+
+### 3. Claude Code へのモデルルーティング導入方法
+
+Claude Code でモデルルーティングを導入するための具体的な方法が2つ紹介されています。
+
+**1. CLAUDE.md にルールを追記する（お手軽版）**
+
+プロジェクトの CLAUDE.md ファイルに、モデルルーティングに関するルールを追記します。これにより、AIに対して「昇格は提案にとどめ、降格は自動で委譲させる」といった指示を与えることができます。
+
+*   **昇格（上位モデルの利用提案）**: Fable 5 の利用を検討する価値がある場合に「このタスクは Fable の利用を検討する価値があります。理由 : ...」と提案し、最終的な判断はユーザーに委ねます。
+*   **降格（下位モデルへの委譲）**: 小さなバグ修正やドキュメント作成は Sonnet、ファイル探索やコード検索は Haiku に自動で委譲させます。
+
+**2. サブエージェント定義（本格版）**
+
+`.claude/agents/` ディレクトリに、モデル指定付きのサブエージェントを定義します。これにより、役割ごとに適切なモデルを固定し、メインの会話モデルに関わらず、軽作業は Sonnet、実装は Opus など、自動的に適切なモデルにタスクが振り分けられます。
+
+### 4. 「設計は Fable、実装は Opus」運用フロー
+
+具体的な運用フローとして、「課金される Fable の出番は短い設計フェーズに限定し、トークンを大量に消費する実装・テスト・手直しは追加コストのかからない Opus に任せる」という方法が提案されています。Fable で詳細な設計書を作成し、その設計書に基づいて Opus で実装を進めることで、Fable の恩恵を享受しつつ、コストを抑えることができます。
+
+### 5. 今後の展望
+
+Anthropic は Claude Fable 5 のサブスクリプションへの復活を目指しているとされていますが、提供条件が変更された状況下では、モデルルーティングの重要性は今後も変わらないと考えられます。サブスクリプションに戻ったとしても、利用上限の節約や応答速度の向上に貢献します。
+
+AIのコストは「使った瞬間に増える変動費」であり、エンジニアの腕の見せ所は「どのタスクをどのモデルに流すか」という設計能力になっていくでしょう。本記事では、Claude Code を例にモデルルーティングの導入方法を紹介しましたが、この考え方は将来的に様々なベンダーのAIモデルに応用できる普遍的なスキルとなります。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

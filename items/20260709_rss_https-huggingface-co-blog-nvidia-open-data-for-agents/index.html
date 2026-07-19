@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Data for Agents</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>Data for Agents</h1>
+<p><strong>Date:</strong> 2026-07-09</p>
+<p><strong>Source:</strong> rss / Hugging Face Blog</p>
+
+<p><a href="https://huggingface.co/blog/nvidia/open-data-for-agents">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">AIエージェントの開発は、現実世界の複雑さへの対応が困難なため、ベンチマークでの性能評価だけでは不十分です。エージェントが予期せぬエラーや未知のワークフローに対処できる能力は、ソフトウェアエンジニアリングのトレース、ツールの誤使用、多段階の推論、検索、安全性、ユーザーシミュレーション、ワークフロー実行、そして最終的には物理世界とのインタラクションなど、データに依存する問題の解決にかかっています。
+
+NVIDIA Nemotronは、このような課題に対応するため、オープンデータ製品を提供しています。最近のICML（International Conference on Machine Learning）では、145件の論文がNemotronモデルやデータセットを引用しており、その重要性が示されています。特に、合成データはNemotron-CCの事前学習データセットの強化や、Nemotron-CC-MATHにおける数学的推論能力の向上に活用されています。Nemotron Pretrainingは、一般、コード、数学、合成データを含む数兆トークン規模の広範なコレクションです。NVIDIAは、コミュニティとの共同学習を通じて、これらのアプリケーションの拡張を目指しています。
+
+モデルの重みだけでなく、データセット、キュレーション、トレーニング、評価方法も再現性に不可欠です。オープンデータは、エージェントの行動を検査可能にし、説明責任を果たす上で重要です。合成データは、この実現における鍵となります。
+
+多くの企業は、独自のワークフローや顧客パターンといった「秘密」によって成り立っています。合成データは、これらの機密情報を公開することなく、AIの有用性を高める手段を提供します。NVIDIAは、多様なAIエコシステムを育成し、企業の秘密を守りつつ、より豊かな共有データレイヤーの構築を目指しています。合成データは、企業が秘密を公開せずに貢献できる方法として注目されています。
+
+Nemotronのオープンデータには、10兆トークンを超える事前学習データと、数百万のポストトレーニングサンプルが含まれています。これらのデータを容易に探索するため、Nemotron Post-Training v3 Prompt Atlasが開発されました。これは、プロンプトサンプルをインタラクティブなマップで表示し、データセット、パイプライン、ドメイン、ツール使用状況などでフィルタリング・再編成できるツールです。これにより、開発者はコードアルゴリズム、安全性、数学、エージェント的行動などの領域を深く理解し、データキュレーションや評価、モデルの挙動理解に役立てることができます。
+
+エージェントは、サポートする人々を理解する必要があり、そのためには「データの質」が地域ごとに異なります。例えば、日本語や韓国語における敵対的なメッセージは、英語とは異なる丁寧さのレベルで表現されることがあり、地域固有の知識が必要です。Nemotron-Personasは、このような地域固有の合成ペルソナを生成することで、多様な人口集団を捉え、開発者がシステムが対象とするユーザー、言語、地域、職業を適切に反映しているかテストできるようにします。現在、10カ国をカバーし、24億人以上の人々を代表しています。
+
+合成データは、リアルなデータと統合されるべきですが、それ単体で全てを解決するわけではありません。リアルなワークフロー、人間のフィードバック、モデル生成トレース、シミュレーションユーザー、合成ラベルなどが組み合わさるため、「合成しきい値」という概念で、データがいつ「純粋なリアル」ではなくなるかを意識することが重要です。生成されたデータ、現実に基づいたデータ、レビューされたデータ、そしてテスト対象を文書化し、透明性を確保することが求められます。AIシステムが人工的な情報で訓練されるにつれて、それを検査し、文書化し、議論するための共通の習慣が必要になります。
+
+データの質は文脈によって意味が異なります。推論データにはより困難な問題と明確なトレース、ペルソナデータには分布の忠実性と地域レビュー、エージェントワークフローにはタスクの多様性、失敗の網羅性、回復パスが求められます。これらの分野はまだ定式化されていないため、オープンな手法が重要です。合成データは、単に例を増やすだけでなく、より良い質問を投げかけ、企業が秘密を明かさずに、政府がプライバシーを侵害せずに、研究者が許可を待たずに貢献できる機会を創出します。AIにおいて希少なのはトークンではなく、組織間の「信頼」であり、合成データはそれを構築するツールの一つです。
+
+NVIDIAは、オープンデータに関するウェビナーを開催し、Hugging FaceでNemotronデータコレクションを公開しています。また、NVIDIA Nemotronに関する最新情報は、NVIDIAニュースの購読や、LinkedIn、X、YouTube、DiscordのNemotronチャンネルでフォローすることで得られます。NemotronモデルはHugging Faceで、NIMマイクロサービスと開発者向けサンプルはbuild.nvidia.comでアクセス可能です。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

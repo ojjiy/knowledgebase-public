@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>『脅威ハンティングとは、脅威インテリジェンスとの違い』〜能動的な「狩り」がSOCの守備範囲を押し広げる〜</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>『脅威ハンティングとは、脅威インテリジェンスとの違い』〜能動的な「狩り」がSOCの守備範囲を押し広げる〜</h1>
+<p><strong>Date:</strong> 2026-07-04</p>
+<p><strong>Source:</strong> rss / Qiita Trend</p>
+
+<p><a href="https://qiita.com/suzukengo/items/d75131b0e3590afd76cb?utm_campaign=popular_items&amp;utm_medium=feed&amp;utm_source=popular_items">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">「脅威ハンティング」と「脅威インテリジェンス」は、サイバーセキュリティにおいて混同されやすい用語ですが、その目的、主体、アプローチの方向性は根本的に異なります。
+
+**脅威インテリジェンス（Threat Intelligence）**は、外部からの情報収集・分析が起点となり、「組織の外の脅威環境を理解し、何に備えるべきかを知ること」に重点を置きます。収集した情報は、セキュリティ戦略や検知ルールの設定に反映されます。
+
+一方、**脅威ハンティング（Threat Hunting）**は、組織のネットワークやエンドポイントに潜む未知の脅威を、アラートを待つことなく能動的に探索・排除するプロアクティブなプロセスです。アラートが出る前に潜伏している攻撃者を発見・排除することを目指し、「ハンターは獲物を待ち伏せするのではなく、自ら追い求める」というイメージです。
+
+両者の決定的な違いは以下の通りです。
+
+*   **主な目的**: 脅威インテリジェンスは脅威状況を「理解」し意思決定を支援するのに対し、脅威ハンティングは自組織内の潜伏脅威を「発見」して排除します。
+*   **活動の方向性**: 脅威インテリジェンスは「外→内」で外部情報を取り込むのに対し、脅威ハンティングは「内」のデータを能動的に調査します。
+*   **主な起点**: 脅威インテリジェンスは外部情報源やニュースなどが起点ですが、脅威ハンティングは仮説、異常検知、既存のIoC/IoAなどが起点となります。
+*   **自動化との関係**: 脅威インテリジェンスは自動化しやすい傾向がありますが、脅威ハンティングは人間の判断や仮説立案が核心となります。
+
+「脅威ハンティングは、脅威インテリジェンスの終了点から始まります」という関係性があり、脅威インテリジェンスで得られた知見を基に、脅威ハンティングで具体的なアクションに変換します。
+
+脅威ハンティングには、以下の3つのタイプがあります。
+
+1.  **構造化ハンティング**: 特定の攻撃者のTTP（戦術・技術・手順）やIoA（攻撃の指標）を起点に、仮説を立てて体系的に調査します。
+2.  **非構造化ハンティング**: アナリストの経験や直感を基に、異常（アノマリー）から調査を開始します。
+3.  **状況ハンティング**: リスクの高い特定の資産やアカウント、システムにフォーカスして、優先的に脅威を探索します。
+
+脅威ハンティングの実践プロセスは、「トリガー（仮説立案）」、「調査」、「解決」の3段階で進み、発見した知見を脅威インテリジェンス基盤に還流させるフィードバックループが重要です。
+
+また、脅威ハンティングではIoC（侵害の指標）に加え、**IoA（攻撃の指標）**も重要視されます。IoCが「侵害が起きた後の痕跡」であるのに対し、IoAは「攻撃が行われている行動のパターン」を指します。
+
+実践においては、EDR、SIEM、XDRといったツールが活用され、Sigmaルールなどの共通フォーマットが利用されます。
+
+脅威ハンティングを有効に機能させるには、SIEMやEDRなどの基盤が整備され、十分なログデータが存在していることが前提条件となります。組織の規模や成熟度に応じて、脅威インテリジェンスの活用から始め、段階的に脅威ハンティングを導入していくことが推奨されます。
+
+脅威インテリジェンスと脅威ハンティングは、どちらか一方だけでは高度な脅威に対する防御は完結しません。「脅威インテリジェンスで外の世界を知り、脅威ハンティングで内側を能動的に探索する」という両活動を車の両輪として機能させることが、サイバーセキュリティの守備範囲を広げる鍵となります。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

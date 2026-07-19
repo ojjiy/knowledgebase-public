@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>RynnWorld-4D: 4D Embodied World Models for Robotic Manipulation</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>RynnWorld-4D: 4D Embodied World Models for Robotic Manipulation</h1>
+<p><strong>Date:</strong> 2026-07-07</p>
+<p><strong>Source:</strong> paper / hf-papers</p>
+
+<p><a href="http://arxiv.org/abs/2607.06559v1">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body"># タイトル
+RynnWorld-4D: 4D Embodied World Models for Robotic Manipulation
+[View Paper](http://arxiv.org/abs/2607.06559v1)
+
+## 1. 問題意識：解決したい問題はなにか
+現在のロボットマニピュレーションは、オープンワールド（未知の環境）での応用において、単にシーンの外観を認識するだけでなく、相互作用によって3D構造がどのように変化するかを予測する必要があります。しかし、既存の2Dピクセルベースのビデオモデルは、2D投影の性質上、重要な空間関係を失ってしまい、正確な6自由度姿勢推定や奥行きを考慮したインタラクションが困難です。また、幾何学的な接地性に欠けるため、オブジェクトのスケールが変動したり、形状が物理的にありえない変化をしたりする一時的な不整合が生じ、ロバストなポリシー学習の妨げとなっています。そのため、2Dビデオから幾何学を統合した4Dシーン進化への、生成ワールドモデリングの移行は、具現化された知能の強固な基盤に向けた不可欠なステップです。
+
+## 2. 提案手法のアプローチ：どのようなアイデア・アプローチで問題を解決しようとしたか
+著者は、同期したRGB、深度、およびオプティカルフロー（RGB-DF）の組み合わせが、シーンの基盤となる4Dダイナミクスを捉える物理的に接地された表現を提供すると主張しています。このマルチモーダルな連携は、外観、幾何学的構造、一時的な動きを整合させ、ロボットシステムが要求する低レベルのエンドエフェクタアクションに大きく近づく表現空間を創出します。この洞察に基づき、RynnWorld-4Dという生成モデルを提案しています。これは、単一のRGB-D画像と言語指示から、統一された拡散プロセス内で、将来のRGBフレーム、深度マップ、およびオプティカルフローを共同生成します。この4Dワールドモデルは、クロスモーダルアテンションとフレームごとの3D RoPEを統合するトライブランチアーキテクチャを特徴とし、外観、幾何学、動きが一貫して進化することを保証します。さらに、RynnWorld-4D-Policyという逆動力学ヘッドを提案しており、これはRynnWorld-4Dの内部4D表現を単一のフォワードパスで消費し、高価なマルチステップのデノイジングを回避して、ロボットアクションをクローズドループで出力します。
+
+## 3. 成果：提案手法により、何が達成できたのか
+RynnWorld-4Dは、時間的かつ空間的に一貫した4D予測を生成できることを実験で示しました。さらに、RynnWorld-4D-Policyは、実世界の器用な両腕マニピュレーションタスクにおいて、最先端のパフォーマンスを達成しました。特に、空間的な精度と時間的な協調を要求するタスクで優れています。具体的には、6つの異なるタスクで評価され、成功率においてDiffusion Policy (DP) などの最先端ベースラインを上回りました。例えば、precision-orientedなタスクでは、DPを8.57%上回る65.71%の成功率を達成しました。また、RGB、深度、オプティカルフローの共同生成が、物理的な整合性とロバストなポリシー学習に不可欠であることを実験的に証明しました。
+
+## 4. 課題：本手法の限界・課題にはなにか。本文中で著者が言及しているものと、あなたが想定するもの
+### 著者が言及している課題：
+*   **計算オーバーヘッドとレイテンシ:** 4Dシーケンス生成は拡散デノイジングプロセスに依存するため、計算オーバーヘッドが発生します。現在の実装では、NVIDIA RTX 5090 GPUで約9Hzの実効制御周波数を達成していますが、超高周波制御にとってはレイテンシがボトルネックとなる可能性があります。
+*   **主に単眼視点への最適化:** モデルは主に単眼視点からのデータで最適化されており、マルチビューシステムや協調マルチロボットセットアップへの拡張は今後の研究課題です。
+
+### 想定される課題：
+*   **データセットのバイアス:** Rynn4DDataset 1.0は大規模ですが、それでも特定の種類のインタラクションやオブジェクトに偏りがある可能性があります。これにより、未知の環境への汎化能力に限界が生じるかもしれません。
+*   **言語指示の解釈能力:** 言語指示に基づいて4Dシーケンスを生成しますが、複雑な指示や曖昧な指示に対して、意図した通りの4Dダイナミクスを生成できるかは、更なる評価が必要です。
+*   **強化学習との統合:** 本手法は逆動力学ヘッドを提案していますが、より複雑なタスクや長期的な計画においては、強化学習など他の学習パラダイムとの統合や、それらを組み合わせたハイブリッドアプローチが有効である可能性があります。
+*   **リアルタイムデバッグの難しさ:** 4Dワールドモデルの内部状態は直接観測できないため、生成された4Dダイナミクスに予期せぬ不整合や非物理的な挙動が見られた場合に、その原因を特定しデバッグすることが困難である可能性があります。
+
+## 5. 技術詳細：提案手法の技術的な詳細について、できるだけ詳しく。数式やアルゴリズム、モデル構造なども可能な限り詳しく
+### 1. **提案する表現：RGB-DF (RGB, Depth, Optical Flow)**
+*   **目的:** 2Dピクセル動画の限界を克服し、幾何学的構造と時間的動きを明示的に捉える。
+*   **利点:**
+    *   深度情報により、各ピクセルが3D空間内の位置を持つ。
+    *   深度とオプティカルフローから、標準的なピンホールカメラモデルの下で、ピクセルごとの3Dシーンフローを逆投影できる。
+    *   RGBのみのシーケンスと比較して、幾何学と動きを明示化。
+    *   明示的な3Dボリュームや4Dガウス過程と比較して、2Dアラインメント形式を維持し、大規模ビデオ拡散モデルのスケーラビリティと豊富な生成事前知識を継承。
+
+### 2. **RynnWorld-4Dモデル構造**
+*   **ベースモデル:** Wan 2.2-TI2V-5B (ビデオ生成の拡散トランスフォーマー) を拡張。
+*   **アーキテクチャ:** **トライブランチトランスフォーマー**
+    *   各ブランチがRGB、深度、オプティカルフローのいずれかのモダリティを担当。
+    *   各ブランチは独立したトランスフォーマーを持つ。
+    *   **共有クロスアテンションキー/バリュー:** モダリティ間の意味論的な信号（言語指示）を共有するために、テキストクロスアテンションのKey/Value投影は全ブランチで共有。
+    *   **Joint Cross-Modal Attention (JA) モジュール:**
+        *   各モダリティの表現のクロスモーダル一貫性を強制。
+        *   トランスフォーマーブロックごとに（3ブロックごと）挿入され、全30層で10個のJAモジュールを構成。
+        *   各JAモジュールは、自身のモダリティのクエリ（Q）と、他のモダリティのキー（K）/バリュー（V）をアテンションする。
+        *   \(\mathbf{Q}_{l}^{m} = \text{RMSNorm}_q(\text{QProj}_{l}^{m}(\tilde{\mathbf{z}}_{l}^{m}))\)
+        *   \([\mathbf{K}_{l}^{m}, \mathbf{V}_{l}^{m}] = \text{KVProj}_{l}^{m}(\tilde{\mathbf{z}}_{l}^{m})\)
+        *   \(\mathbf{K}_{l}^{\text{cross}} = \text{concat}(\{\mathbf{K}_{l}^{j}\}_{j\neq m})\)
+        *   \(\mathbf{V}_{l}^{\text{cross}} = \text{concat}(\{\mathbf{V}_{l}^{j}\}_{j\neq m})\)
+        *   \(\hat{\mathbf{z}}_{l}^{m} = \mathbf{z}_{l}^{m} + \tanh(g_{l}^{m}) \cdot \text{CrossBranchAttn}(\mathbf{Q}_{l}^{m}, \mathbf{K}_{l}^{\text{cross}}, \mathbf{V}_{l}^{\text{cross}})\)
+        *   \(g_{l}^{m}\) は学習可能なゲート（\( \tanh \) を通して、0から1の範囲で調整）。
+        *   **3D RoPE (Rotary Positional Embeddings):** フレームごとの3D RoPEを適用し、空間位置情報をブランチ間で一貫して注入。
+        *   **フレームワイズマスク:** クロスモーダルアテンションが同じ時間フレーム内のトークンに限定されるようにする。
+*   **モダリティごとの特性:**
+    *   RGB: テクスチャ、外観。
+    *   深度: 空間幾何学。
+    *   オプティカルフロー: 動きの変位。
+*   **学習目標:** **フローマッチング**
+    *   モデリング対象：\(\mathcal{L}_{\text{total}} = \sum_{m\in\mathcal{M}} \lambda_m \mathbb{E}_{\mathbf{z}_{0}^{m},\boldsymbol{\epsilon}^{m},t,\mathbf{c}} \left[ \left\| \mathbf{v}_{\theta}^{m}(\mathbf{z}_{t}^{m},t,\mathbf{c})_{[1{:]} - (\boldsymbol{\epsilon}^{m} - \mathbf{z}_{0}^{m})_{[1{:]} \right\|_2^2 \right]\)
+    *   \(\mathbf{z}_{t}^{m} = (1-t)\mathbf{z}_{0}^{m} + t\boldsymbol{\epsilon}^{m}\) （ノイズの追加）
+    *   \(\mathbf{v}_{\theta}^{m}\) はモデル \(\theta\) でパラメータ化されたデノイザー。
+    *   \(\mathbf{z}_{0}^{m}\) はクリーンなデータ、\(\boldsymbol{\epsilon}^{m}\) はノイズ。
+    *   \(t \in [0, 1]\) はノイズレベル。
+    *   \(\mathbf{c}\) は条件（RGB-D画像とテキスト指示）。
+    *   \(\boldsymbol{\epsilon}^{\text{rgb}} = \boldsymbol{\epsilon}^{\text{depth}} = \boldsymbol{\epsilon}^{\text{flow}}\) ：3つのモダリティで単一のノイズサンプルを共有し、デノイジング軌跡を時間的に整合させる。
+
+### 3. **Rynn4DDataset 1.0**
+*   **内容:** 2億5440万フレーム以上の、自我中心的な人間とロボットのマニピュレーションビデオの大規模データセット。
+*   **ソース:** Epic-Kitchens, RoboNET, CMU-MOOC, OpenCV, Robotics Transformer 2 (RT-2) などのデータセットを組み合わせ。
+*   **アノテーション:** 高品質な疑似ラベル（深度、オプティカルフロー）を生成。
+    *   **言語説明:** 事前学習済みのビデオ言語モデル（例: Wan）を使用し、動画クリップの詳細な説明を生成。
+    *   **オプティカルフロー:** State-of-the-artのオプティカルフロー推定モデル（例: RAFT）を使用。
+    *   **深度:** 事前学習済みの深度推定モデル（例: MiDaS, DPT）を使用。
+
+### 4. **RynnWorld-4D-Policy**
+*   **目的:** RynnWorld-4Dの内部4D表現を利用して、ロボットアクションを直接生成する。
+*   **構造:** **逆動力学ヘッド**（インバースダイナミクスヘッド）。
+*   **機能:**
+    *   RynnWorld-4Dの内部4D表現（RGB、深度、フローの隠れ状態）を単一のフォワードパスで消費。
+    *   高価なマルチステップデノイジングを回避。
+    *   ロボットアクションをクローズドループで出力。
+*   **詳細:**
+    *   RynnWorld-4Dから抽出された特徴量を連結し、**Flow Former**（クエリベースのTransformer）に入力。
+    *   Flow Formerは、特徴量を圧縮し、時空間動態をカプセル化する予測トークンを生成。
+    *   これらのトークンは、**フローマッチングポリシーヘッド**に供給される。
+    *   推論時には、ODEソルバーを用いてアクションを生成（複数ステップ）。
+    *   アクションは「アクションチャンク」として生成され、実効的な高頻度制御を実現。
+
+### 5. **学習戦略：段階的トレーニング**
+1.  **Stage 1: Independent Branch Training (Disabling JA)**
+    *   3つのブランチ（RGB, Depth, Flow）を独立にトレーニング。
+    *   クロスモーダルアテンション（JA）は無効。
+    *   各モダリティが自身の分布に効果的に適応することを促進。
+2.  **Stage 2: Frozen Backbone Joint Attention**
+    *   バックボーンは凍結し、JAモジュールのみをトレーニング。
+    *   各モダリティの表現を維持しながら、クロスモーダル相互作用を学習。
+    *   **Branch Dropout**を導入し、各ステップでランダムに1つのモダリティの入力をドロップアウトさせ、他のモダリティからの再構築を強制。
+3.  **Stage 3: Full Model Fine-tuning**
+    *   モデル全体を解凍し、Rynn4DDataset 1.0全体でファインチューニング。
+    *   全てのモジュールが協力して、統一された4D表現を生成するように最適化。
+
+### 6. **3Dシーンフローの復元**
+*   **プロセス:**
+    1.  **深度とフローの逆投影:**
+        \(\mathbf{P}_{t}(u,v) = D_{t}(u,v) \cdot \mathbf{K}^{-1} \mathbf{p}_{t}\)
+        ここで、\(D_{t}(u,v)\) は深度マップ、\(\mathbf{K}\) はカメラ内部行列、\(\mathbf{p}_{t}=[u, v, 1]^T\) はピクセル座標。これにより2Dピクセルが3Dカメラ空間に展開され、メトリック3D点群 \(\mathcal{C}_{t}\) が生成される。
+    2.  **3Dシーンフローの計算:**
+        オプティカルフロー \(\mathbf{f}_{opt} = [\Delta u, \Delta v]^T\) を使用して、時間 \(t\) から \(t+1\) への3D点 \(\mathbf{P}_{t}\) の動き \(\mathbf{f}_{3D}\) を計算。
+        \(\mathbf{P}_{t+1} = D_{t+1}(u+\Delta u, v+\Delta v) \cdot \mathbf{K}^{-1} (\mathbf{p}_{t}+[\Delta u, \Delta v, 0]^T)\)
+        \(\mathbf{f}_{3D} = \mathbf{P}_{t+1} - \mathbf{P}_{t}\)
+        これにより、ピクセルごとのメトリック変位が表現される。
+*   **後処理:** 深度不連続部でのアーティファクトを抑制するため、深度勾配ベースのフィルタリングを適用し、結果の3D軌跡を鳥瞰図（BEV）に投影。
+
+## 6. この論文を140字以内のツイートで要約すると？
+ロボット操作向けに、RGB-Depth-Flowを同時生成する4Dワールドモデル「RynnWorld-4D」を提案。物理的に接地された4D表現で、ロボットは高精度な操作を実現。大規模データセット「Rynn4DDataset」も構築。#ロボット工学 #AI #ワールドモデル</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

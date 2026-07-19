@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Fable 5をトークン破産させずに使い倒す — オーケストレーターに徹させる運用</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>Fable 5をトークン破産させずに使い倒す — オーケストレーターに徹させる運用</h1>
+<p><strong>Date:</strong> 2026-07-04</p>
+<p><strong>Source:</strong> rss / Hatena Bookmark Technology Hotentry</p>
+
+<p><a href="https://zenn.dev/yui/articles/740da24e9ee419">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">Claude Fable 5は非常に高性能なモデルですが、トークン消費量が多いため、そのままメインモデルとして使用するとコストがかさみます。本記事では、Fable 5を「オーケストレーター」に徹させ、賢さを活かしつつトークン消費を抑える運用方法を提案しています。
+
+**オーケストレーション設定の重要性**
+
+Fable 5のような高度なモデルは、単純なタスクであっても内部で複数の工程に分解して処理します。例えば、「APIにレート制限を追加する」というタスクは、アルゴリズム決定、実装、テスト、エッジケース対応など、様々な作業に分解されます。設計といったコアな部分はFable 5に任せるべきですが、一度設計が決まってしまえば、実装やテストといった機械的な作業はより安価なモデルでも十分対応可能です。したがって、Fable 5は「考える」ことに特化させ、他のタスクはサブエージェントに委譲することが重要です。
+
+**役割分担の例**
+
+*   **Fable 5 (オーケストレーター):** 計画、分解、統合のみを担当。コードは書かない。
+*   **Opus (深い推論用サブエージェント):** 設計判断、複雑なデバッグ、レビューを担当。
+*   **Sonnet (機械的作業用サブエージェント):** 実装、ボイラープレートコード生成、テスト、雑務を担当。
+*   **Codex (別視点のシニアエンジニア):** 高リスクな判断に対するセカンドオピニオン。
+
+このように役割を細分化することで、Fable 5の出番を計画と統合に絞り、トークン消費を削減し、コンテキストをクリーンに保つことで判断のブレを防ぐことができます。
+
+**サブエージェントの設計とチーム構築**
+
+サブエージェントを効果的に機能させるには、以下の点が重要です。
+
+1.  **Descriptionの質:** サブエージェントのDescriptionは、オーケストレーターがタスクを正確に委譲するための鍵となります。曖昧なDescriptionでは、境界ケースでの委譲先がブレてしまい、期待通りの結果が得られません。
+2.  **プロンプトの設計:** 各サブエージェントは独自のコンテキストを持つため、作業前に「何を読み込むか」「何を出力するか」を明確に定義する必要があります。
+3.  **チーム設計:** 単純な「考える人」と「手を動かす人」の2体では不十分で、「スコープ切断」「設計」「実装」「検証」「出荷」といった実務に即したチーム設計が必要です。
+
+**ccteams CLIによるチーム構築の効率化**
+
+上記のようなチーム設計をゼロから行うのは手間がかかります。そこで、本記事では「ccteams」というCLIツールを紹介しています。これはClaude Codeのエージェントチームのパッケージマネージャーとして機能し、1コマンドで役割分担済みのサブエージェント一式（Description、システムプロンプト、ツール制限を含む）とオーケストレーションルールをプロジェクトに適用できます。
+
+ccteamsは、スタック別に様々なチーム（generalist, next-ts, go-api, python-fastapi, rails/django, debug, researchなど）を用意しており、自然言語でチームを選択・適用することも可能です。さらに、v0.1.5以降ではモデルもプリセットされており、.claude/agents/内のagentのmodel行を編集するだけで変更できます。
+
+**Codexの活用**
+
+OpenAIのCodexプラグインを導入することで、Codexを「作業者」としてチームに組み込むことができます。Codexは「レビュアー」ではなく「対等な相棒」として扱い、高リスクな判断においては、Opus系エージェントとCodexに並行して問題を解かせ、その結果を統合することで、設計判断の抜け漏れを効果的に潰すことができます。
+
+**指示の出し方**
+
+エージェントチーム適用後は、達成したいゴールを述べるだけでClaude Codeがタスクを自動で分解・委譲します。これにより、Fable 5は計画と統合に専念し、トークン消費を抑えながら高水準な判断を維持できます。
+
+**まとめ**
+
+Fable 5はトークン消費が多いため、実作業を任せるのではなく「考えること」に特化させるのが最もコストパフォーマンスが高い運用方法です。モデルの割り当てよりも、サブエージェントのチーム設計が重要であり、ccteams CLIを活用することで、このチーム設計を1コマンドで効率的に実装できます。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

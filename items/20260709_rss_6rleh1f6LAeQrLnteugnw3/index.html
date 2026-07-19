@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ECS Managed InstancesのGPU管理費値下げをPricing APIで確認してみた</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>ECS Managed InstancesのGPU管理費値下げをPricing APIで確認してみた</h1>
+<p><strong>Date:</strong> 2026-07-09</p>
+<p><strong>Source:</strong> rss / DevelopersIO</p>
+
+<p><a href="https://dev.classmethod.jp/articles/ecs-managed-instances-gpu-management-fee-reduction-pricing-api/">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">AWSのECS Managed InstancesにおけるGPUインスタンスの管理費が、2026年7月7日より大幅に値下げされました。Gシリーズ（g4dn, g5, g6, g6e等）では35%、Pシリーズ（p5等）では60%の管理費削減となります。
+
+本記事では、AWS Pricing APIを使用して、この値下げが実際のコストにどの程度影響するかを検証しています。Pricing APIの`get-products`コマンドで現行の管理費を、`list-price-lists`コマンドで過去の料金リストを取得し、値下げ前後の管理費を比較しました。その結果、Gシリーズは正確に35%、Pシリーズは正確に60%の削減率となり、公式発表と一致することが確認されました。
+
+しかし、ECS Managed Instancesの総コストは「EC2インスタンス料金 + 管理費」で構成されるため、EC2インスタンス料金を含めた合計コストでの実質的な削減率は、Gシリーズで約3.7〜3.8%、Pシリーズで約6.4%に留まることが分かりました。それでも、月額換算ではp5.48xlargeで約3,600ドル、g6e.xlargeでも約83ドルの削減となり、GPUインスタンスを常時稼働させているワークロードでは無視できない金額となります。
+
+また、管理費の対価として得られる付加価値についても検証されています。ECS Managed Instancesでは、Container InsightsによるGPUメトリクスの自動収集と、GPU Auto Repairによるハードウェア障害時のインスタンス自動置換といった機能が提供されます。特にContainer InsightsによるGPU割当状況のメトリクス自動収集は、追加のエージェントなしでCloudWatchで監視可能であり、今回の値下げによりECS Managed InstancesのGPU利用がより魅力的な選択肢になったと結論付けています。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

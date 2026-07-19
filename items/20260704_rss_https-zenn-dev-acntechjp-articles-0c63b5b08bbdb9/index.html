@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>すでに4800スター、Loop Engineeringとは — “自分の仕事はloopを書くこと”</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>すでに4800スター、Loop Engineeringとは — “自分の仕事はloopを書くこと”</h1>
+<p><strong>Date:</strong> 2026-07-04</p>
+<p><strong>Source:</strong> rss / Hatena Bookmark Programming</p>
+
+<p><a href="https://zenn.dev/acntechjp/articles/0c63b5b08bbdb9">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">Loop Engineeringは、AIエージェントへの指示を個別に行うことから、指示を継続的に実行するシステム自体を設計する役割への転換を指します。この概念は、AnthropicのClaude Code責任者であるBoris Cherny氏が「自分の仕事はloopを書くことだ」と発言したことから広まりました。
+
+従来の「Prompt Engineering」が個々の指示文の最適化に焦点を当てていたのに対し、「Loop Engineering」は、指示文だけでなく、エージェントに与える文脈全体（Context Engineering）、エージェントを動かす仕組み（Harness Engineering）、そしてその仕組みを時間軸で継続的に実行する「ループ」として設計する（Loop Engineering）へと、扱う対象の抽象度と解像度を高めていく考え方です。
+
+Loop Engineeringのコアとなるのは、AIエージェントに「何を指示するか」ではなく、「指示を出し続けるシステムを設計する」という役割の変化です。Cherny氏が例として挙げたClaude Codeの`/loop`コマンドでは、具体的な作業手順ではなく、目的（intent）と停止条件のみを定義し、AIが詳細を自律的に判断して実行します。
+
+Loop Engineeringは、以下の6つの主要な構成要素から成り立ちます。
+
+1.  **スケジューリング (Trigger)**: AIをいつ起動するかを決定する仕組み（例: cron、Claude Codeの`/schedule`や`/loop`）。
+2.  **ゴール条件 (Goal)**: 達成条件を満たすまでAIの実行を継続させる仕組み（例: `/goal`）。
+3.  **隔離ワークスペース (Isolation)**: 複数のAIエージェントの作業が干渉しないように、作業環境を分離する仕組み（例: git worktree）。
+4.  **検証者 (Verifier)**: AIの生成した結果を、別のAIやロジックで検証する仕組み。AI自身に自己検証させないことが重要です。
+5.  **永続メモリ (Memory)**: セッションを跨いでAIの学習内容や状態を引き継ぐ仕組み（例: CLAUDE.md、スキルファイル）。
+6.  **コネクタ (Connector)**: GitHubやSlackなどの外部システムと連携し、提案だけでなく実際に行動を実行する仕組み。
+
+この概念を実践するためのCLIツール群として、`cobusgreyling/loop-engineering`リポジトリが提供されています。`loop-init`（ループの雛形生成）、`loop-audit`（ループ設計の採点）、`loop-cost`（トークンコスト見積もり）、`loop-sync`（状態の乖離検知）といったツールが含まれます。
+
+ただし、Loop Engineeringには注意点もあります。サブエージェントの多用や長時間実行によるトークンコストの増大、検証責任が依然として人間側にあること、監視されていないループによる失敗の蓄積、そしてAIが生成したコードを理解しないことによる「理解負債」の急速な増加といったリスクが指摘されています。Addy Osmani氏は、Loop Engineeringを理解して使う場合と、理解を放棄して使う場合では結果が大きく異なると警告しています。
+
+なお、Anthropic社は「Loop Engineering」という言葉自体を公式に採用しているわけではありませんが、「agentic loop」という概念はClaude CodeやAgent SDKの設計思想として元々組み込まれており、Cherny氏の発言はこれを外部向けに平易な言葉で表現したものと理解できます。SNS上では、Anthropic社員の発言として伝聞される情報には、出典が不明確なものもあるため、Boris Cherny氏本人の発言や公式文書との信頼度を区別して扱うことが推奨されています。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

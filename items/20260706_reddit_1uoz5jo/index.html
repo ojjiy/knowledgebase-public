@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TRACE: open-source hierarchical memory for LLM agents, 82.5% on MemoryAgentBench’s EventQA using gpt-oss-20B [P]</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>TRACE: open-source hierarchical memory for LLM agents, 82.5% on MemoryAgentBench’s EventQA using gpt-oss-20B [P]</h1>
+<p><strong>Date:</strong> 2026-07-06</p>
+<p><strong>Source:</strong> reddit / MachineLearning</p>
+
+<p><a href="https://www.reddit.com/r/MachineLearning/comments/1uoz5jo/trace_opensource_hierarchical_memory_for_llm/">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">1.  **ポストの内容説明**
+
+    このRedditのポストは、「TRACE」という名前の新しいオープンソースの階層型メモリシステムについて紹介しています。これは、大規模言語モデル（LLM）エージェントが会話の履歴を管理するためのものです。
+
+    *   **TRACEの仕組み**: 従来のRAG（Retrieval-Augmented Generation）のように会話履歴を平坦なチャンク（断片）として扱うのではなく、TRACEは会話履歴をトピックツリーとして整理します。このツリーは、各トピックのブランチ（枝）と要約で構成されており、より構造化された記憶管理を可能にします。
+    *   **ベンチマーク**: TRACEの性能は、MemoryAgentBench（ICLR 2026で発表されたベンチマーク）のEventQAタスクで評価されました。EventQAは、正確な情報検索を目的としたタスクです。
+    *   **性能比較**:
+        *   TRACE (gpt-oss-20Bを使用): F1スコア 82.5%
+        *   TRACE (gpt-oss-120Bを使用): F1スコア 83.8%
+        *   Mem0 (GPT-4o-miniを使用、論文公式値): F1スコア 37.5%
+        *   MemGPT/Letta (GPT-4o-miniを使用、論文公式値): F1スコア 26.2%
+    *   **使用モデルと制約**: ポストの投稿者は、TRACEの性能を評価するために、オープンウェイトモデルであるgpt-ossをローカルで実行しました。そのため、GPT-4o-miniを使用するMem0やMemGPT/Lettaとの直接比較（同じバックボーンでの比較）ではないことを明記しています。これは、OpenAIのAPIトークンに費用がかかるため、実行できなかったと説明しています。
+    *   **Mem0の実行試行**: 投稿者は、公平性のためにMem0をgpt-oss-20Bで直接実行しようとしましたが、Mem0の事実抽出ステップで必要とされる厳密なJSON出力が、gpt-ossの応答では解析できないという問題に直面しました（これはgpt-oss固有の問題ではなく、GeminiやMistralでも発生する既知の問題とのことです）。Lettaについては、サーバーのセットアップが必要なため実行を見送ったと述べています。
+    *   **詳細情報**: Methodology（方法論）の詳細を確認したい人のために、GitHubリポジトリに完全なJSONログが提供されています。
+
+    要するに、このポストは、LLMエージェントの記憶管理を改善する新しいシステム「TRACE」を発表し、その優れた性能と、既存のシステム（Mem0、MemGPT/Letta）との比較結果を提示しています。
+
+2.  **興味深いコメント**
+
+    提供された情報にはコメントが含まれていないため、このポストに対する興味深いコメントを具体的に指摘することはできません。
+
+    もしコメントがあれば、その中から以下のような点に注目して「興味深い」と判断する可能性があります。
+
+    *   **技術的な深掘り**: TRACEのアーキテクチャや、階層型メモリの利点について、さらに技術的な詳細を尋ねるコメント。
+    *   **比較の妥当性への言及**: 投稿者が述べた「apples-to-applesではない」という点について、さらに議論を深めるコメント。例えば、「もし同じバックボーンで比較できた場合、どれくらいの差が出ると予想されますか？」といった質問。
+    *   **実用化への期待**: TRACEが実際のLLMエージェント開発でどのように役立つか、具体的なユースケースや応用について議論するコメント。
+    *   **パフォーマンスへの質問**: 実行速度やメモリ使用量など、パフォーマンスに関する質問。
+    *   **改善提案**: TRACEの機能や性能をさらに向上させるための提案。
+    *   **類似研究との比較**: 類似のメモリシステムや階層型アプローチを持つ他の研究との比較について言及するコメント。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

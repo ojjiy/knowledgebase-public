@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>neue cc - AI時代におけるC#でのBenchmarkDotNetを使った最速コードの書き方</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>neue cc - AI時代におけるC#でのBenchmarkDotNetを使った最速コードの書き方</h1>
+<p><strong>Date:</strong> 2026-07-06</p>
+<p><strong>Source:</strong> rss / Hatena Bookmark Programming</p>
+
+<p><a href="https://neue.cc/2026/07/06_highperformancecode_with_ai.html">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">AI時代において、C#でBenchmarkDotNetを活用し、最速のコードを生成するためには、従来のMeanとAllocatedだけでなく、JIT DisassemblerやBranchMispredictions/Opなどの詳細な解析情報をAIに提供することが重要である。これらの情報は、コードのパフォーマンスボトルネックを特定し、AIが「なぜそのコードが速くなったのか」を理解する上で不可欠であり、推測に頼るのではなく、より的確な改善ループを促進する。
+
+記事では、AIにプロンプトを与えてベンチマークコードを生成させる方法が示されている。例えば、配列の合計を計算する`Sum`関数のベンチマークでは、AIは単純なforループから始まり、SIMD命令を活用した高速化、さらにはAVX-512命令を用いた最適化まで、複数ラウンドにわたるコード生成と改善を行った。この過程で、`DisassemblyDiagnoser`を用いて生成された機械語を解析し、欠陥を発見・修正することで、人間が手動で行うよりも遥かに効率的かつ高度な最適化を実現した。最終的には、`.NET 11`の`TensorPrimitive.Sum`が圧倒的な速さを示し、AIによる最適化の方向性の正しさが証明された。
+
+次に、MessagePackの`WriteInt32`機能のパフォーマンス改善について、分岐予測の診断情報を活用する例が紹介されている。従来のif-else連鎖による実装では、分岐予測のミスがパフォーマンス低下の原因となることが示された。AIは、この課題に対して、分岐を排除した「ブランチレスコード」を複数提案し、特に`Branchless2`という実装は、テーブルルックアップとビット演算を駆使することで、大幅な高速化を達成した。このコードは、int値のレンジに応じて必要なバイト数を効率的に計算し、可変長エンコーディングにおけるパフォーマンスを劇的に改善している。AIの指示生成能力や、ハードウェアカウンターの活用、さらにはベンチマークのテストケースの網羅性といった点も、AI時代におけるコーディングの重要性として強調されている。
+
+AIは、関数単位のような比較的小さな領域においては、人間の能力を遥かに超えるコード生成能力を示している。しかし、アプリケーション全体やライブラリ全体をAIに任せることには、コンテキストの限界や複雑性、そして「感性」の領域での問題が残る。コードへのオーナーシップが失われることへの懸念も示唆されている。OSSライブラリのようなコード中心の世界では、AI生成コードの受け入れは慎重に行うべきであり、モチベーションの維持や、コードへの愛着といった人間的な側面も考慮する必要がある。
+
+総じて、AIは最速コード生成のための強力な武器となり得るが、その能力を最大限に引き出すには、詳細な解析情報を提供し、AIとの協調作業を通じて、人間が最終的な判断を下すことが重要である。AI時代においても、コードへの深い理解と、プロダクトへのオーナーシップを持つ姿勢は不可欠であると結論づけている。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

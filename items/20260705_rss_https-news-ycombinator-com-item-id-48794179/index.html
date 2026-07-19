@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Phosh 0.56.0</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>Phosh 0.56.0</h1>
+<p><strong>Date:</strong> 2026-07-05</p>
+<p><strong>Source:</strong> rss / Hacker News Front Page</p>
+
+<p><a href="https://phosh.mobi/releases/rel-0.56.0/">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">Phosh 0.56.0 がリリースされました。このバージョンでは、モバイルデバイス向けのグラフィカルシェルである Phosh 本体に加えて、Wayland コンポジタの phoc、オンスクリーンキーボードの stevia、モバイル設定アプリの phosh-mobile-settings、Phosh の紹介ツールの phosh-tour、xdg-desktop-portal-phosh、Phosh のセッションサービスを提供する phosh-session-services、そして Phosh の初回起動ヘルパーである phosh-first-boot など、多くのコンポーネントで変更が行われました。
+
+**Phosh 0.56.0 の主な変更点:**
+
+*   **UI の改善:**
+    *   トップバーに新しいロードメータープラグインが追加されました（デモあり）。
+    *   GNOME Software を使用しない場合、アプリグリッドからアプリケーションを非表示にできるようになりました。これは、postmarketOS Duranium や Phosh&#39;s BengalOS のようなイミュータブルディストリビューションで、ベースイメージに含まれるアプリケーションを非表示にするのに役立ちます。
+    *   Syncthing プラグインをモバイル設定から有効化できるようになりました。
+    *   アプリがアンインストールできない場合に通知が表示されるようになりました。
+    *   Firefox などの起動が遅いアプリに対して、フォークしたアプリを追跡することで起動時間を長く確保し、遅延通知を回避するようになりました。
+    *   アプリが誤ってアプリ ID を引用している場合、それを解除して起動の遅延問題を修正しました。
+    *   出力変更時に Bluetooth クイック設定が無効になるのを回避しました。
+    *   タブレットでロック画面を回転できるようになりました。
+    *   カトアウト設定の変更が即座に適用されるようになりました。
+    *   ロック画面のスタイルが改善されました。
+    *   クラッシュやメモリリークの修正が行われました。
+*   **その他の改善:**
+    *   多数のバグ修正が行われました。
+    *   国際化（i18n）の更新が行われ、多くの言語で UI 翻訳が更新されました。
+
+**phoc 0.56.0 の主な変更点:**
+
+*   wlroots 0.20.1 にアップデートされました。
+*   内部のクリーンアップと修正が行われました。
+*   新しいプロトコル xdg-toplevel-tag-v1 のサポートが追加されました。
+*   国際化（i18n）の更新が行われました。
+
+**stevia 0.56.0 の主な変更点:**
+
+*   アプリごとにデフォルトレイアウトを指定できるようになりました。これにより、Emacs では常にターミナルレイアウトを使用するといった設定が可能になります。
+*   ショートカットバーの修飾キー以外のキーでキーリピートが有効になりました。
+*   ショートカットバーにカーソルキーがデフォルトで追加されました。
+*   モバイル設定でレイアウト情報がロケールとフレーバーを含むようになり、より詳細な情報を提供できるようになりました。
+*   ペースト処理のために ext-data-control-v1 に切り替わりました。
+*   いくつかのレイアウトが更新され、不足していたキーが追加されました。
+*   国際化（i18n）の更新が行われました。
+
+**phosh-mobile-settings 0.56.0 の主な変更点:**
+
+*   **新しいパネル:**
+    *   os-updates パネルが追加され、イミュータブルディストリビューションでアトミックな OS アップデートが可能になりました。現在、systemd-sysupdate をバックエンドとしてサポートしており、サービスが利用可能な場合にのみ有効になります。
+*   **改善されたパネル:**
+    *   sidebar が AdwSidebar を使用するように改善され、conf-tweaks が独自のセクションに移動しました。
+    *   about パネルにイメージバージョンが追加され、BengalOS のようなイミュータブルイメージで最新の状態か確認するのに役立ちます。
+    *   overview パネルで非表示にしたアプリを再有効化できるようになりました。これは、イミュータブルディストリビューションでアンインストールできないアプリがある場合に便利です。
+    *   convergence パネルで NexDock 2025 のサポートが追加されました。
+    *   Librem 5 パネルが検索で見つかるように修正されました。
+    *   libpms ライブラリで、現在のロケールに一致する OSK レイアウトを追加できるようになりました。
+*   **その他:**
+    *   多数のバグ修正が行われました。
+    *   国際化（i18n）の更新が行われ、多くの言語で UI 翻訳が更新されました。
+
+**その他のコンポーネントの変更点:**
+
+*   **phosh-tour 0.56.0:** 翻訳の更新が行われました。
+*   **xdg-desktop-portal-phosh 0.56.0:** ブックマーク処理のバグ修正と、ダイアログがモバイルで最大化されるように修正されました。
+*   **phosh-session-services 0.2.0:** 新しい OS アップデートチェックサービスが追加され、サービスがセッションにプルされるようになりました。
+*   **phosh-first-boot 0.1.0:** ロケールによって OSK レイアウトが自動的に選択されるようになり、libpms-rs 0.0.3 が使用されるようになりました。
+
+**ライブラリの変更点:**
+
+*   **gmobilie 0.7.2:** public headers への libexecdir のリークを防ぎ、テストですべてのデバイスがレンダリングされるようにしました。
+*   **libpms-rs 0.0.3:** phosh-mobile-settings 0.56~rc1 へのバインディングが更新されました。
+*   **pfs 0.1.1:** ブックマークの初期状態同期のバグが修正されました。
+
+**依存関係:**
+
+このリリースは、callaudiod 0.1.10、Calls 50.0、cellbroadcastd 0.0.3、feedbackd 0.8.9、feedbackd-device-themes 0.8.9、GNOME 50、iio-sensor-proxy 3.9、mmsd-tng 2.6.4、ModemManager 1.25.95、wlroots 0.20.1、wys 0.1.12 に基づいています。
+
+**関連ソフトウェア:**
+
+Phosh と一緒に使用されることが多いソフトウェアとして、phrog 0.53.0（Phosh UI を使用したモバイルデバイス用 greeter）、phosh-antispam 3.5（迷惑電話防止）、vvmd 1.1（Visual Voice Mail Daemon）、vvmplayer 2.6（Visual Voice Mail Player）、livi 0.4.0（モバイル用シンプルなビデオプレイヤー）、chatty 0.8.9（SMS および MMS 用メッセージングアプリ）、libfeedback-rs 0.0.1（libfeedback の Rust バインディング）が挙げられています。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

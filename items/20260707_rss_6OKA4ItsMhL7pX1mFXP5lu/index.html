@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Claude Sonnet 4.6からSonnet 5 移行後にBedrock Converse APIでエラーが出たので調査してみた</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>Claude Sonnet 4.6からSonnet 5 移行後にBedrock Converse APIでエラーが出たので調査してみた</h1>
+<p><strong>Date:</strong> 2026-07-07</p>
+<p><strong>Source:</strong> rss / DevelopersIO</p>
+
+<p><a href="https://dev.classmethod.jp/articles/bedrock-sonnet-converse-api-error/">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">Amazon BedrockでClaude Sonnet 4.6からSonnet 5へ移行した際に、Converse APIで`KeyError: &#39;text&#39;`が発生するという問題について調査した結果をまとめた記事です。
+
+**問題の発生経緯:**
+
+*   Sonnet 4.6までは問題なく動作していたPythonコードが、Sonnet 5に移行したところ、`KeyError: &#39;text&#39;`というエラーが頻繁に発生するようになった。
+*   エラーは毎回発生するわけではなく、数回に一度の頻度で発生していた。
+
+**原因:**
+
+1.  **サンプリングパラメータの非対応:** Sonnet 5では、`temperature`、`top_p`、`top_k`といったサンプリングパラメータが非対応となり、これらを設定すると400エラーが発生する。
+2.  **レスポンス形式の変更（`content`配列の構造変化）:** Sonnet 5では、`adaptive thinking`（思考モード）が常にオン（無効化不可）になり、モデルが推論を必要と判断した場合、その思考過程を示す`reasoningContent`が`content`配列の先頭（`content[0]`）に含まれることがある。
+    *   Sonnet 4.6では`content[0]`が常にテキスト（`text`）であったため、`content[0][&#34;text&#34;]`で直接テキストを取得できていた。
+    *   しかし、Sonnet 5では`content[0]`が`reasoningContent`になるケースがあり、この場合に`content[0][&#34;text&#34;]`でアクセスしようとすると`KeyError`が発生する。
+
+**Converse APIの`content`配列に含まれる可能性のあるブロック:**
+
+*   `text`: テキスト応答
+*   `reasoningContent`: 推論過程（Chain of Thought）
+*   `toolUse`: ツール呼び出しリクエスト
+*   `toolResult`: ツール実行結果
+*   `image`: 画像
+*   `document`: ドキュメント
+*   `citationsContent`: 引用付きテキスト
+*   `guardContent`: ガードレール評価用
+
+**修正方針:**
+
+*   `content[0]`で決め打ちでテキストを取得するのではなく、`content`配列をループ処理し、`text`キーを持つブロックのみを抽出する。
+*   `reasoningContent`や`toolUse`などの他のブロックは無視する。
+*   `text`ブロックが一つも見つからなかった場合に、サイレント不具合を防ぐため例外を投げるようにする。
+
+**修正後のコード:**
+
+`extract_text_from_converse_response`という関数を作成し、`content`配列をループして`text`ブロックを安全に取得できるように実装。
+
+**まとめ:**
+
+Sonnet 4.6からSonnet 5への移行では、以下の点に注意が必要です。
+
+*   `temperature`、`top_p`、`top_k`は`inferenceConfig`から削除する。
+*   `content[0]`でテキストを決め打ちで取得せず、`content`配列をループして`text`ブロックを安全に抽出する実装に変更する。
+
+公式ドキュメントのサンプルコードも簡易的なものであるため、Sonnet 5以降のモデルを使用する際は、`content`ブロックの構造を考慮した実装が推奨されます。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

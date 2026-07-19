@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>DGX Spark 1 台をパートナーにする LLM 構成を考えてみた | DevelopersIO</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>DGX Spark 1 台をパートナーにする LLM 構成を考えてみた | DevelopersIO</h1>
+<p><strong>Date:</strong> 2026-07-06</p>
+<p><strong>Source:</strong> rss / Hatena Bookmark LLM</p>
+
+<p><a href="https://dev.classmethod.jp/articles/dgx-spark-single-node-best-llm-qwen3-6-27b-nvfp4/">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">NVIDIAが公開した、Qwen3.6-27BをNVFP4で量子化したモデル「nvidia/Qwen3.6-27B-NVFP4」をDGX Spark 1台で運用する際のモデル構成について、速度、日本語性能、他の用途との共存可能性という観点から詳細な検証が行われています。
+
+**主な発見と結論:**
+
+*   **生成速度はActiveパラメータの量で決まる:** DGX SparkでのLLMの生成速度は、1トークン生成時に読み込む重みの量、すなわちActiveパラメータの少なさでほぼ決まります。
+*   **MoEモデルが有利:** Activeパラメータが少ないMixture of Experts (MoE) モデルは、素の速度で優位に立ちます。Nemotron Nano 30B-A3B (Active 3B) は単一セッションで61 tok/sを記録し、頭一つ抜けました。
+*   **Qwen3.6-27B-NVFP4の「速さ」はMTP有効時:** Qwen3.6-27B-NVFP4は、単体（MTP無効）では12 tok/sですが、同梱されている投機デコード用モジュール「MTP」を有効にすると2.4倍の29 tok/sに向上します。公開されているベンチマークの「速い」という評価は、このMTP有効時の数値でした。
+*   **Gemmaと外部drafterの組み合わせが最速クラス:** Gemma 4 26B-A4Bは、Googleが公式配布する外部drafterと組み合わせることで、単体30 tok/sから62 tok/sへと大幅に高速化し、Nemotron Nanoと並ぶ最速クラスとなりました。ただし、この組み合わせには比較的新しいvLLMが必要です。
+*   **指示遵守ではGemma 4が優位:** 短い文字数での説明を求めるといった指示遵守の面では、Gemma 4が他のモデルを圧倒しました。
+*   **メモリ使用量と共存:** DGX Spark 1台をLLM専用ではなく、RAGのベクトルDBや画像生成（ComfyUI）などと共有する場合、モデルのフットプリント（メモリ使用量）が重要になります。小型モデル（Ornith, Gemma, Qwen, Nano）はGPUメモリ使用率を抑えても速度低下が少なく、RAGやComfyUI（Flux）との共存が現実的です。一方、Nemotron Super 120B-A12Bのような大型モデルは、メモリをほぼ専有するため、共存は厳しくなります。
+*   **vLLMのビルドによる影響:** vLLMのビルドバージョンによって、NVFP4モデルの挙動や速度が大きく変化することが確認されました。同梱MTPは安定版v0.24.0で健全に動作する一方、最新nightlyビルドでは壊れた出力をする可能性があります。
+
+**用途別のおすすめモデル:**
+
+*   **エージェント常駐、対話:** Nemotron Nano 30B-A3B（手軽に高速）
+*   **短く正確な応答、ツール呼び出し:** Gemma 4 26B-A4B（指示遵守、外部drafterで高速化）
+*   **高密度な知能、重い推論:** Qwen3.6-27B-NVFP4 + MTP（バランス型、画像入力対応）
+*   **最高レベルの精度:** Nemotron Super 120B-A12B（メモリ専有大）
+*   **日本語の文章品質最優先:** Ornith 1.0 9B
+
+**総括:**
+
+DGX Spark 1台をパートナーとしてLLMを運用する場合、単一の「最適解」はなく、目的によって最適なモデルが異なります。Qwen3.6-27B-NVFP4は、賢さ、速度（MTP有効時）、画像入力対応といったバランスの良さから、筆者の個人用途での有力候補となっています。速度を重視するならNemotron Nano、指示遵守を求めるならGemma 4が強力な選択肢となります。vLLMのビルドバージョンと、MTP使用時の出力内容を必ず確認することが重要です。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

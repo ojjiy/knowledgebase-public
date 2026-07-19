@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Native-speed vLLM transformers modeling backend</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>Native-speed vLLM transformers modeling backend</h1>
+<p><strong>Date:</strong> 2026-07-08</p>
+<p><strong>Source:</strong> rss / Hugging Face Blog</p>
+
+<p><a href="https://huggingface.co/blog/native-speed-vllm-transformers-backend">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">vLLMのトランスフォーマーモデリングバックエンドがネイティブ速度で利用可能になり、多くのLLMアーキテクチャにおいて、カスタムvLLM実装と同等またはそれ以上の推論速度を実現しました。これにより、モデル作者は追加のコード移植なしに、自身のトランスフォーマー実装をそのまま利用して超高速なvLLM推論が可能になります。
+
+この機能は、Hugging FaceのトランスフォーマーライブラリとvLLMを統合することで実現されました。トランスフォーマーがモデリングコードを提供し、vLLMが連続バッチ処理やカスタムアテンションカーネルなどの最適化された推論技術を提供します。
+
+今回のアップデートでは、動的な推論特化型レイヤー融合が実行時に適用され、カスタムコード実装と同等の速度を達成できるようになりました。これは、torch.fxによる静的解析で最適化可能なパターンを検出し、ast（抽象構文木）を用いてソースコードを書き換えることで実現されています。これにより、Expert Parallelization（EP）やTensor Parallelism（TP）、Pipeline Parallelism（PP）のための最適化されたvLLMカーネルが利用可能になります。
+
+この変更により、モデル作者は追加の最適化コードを書く必要なく、ネイティブvLLM実装と同等の推論速度を得ることができます。さらに、トランスフォーマー実装は学習にも使用できるため、学習、評価、RLロールアウトで同じモデルコードを共有できます。
+
+利用するには、vLLMパッケージをアップグレードし、`--model-impl transformers` フラグを指定するだけで、既存のサービング設定を変更することなく利用できます。ただし、線形アテンションを使用するモデルや、Hubリポジトリでカスタムコードが管理されているモデルは、現時点ではサポートされていません。
+
+今後、この最適化手法の詳細について、さらに詳しいブログ記事が公開される予定です。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

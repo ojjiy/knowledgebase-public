@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Jul 8, 2026AlignmentAn off switch for dual-use knowledge in AI models</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>Jul 8, 2026AlignmentAn off switch for dual-use knowledge in AI models</h1>
+<p><strong>Date:</strong> 2026-07-08</p>
+<p><strong>Source:</strong> rss / Anthropic Research</p>
+
+<p><a href="https://www.anthropic.com/research/off-switch-dual-use">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">AE StudioとAnthropicの共同研究により、AIモデルにおけるデュアルユース（善悪両方に利用可能な）知識への「オフスイッチ」となる可能性を秘めた新しい技術「GRAM（Gradient-Routed Auxiliary Modules）」が開発されました。
+
+ frontier AIモデルは大量の知識を蓄積しますが、その中にはサイバーセキュリティやウイルス学のように、有益にも有害にも利用できるデュアルユース知識が含まれます。既存の安全性対策は、モデルが有害な要求を拒否するように訓練したり、入力・出力をフィルタリングしたりするものですが、モデル自体が持つ知識を変えるわけではないため、悪意のある攻撃者によって回避される可能性があります。
+
+これまでの研究では、訓練データから特定のデュアルユース情報をフィルタリングしたり、モデルの重みの一部にデュアルユース知識を隔離したりする方法が試みられてきました。しかし、フィルタリングは「鈍い道具」であり、特定の能力を持ったモデルを作るには、それぞれ個別のモデルを訓練する必要があり、特に大規模な frontier モデルではコストがかさみます。
+
+GRAMは、単一のモデルを訓練するだけで、複数の「フィルタリングされた」モデルと同等の効果を得ることを目指しています。GRAMでは、Transformerアーキテクチャの各層に、デュアルユース知識のカテゴリごとに分割された補助的なモジュール（ニューロンのグループ）が追加されます。訓練時、モデルが一般的なテキストに触れる際は通常通り学習しますが、デュアルユースのテキストに触れた場合は、そのカテゴリに対応するモジュールのみが学習し、それ以外の汎用的な重みは一時的に固定されます。これにより、デュアルユース知識はネットワーク全体に広がるのではなく、特定のモジュールに蓄積されます。訓練後、このモジュールは削除することでその知識を無効化したり、必要な場合はそのまま保持したりできます。
+
+実験では、子供向けの物語のデータセット、ウェブテキスト、コード、科学論文などが混在したデータセット、そして7つの異なるモデルサイズでGRAMの効果が検証されました。その結果、GRAMは特定のデュアルユース知識を効果的に隔離し、モジュールを削除することでその知識をほぼ完全に除去できることが示されました。さらに驚くべきことに、この知識の除去はモデルの汎用的な性能を低下させませんでした。攻撃者が除去された知識を復元しようとする試みに対しても、GRAMはデータフィルタリングと同等の耐性を示しました。
+
+GRAMはまだ初期段階の研究であり、frontier スケールでのテストや実際のプロダクション環境での適用はされていません。また、一部のデュアルユース能力は汎用知識と不可分に結びついている可能性など、依然として課題も残されています。しかし、GRAMは、AIモデルにおけるデュアルユース知識へのアクセス制御をより堅牢にするための有望なアプローチとして期待されています。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>GitHubの公開IssueだけでAIに非公開リポジトリの情報を吐き出させる脆弱性「GitLost」が報告される</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>GitHubの公開IssueだけでAIに非公開リポジトリの情報を吐き出させる脆弱性「GitLost」が報告される</h1>
+<p><strong>Date:</strong> 2026-07-09</p>
+<p><strong>Source:</strong> rss / Hatena Bookmark Technology Hotentry</p>
+
+<p><a href="https://gigazine.net/news/20260709-gitlost/">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">GitHubの公開リポジトリに投稿されたIssueを利用して、AIエージェントに非公開リポジトリの情報を漏洩させる脆弱性「GitLost」が報告されました。この脆弱性は、AIエージェントが入力された文章を指示として誤解してしまう「間接プロンプトインジェクション」という攻撃手法に基づいています。
+
+攻撃者は、組織の公開リポジトリに一見自然なIssueを作成し、その本文に悪意のある命令を紛れ込ませます。これにより、GitHub Agentic Workflowsで設定されたAIエージェントが、組織内の非公開リポジトリのREADME.mdなどの内容を取得し、その情報を公開Issueのコメント欄に投稿してしまう可能性があります。
+
+この攻撃は、攻撃者が対象リポジトリへの認証情報やアクセス権を持っていなくても成立する可能性があり、組織の機密情報漏洩につながる恐れがあります。GitHub Agentic Workflowsには防御策が用意されていますが、特定のキーワードの追加などによって、これらの防御策が意図通りに機能しなくなる場合があることが確認されています。
+
+セキュリティ企業Noma Labsは、この脆弱性がAIエージェントにおける「間接プロンプトインジェクション」という、ウェブアプリケーションにおける「SQLインジェクション」に匹敵する、システム全体に共通する問題であると指摘しています。
+
+対策として、ユーザーが制御できる文章を信頼できる命令として扱わないこと、AIエージェントの権限を必要最小限にすること、AIエージェントが公開の場へ投稿できる内容を制限すること、AIエージェントへ渡す前にユーザー入力を無害化することなどが推奨されています。特に、複数のリポジトリを横断して読み取れるエージェントは、攻撃対象として価値が高いため、権限設計の見直しが重要とされています。
+
+Noma Labsはこの脆弱性をGitHubに報告済みであり、詳細はGitHubが把握した上で公開されています。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Rewriting Bun in Rust | Bun Blog</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>Rewriting Bun in Rust | Bun Blog</h1>
+<p><strong>Date:</strong> 2026-07-09</p>
+<p><strong>Source:</strong> rss / Hatena Bookmark Programming</p>
+
+<p><a href="https://bun.com/blog/bun-in-rust">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">BunというJavaScriptランタイムが、ZigからRustへ書き直されました。この移行は、Zigでの開発中に発生していたメモリリークやクラッシュといった安定性の問題に対処するために行われました。
+
+**変更の背景:**
+
+*   Bunは当初、JavaScript、TypeScript、CSSのトランスパイラ、ミニファイア、バンドラー、npm互換パッケージマネージャー、Jestライクなテストランナー、Node.js API互換機能など、非常に広範な機能を備えていました。
+*   Zigでの開発は、低レベルの制御とパフォーマンスに魅力を感じて開始されましたが、JavaScriptのようなガベージコレクション言語と、手動メモリ管理を行うZigとの組み合わせが、多くの安定性問題（メモリリーク、use-after-free、double-freeなど）の原因となっていました。
+*   これらの問題に対処するために、Address Sanitizerの導入、テストスイートでのASan実行、Fuzzingなどが行われていましたが、根本的な解決には至りませんでした。
+*   Rustは、RAII（Resource Acquisition Is Initialization）とDropトレイトによる自動的なメモリ管理、およびコンパイラによる厳格な借用チェッカーにより、これらのメモリ関連のバグをコンパイル時に検出できるため、Bunの安定性向上に貢献すると期待されました。
+
+**Rustへの移行プロセス:**
+
+*   完全な書き直しは、Bunの巨大なコードベース（Zigで535,496行）を考えると、数人のエンジニアが1年かけても困難であり、その間、バグ修正や新機能開発が滞るリスクがありました。
+*   そこで、AnthropicのClaude CodeというAIモデルを利用した、自動化された機械的ポート（ZigコードをRustコードに変換）というアプローチが取られました。
+*   このプロセスでは、まずZigのパターンとRustのパターンをマッピングするガイド（PORTING.md）と、ライフタイムの定義（LIFETIMES.tsv）が作成されました。
+*   次に、Claude Codeが約50の動的なワークフローを11日間実行し、ZigコードをRustコードに変換し、コンパイルエラーを修正し、テストスイートをパスするように進められました。
+*   この自動化されたプロセスでは、コード生成を担当するAIと、バグを見つけるための「敵対的レビューア」AIを分けることで、コードの品質を維持しました。
+*   約11日間で6,778コミット、110億トークン（API料金換算で約16.5万ドル）が費やされ、最終的にBun v1.4.0としてRust版がリリースされました。
+
+**Rustへの移行による改善点:**
+
+*   **安定性の向上:** メモリリークやクラッシュといった根本的な問題が、Rustのコンパイラとメモリ管理により大幅に削減されました。
+*   **メモリ使用量の削減:** Zigの`defer`に比べてRustの`Drop`トレイトによる自動的なクリーンアップは、メモリリークを防ぎ、特にin-processでの`Bun.build()`のような繰り返しの操作におけるメモリ使用量を大幅に削減しました。
+*   **バイナリサイズの縮小:** Zigの`comptime`の多用によるバイナリサイズの増加が解消され、Rustのリンカ最適化などにより、全体としてバイナリサイズが約20%縮小しました。
+*   **スタック領域使用量の削減:** RustのLLVM IRコード生成によるスタック空間の再利用により、再帰的なパーサーなどのスタック使用量が削減されました。
+*   **パフォーマンスの向上:** C/C++とのクロス言語リンクタイム最適化などにより、HTTPスループットやアプリケーションのビルド時間などで2%〜5%のパフォーマンス向上が見られました。
+*   **デバッグの容易さ:** コンパイラが多くのバグを検知してくれるため、デバッグ作業が効率化されました。
+*   **保守性の向上:** Rustの厳格な型システムとメモリ管理は、コードベースの保守性を向上させると期待されています。
+
+**残る課題と今後の展望:**
+
+*   Rustへの移行後も、BunはJavaScriptCoreなどのC/C++ライブラリに依存しているため、`unsafe`ブロックは依然として存在します。しかし、徐々にIdiomatic Rustへとリファクタリングしていく予定です。
+*   移行に伴い、19件の既知の回帰（レグレッション）が確認されましたが、これらは修正済みです。
+*   Bun v1.4.0では、v1.3.14で報告されていた128個のバグが修正されています。
+*   Rustへの移行後も、継続的なセキュリティレビューやカバレッジガイド付きファジングが行われており、Bunの安定性とセキュリティはさらに強化されていく見込みです。
+
+このRustへの書き換えは、AIを大規模なソフトウェア開発に活用する最先端の事例として注目されています。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

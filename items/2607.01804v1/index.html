@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>VLA-Corrector: Lightweight Detect-and-Correct Inference for Adaptive Action Horizon</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>VLA-Corrector: Lightweight Detect-and-Correct Inference for Adaptive Action Horizon</h1>
+<p><strong>Date:</strong> 2026-07-02</p>
+<p><strong>Source:</strong> paper / hf-papers</p>
+
+<p><a href="http://arxiv.org/abs/2607.01804v1">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body"># タイトル
+VLA-Corrector: Lightweight Detect-and-Correct Inference for Adaptive Action Horizon
+[View Paper](http://arxiv.org/abs/2607.01804v1)
+
+## 1. 問題意識：解決したい問題はなにか
+Vision-Language-Action (VLA) モデルは、ロボット知能において大きな進歩を遂げていますが、その応用には課題があります。特に、生成モデルを用いたVLAポリシーは、ポリシーの呼び出し頻度を減らし、時間的な一貫性を保つために「アクションチャンキング」という機構を採用しています。これは、固定された「アクションホライズン」内で、複数の将来のアクションを一度に予測し、それをオープンループで実行する方式です。しかし、この「予測して盲目的に実行する」というパラダイムは、閉ループの反応性を犠牲にします。物理的な相互作用が複雑な状況では、たとえ小さな摂動であっても、オープンループの「死角」で急速に増幅し、エラーが連鎖して最終的にタスクの失敗につながる可能性があります。この、静的なアクションホライズンがもたらす「実行の堅牢性」と「ポリシー呼び出し頻度」のトレードオフを解決し、よりロバストで効率的なロボット制御を実現したいという問題意識があります。
+
+## 2. 提案手法のアプローチ：どのようなアイデア・アプローチで問題を解決しようとしたか
+この問題を解決するために、VLA-Correctorという軽量な「検出・修正（detect-and-correct）」推論フレームワークを提案しています。この手法は、既存のアクションチャンク化されたVLAポリシーのバックボーン（基礎となるモデル）を変更することなく、推論時に軽量なモジュールを追加することで機能します。
+
+主なアプローチは以下の2点です。
+
+1.  **Latent-space Vision Monitor (LVM) による実行ドリフトの検出:**
+    *   軽量なLVMモジュールを導入し、ポリシーが予測する視覚特徴の進化と、実際に観測される視覚特徴の進化を継続的に比較します。
+    *   これにより、オープンループ実行中に視覚的なダイナミクスのずれ（ドリフト）をオンラインで検出します。
+    *   この検出メカニズムは、イベントトリガー式のアダプティブなアクションホライズンを自然に誘導します。
+
+2.  **Online Gradient Guidance (OGG) による修正的再計画:**
+    *   LVMが持続的なずれを検出した場合、システムは「トランケーションイベント」をトリガーします。これは、残りの古くなったアクションを破棄し、修正的な再計画を呼び出すことを意味します。
+    *   単純な再計画ではなく、OGGは、予測された視覚ダイナミクスと観測された視覚ダイナミクスの間の不一致を利用して、修正的な勾配を注入します。
+    *   これにより、ロボットを意図した軌道に積極的に誘導し、単に再推論が自然に回復することを期待するのではなく、より確実な回復を目指します。
+
+これらのメカニズムの組み合わせにより、VLA-Correctorは、現在のチャンクが信頼できる間は長期ホライズンでの実行を維持し、実行がドリフトし始めたら短期ホライズンでの修正的再計画を呼び出す、イベントトリガー式のアダプティブなアクションホライズンを実現します。
+
+## 3. 成果：提案手法により、何が達成できたのか
+VLA-Correctorの提案により、以下の成果が達成されました。
+
+*   **実行の堅牢性の向上:**
+    *   固定されたアクションホライズンにおける、エラーの連鎖によるタスク失敗を大幅に軽減します。
+    *   特に、長期間にわたる、接触が多い物理的な操作タスクにおいて、その有効性が示されています。
+    *   シミュレーション（MetaWorld, LIBERO）および実世界（AgileX PiPER 6-DoF arm）の実験で、成功率が顕著に向上しました。例えば、MetaWorldでは平均成功率が15.65ポイント向上しました。
+*   **パフォーマンスと効率のトレードオフの緩和:**
+    *   静的なアクションホライズンでは、成功率を上げるためにホライズンを短くするとポリシー呼び出し頻度が増加し、効率が低下するというジレンマがありました。VLA-Correctorは、このトレードオフを緩和し、成功率を向上させつつ、ポリシー呼び出し頻度を維持または削減することに成功しました。
+    *   **成功率あたりのポリシー呼び出し効率 (Success-per-call efficiency)** が向上しました。これは、各ポリシー呼び出しがより効果的にタスク完了に貢献することを意味します。例えば、SmolVLAでホライズン10の場合、成功率が61.90%から73.00%に向上し、ポリシー呼び出し回数は19.27から15.64に減少しました。
+*   **アダプティブなアクションホライズン:**
+    *   固定されたアクションホライズンではなく、実行状況に応じて動的にホライズンが変化する「アダプティブなアクションホライズン」を実現しました。タスクが順調に進んでいるときは長いホライズンで効率を保ち、ドリフトが発生した際には短いホライズンで修正的な再計画を行います。
+*   **汎用性と統合の容易さ:**
+    *   既存のVLAモデルのバックボーンを変更したり、再学習したりすることなく、推論時に統合できます。これにより、様々なVLAモデルに容易に適用可能です。
+*   **データ効率:**
+    *   外部のコレクターモジュールは、局所的な視覚ダイナミクスの整合性を学習するだけでよいため、比較的数据効率よく学習できます。少量のデモンストレーションデータでも効果を発揮します。
+
+## 4. 課題：本手法の限界・課題にはなにか。本文中で著者が言及しているものと、あなたが想定するもの
+### 本文中で著者が言及している課題:
+*   **リカバリーの限界:**
+    *   リカバリーは、一度の補正的再計画に依存しています。もしターゲットオブジェクトや設置場所がロボットの到達範囲を超えて移動されたり、グリッパーが既に不利な姿勢に入っていたりする場合、単一の補正的再計画で回復できるとは限りません。
+    *   タイトなアライメントタスクでは、6自由度アームが力覚フィードバックなしでは、接触ジオメトリ、摩擦、またはわずかな高さの違いにより失敗する可能性があります。
+*   **視覚的曖昧さ:**
+    *   グリッパーによる部分的な隠蔽や、オブジェクトとターゲット領域のコントラストの低さなど、視覚的な曖昧さが原因で失敗が発生する可能性があります。
+*   **バックボーンモデルの能力への依存:**
+    *   OGGは、凍結されたVLAアクションの先行モデル（prior）に依存しています。これは、次の生成をより良い修正方向へ導くことができますが、バックボーンモデルが表現できない回復動作を生成することはできません。
+*   **OGGの計算コスト:**
+    *   OGGは、オンラインでの勾配計算を伴うため、特にリカバリーイベントが発生した場合、推論時間（ウォールクロックタイム）が増加します。これは、すべてのポリシー呼び出しではなく、イベントトリガー式ですが、計算オーバーヘッドとなります。
+
+### あなたが想定する課題:
+*   **LVMの感度と誤検出:**
+    *   LVMは視覚ダイナミクスのずれを検出しますが、環境の急激な変化（照明の変化、予期せぬノイズなど）や、タスクとは無関係な視覚的ノイズによって誤ってドリフトを検出してしまう可能性があります。これにより、不必要なトランケーションが発生し、効率が低下する可能性があります。
+    *   逆に、非常に微妙なドリフトや、タスクの進行に直結しない視覚的な変化をLVMが検出しきれない場合、エラーが蓄積してから検出される可能性があります。
+*   **OGGの最適化:**
+    *   OGGの勾配注入の強さ（$\eta$）や、ターゲットとする修正方向の設計によっては、リカバリーが不安定になったり、逆に望ましくない軌道に誘導されたりする可能性があります。このハイパーパラメータの調整は、タスクや環境に依存する可能性があります。
+*   **状態空間の離散化・高次元化への対応:**
+    *   VLAモデルの入力となる視覚情報や、出力となるアクションが非常に高次元であったり、離散的な要素を含んだりする場合、LVMによる視覚特徴の比較やOGGによる勾配誘導の有効性が低下する可能性があります。
+*   **長期的なエラー蓄積の完全な防止:**
+    *   「検出・修正」は、エラーが許容範囲内で検出された場合には有効ですが、極端に長期間にわたる、あるいは非常に急速なエラーの蓄積に対しては、一度の修正では追いつかない可能性があります。
+*   **RL (強化学習) との連携:**
+    *   本手法は、既存の（学習済みの）VLAポリシーを前提としています。もし、ポリシー自体がよりロバストな回復能力を持つように強化学習で学習する場合、VLA-Correctorがその学習プロセスや最終的なポリシーの性能にどのような影響を与えるかは、さらなる研究が必要かもしれません。
+
+## 5. 技術詳細：提案手法の技術的な詳細について、できるだけ詳しく。数式やアルゴリズム、モデル構造なども可能な限り詳しく
+VLA-Correctorは、既存のVLAポリシーと統合され、推論時に「検出」と「修正」の機能を追加します。
+
+### VLAポリシーの標準的な実行フロー
+まず、標準的なアクションチャンク化されたVLAポリシーの実行フローを理解することが重要です。
+
+1.  **観測とエンコーディング:** 現在の観測 $o_t$ (画像など) をVLAモデルの視覚エンコーダ $\mathcal{E}$ でエンコードし、潜在表現 $Z_t^{\mathrm{real}} = \mathcal{E}(o_t)$ を得ます。
+2.  **アクション生成:** 言語指示 $l$ と視覚潜在表現 $Z_t^{\mathrm{real}}$ を条件として、VLAポリシー $\pi_{\theta}$ がアクションチャンク $A_t = [a_t, a_{t+1}, \dots, a_{t+C-1}]$ を生成します。ここで $C$ はアクションホライズンです。
+3.  **アクション実行:** 生成されたアクションチャンクのうち、最初の1つ $a_t$ がコントローラーによって実行されます。
+4.  **オープンループ実行:** $a_t$ の実行後、次の制御ステップ $t+1$ に進みますが、ポリシーは再クエリされず、アクションチャンクの残りの部分（$a_{t+1}, \dots, a_{t+C-1}$）が、あたかも時間通りに実行されるかのように扱われます。この期間を「オープンループ実行」と呼びます。
+5.  **ポリシー再クエリ:** アクションホライズン $C$ ステップ後（または何らかのイベントで）、ポリシーは再度 $Z_{t+C}^{\mathrm{real}}$ を条件として新しいアクションチャンクを生成します。
+
+このフローの「オープンループ実行」期間が、VLA-Correctorが解決しようとする「死角」となります。
+
+### VLA-Correctorの構成要素とアルゴリズム
+
+VLA-Correctorは、主に以下の3つのコンポーネントとメカニズムで構成されます。
+
+1.  **Latent-space Vision Monitor (LVM) - 視覚ダイナミクスのオンライン検出**
+    *   **目的:** 実行中の視覚的なずれ（ドリフト）をリアルタイムで検出すること。
+    *   **モデル:** 軽量な外部モジュール $M_{\phi}$ です。これは、通常、多層パーセプトロン（MLP）で実装されます。
+    *   **学習:**
+        *   VLAポリシー $\pi_{\theta}$ が学習・凍結された後、その視覚エンコーダ $\mathcal{E}$ を使用して、デモンストレーション軌道から視覚潜在表現 $Z_t^{\mathrm{real}}, Z_{t+k}^{\mathrm{real}}$ を抽出します。
+        *   実際の視覚潜在表現の短期的な変化 $\Delta Z_{t+k}^{*} = Z_{t+k}^{\mathrm{real}} - Z_t^{\mathrm{real}}$ をターゲットとします。これは、実行されたアクション $a_t$ による期待される変化です。
+        *   コレクターモジュール $M_{\phi}$ は、現在の視覚潜在表現 $Z_t^{\mathrm{real}}$ と実行されたアクション $a_t$ を入力として、**残差視覚潜在ダイナミクス** $\Delta \hat{Z}_{t+k} = M_{\phi}(Z_t^{\mathrm{real}}, a_t)$ を予測するように学習されます。
+        *   **学習目標:** 残差の大きさの一致と方向の一貫性を組み合わせます。
+            ```python
+            #Pseudo-code for corrector training loss
+            residual_actual = Z_target_k_real - Z_current_real
+            residual_predicted = M_phi(Z_current_real, action_t)
+            loss_corr = ||residual_predicted - residual_actual||_2^2  # Magnitude matching
+            loss_corr += beta * (1 - cosine_similarity(residual_predicted, residual_actual)) # Directional consistency
+            ```
+            ここで $\beta$ はバランスを取るハイパーパラメータです。このモジュールは、静的なシーンの内容を抑制し、タスク関連のダイナミクスに焦点を当てるように学習されます。
+    *   **オンラインでの使用:**
+        *   実行時、直前の視覚潜在表現 $Z_t^{\mathrm{real}}$ と実行されたアクション $a_t$ を用いて、LVM $M_{\phi}$ が期待される短期的な視覚潜在残差 $\Delta Z_{t+k}^{\mathrm{exp}} = M_{\phi}(Z_t^{\mathrm{real}}, a_t)$ を予測します。
+        *   同時に、現在のステップ $t$ と次のステップ $t+k$ の実際の観測から得られた視覚潜在表現 $Z_t^{\mathrm{real}}, Z_{t+k}^{\mathrm{real}}$ を用いて、実際の視覚潜在残差 $\Delta Z_{t+k}^{\mathrm{real}} = Z_{t+k}^{\mathrm{real}} - Z_t^{\mathrm{real}}$ を計算します。
+        *   LVMは、予測された残差と実際の残差の間の不一致を測定します。一般的に、コサイン類似度の逆数（または1 - コサイン類似度）が使用されます。
+            ```python
+            # Pseudo-code for inconsistency score calculation
+            expected_residual = M_phi(Z_current_real, executed_action)
+            actual_residual = Z_next_real - Z_current_real
+            inconsistency_score = 1 - cosine_similarity(expected_residual, actual_residual)
+            ```
+        *   このスコア $E_t$ は、視覚ダイナミクスのずれの度合いを示します。
+
+2.  **Event-Triggered Truncation - イベントトリガーによるトランケーション**
+    *   **目的:** LVMが検出した持続的なずれを基に、古くなったアクションチャンクを破棄するタイミングを決定すること。
+    *   **メカニズム:**
+        *   連続する数ステップの不一致スコア $E_t$ のスライディングウィンドウ $\mathbf{E}_W$ を維持します。
+        *   このウィンドウのメディアン ($M_e$) と、メディアン絶対偏差 (MAD) を計算し、動的な閾値 $T_{\mathrm{on}}$ と $T_{\mathrm{off}}$ を設定します。MADは外れ値に強いロバストな統計量です。
+            ```python
+            # Pseudo-code for dynamic thresholds
+            E_window = [E_{t-w+1}, ..., E_t]
+            M_e = median(E_window)
+            MAD = median(|E_i - M_e| for E_i in E_window)
+            T_on = M_e + lambda_on * MAD
+            T_off = M_e + lambda_off * MAD  # lambda_on &gt; lambda_off for hysteresis
+            ```
+        *   不一致スコア $E_t$ が $T_{\mathrm{on}}$ を上回り、それが指定された連続ステップ数（例: 3ステップ）続いた場合に、トランケーションイベントがトリガーされます。
+        *   トランケーションイベントが発生すると、現在の実行キューにある残りのアクションは破棄され、次のポリシー呼び出しは「修正モード」で実行されます。
+    *   **アダプティブホライズン:** トランケーションにより、実行されたアクション数に応じて、実質的なアクションホライズンが短縮されます。これは、タスクの進捗状況に応じてホライズンが動的に調整されることを意味します。
+
+3.  **Online Gradient Guidance (OGG) - 修正的再計画**
+    *   **目的:** トランケーション後、新しいアクションチャンクを生成する際に、ドリフトした状態からの回復を効果的に誘導すること。
+    *   **メカニズム:**
+        *   トランケーションイベントが発生した後、次に行われる単一のポリシー呼び出しにOGGが適用されます。
+        *   まず、VLAポリシー $\pi_{\theta}$ は、通常の（あるいはそれに近い）状態から新しいアクションチャンク $A^{\tau}$ を生成しようとします。この際、観測された視覚ダイナミクスとの不一致を考慮します。
+        *   OGGは、**期待される残差** $\Delta Z_{\mathrm{exp}}$（LVMが予測したもの）と、**実際の残差** $\Delta Z_{\mathrm{dev}}$（トランケーション直前の状態からの実際の変化）の差分、すなわち**補正方向** $\Delta Z_{\mathrm{corr}} = \Delta Z_{\mathrm{exp}} - \Delta Z_{\mathrm{dev}}$ を計算します。
+            ```python
+            # Pseudo-code for corrective direction
+            # Z_t_minus_k_real: visual latent at the last stable step
+            # Z_t_real: visual latent at the current step (before truncation)
+            # expected_residual_at_t_minus_k = M_phi(Z_t_minus_k_real, action_at_t_minus_k)
+            # actual_residual_at_t = Z_t_real - Z_t_minus_k_real
+            # corrective_direction = expected_residual_at_t_minus_k - actual_residual_at_t
+            ```
+        *   生成されたアクションの潜在的効果 $\Delta \hat{Z}_{\mathrm{act}} = M_{\phi}(Z_t^{\mathrm{real}}, \hat{a}_t)$ が、この補正方向 $\Delta Z_{\mathrm{corr}}$ に沿うように、生成プロセス（例: フローマッチングの速度場 $v_{\tau}$）に勾配 $\nabla_{v_{\tau}}\mathcal{L}_{\mathrm{OGG}}$ を注入します。
+            ```python
+            # Pseudo-code for OGG guidance
+            predicted_action_effect = M_phi(Z_current_real, generated_action_t)
+            loss_OGG = 1 - cosine_similarity(predicted_action_effect, corrective_direction)
+            # Modify velocity field based on OGG loss gradient
+            guided_velocity = current_velocity - eta * gradient(loss_OGG, current_velocity)
+            new_action_chunk = generate_action_from_guided_velocity(...)
+            ```
+        *   これにより、生成されるアクションは、単に過去の経験から再生成されるだけでなく、現在のドリフト状態から回復するための、より積極的な誘導を受けます。
+
+### モデル構造とパラメータ
+*   **LVM (Latent-space Vision Monitor) / Corrector Module:**
+    *   入力: 現在の視覚潜在表現 $Z_t^{\mathrm{real}}$ (例: 512次元) と実行されたアクション $a_t$ (例: 6次元)。
+    *   構造: 基本的にはMLPです。具体的には、アクションを線形層で埋め込み、それを視覚潜在表現と連結し、残差ブロックのスタックに入力します。
+    *   例: 4層の隠れ層、幅は1024程度。
+    *   パラメータ数: 約38M〜42Mパラメータ。これは「軽量」と見なされます。
+*   **VLA Backbone:**
+    *   既存のVLAモデル（例: SmolVLA, X-VLA, LeRobotベースのもの）が使用されます。これらのモデルは、通常、Transformerベースのエンコーダ・デコーダ構造や、拡散モデル、フローマッチングなどの生成モデルを含みます。
+*   **統合:** VLA-Correctorは、VLAバックボーンの視覚エンコーダ $\mathcal{E}$ や、アクション生成モジュール $\pi_{\theta}$ の一部（例えば、フローマッチングの速度場生成部分）と連携します。LVMはバックボーンの外部で、凍結されたバックボーンの視覚特徴を読み取って動作します。
+
+### アルゴリズムの全体像
+```python
+# VLA-Corrector Inference Loop
+current_time = 0
+while not task_complete:
+    # 1. Observation and Encoding
+    observation = get_observation(current_time)
+    Z_current_real = VLA_visual_encoder(observation)
+
+    # 2. Action Generation (Policy Call)
+    # If it&#39;s a corrective replan, use OGG
+    if needs_corrective_replan:
+        action_chunk = VLA_policy.generate_action_with_OGG(Z_current_real, language_instruction, last_stable_latent, last_stable_action_resid)
+        needs_corrective_replan = False # Reset for the next steps
+    else:
+        action_chunk = VLA_policy.generate_action(Z_current_real, language_instruction)
+        
+    # Store current state for potential OGG calculation later
+    Z_last_stable_real = Z_current_real
+    # If action_chunk contains a_t, then a_t is the executed action from the previous step
+    # This part is simplified, actual execution requires tracking executed actions from chunk
+
+    # 3. Action Execution
+    executed_action = action_chunk[0] # First action in the chunk
+    execute_action(executed_action)
+
+    # 4. LVM Monitoring (in parallel with execution)
+    # Predict expected residual for the next step
+    predicted_residual = LVM_corrector(Z_current_real, executed_action)
+
+    # Get next observation and encode it
+    next_observation = get_observation(current_time + 1)
+    Z_next_real = VLA_visual_encoder(next_observation)
+
+    # Calculate actual residual
+    actual_residual = Z_next_real - Z_current_real
+
+    # Calculate inconsistency score
+    inconsistency_score = 1 - cosine_similarity(predicted_residual, actual_residual)
+    
+    # 5. Event Triggering (Truncation)
+    update_inconsistency_window(inconsistency_score)
+    if is_deviation_persistent(inconsistency_score_window):
+        print(&#34;Persistent deviation detected. Triggering truncation.&#34;)
+        # Discard remaining actions in the current chunk
+        discard_remaining_actions_in_chunk() 
+        # Prepare for corrective replanning
+        needs_corrective_replan = True
+        # Store state for OGG calculation
+        # (This implies storing Z_t and Z_{t-k} and executed actions up to last stable step)
+        # The paper details use Z_{t-k} and Z_t to calculate corrective direction for the *next* replan
+        # For simplicity here, let&#39;s assume we store what&#39;s needed for OGG based on paper&#39;s description
+        # This might involve storing latent states from several steps back
+
+    current_time += 1
+
+```
+
+###  OGGのための状態管理の詳細 (論文より抜粋)
+OGGの補正方向 $\Delta Z_{\mathrm{corr}}$ を計算するためには、トランケーションが発生した時点 $t$ の直前の安定した状態 $t-k$、およびトランケーション直前の状態 $t$ の視覚潜在表現 ($Z_{t-k}^{\mathrm{real}}, Z_t^{\mathrm{real}}$) が必要になります。また、それらの間の実際の軌跡 ($\Delta Z_{\mathrm{dev}} = Z_t^{\mathrm{real}} - Z_{t-k}^{\mathrm{real}}$) と、その期間で実行されたアクションからの期待される軌跡 ($\Delta Z_{\mathrm{exp}} = M_{\phi}(Z_{t-k}^{\mathrm{real}}, a_{t-k})$) も必要です。これらは、LVMがオンラインで計算した値を利用します。OGGは、この補正方向を、生成されるアクションの潜在効果 $\Delta \hat{Z}_{\mathrm{act}}$ ができるだけ近づくように、損失関数 $\mathcal{L}_{\mathrm{OGG}}$ を通して導きます。
+
+## 6. この論文を140字以内のツイートで要約すると？
+VLAロボット制御の「予測→実行」の弱点（エラー蓄積）を克服！軽量「VLA-Corrector」が、視覚ドリフトを検出し（LVM）、古くなった計画を破棄。さらに、次回の行動計画を効果的に修正（OGG）し、アダプティブな（状況に応じた）行動ホライズンを実現。堅牢性と効率を両立！</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

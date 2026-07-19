@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SQL Indexing 用 AI エージェントスキル集</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>SQL Indexing 用 AI エージェントスキル集</h1>
+<p><strong>Date:</strong> 2026-07-07</p>
+<p><strong>Source:</strong> rss / Qiita Trend</p>
+
+<p><a href="https://qiita.com/TOMOSIA-HieuNT/items/6cf51ac079b9bfad2155?utm_campaign=popular_items&amp;utm_medium=feed&amp;utm_source=popular_items">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">本記事は、SQLインデックスを効率的に設計・運用するためのAIエージェントスキル集として、MySQL/InnoDBに焦点を当てた4つの主要スキルを解説しています。
+
+**1. 複合インデックス設計:**
+*   **Leftmost prefixルール:** インデックスの最初の列から順番にクエリ条件で使用される場合に、インデックスが効果的に機能します。
+*   **列の順序:** 等価条件（equality）を先に、範囲条件（range）やソート順（sort）を後に配置することが推奨されます。
+*   **ソート順:** クエリのORDER BY句とインデックスのソート順を一致させることで、ソート処理のオーバーヘッドを削減できます。
+*   **複合インデックス vs 単一列インデックス:** 多くの場合、複合インデックスの方が単一列インデックスを複数使用するよりも効率的です。
+*   **選択性:** カーディナリティ（一意な値の数）が高い列を先に配置することが有効ですが、クエリパターンと頻度の方が重要視されるべきです。
+*   **GROUP BY:** GROUP BY句の列がインデックスのプレフィックスと一致すると、ソート処理を回避できる場合があります。
+*   **1つのインデックスで複数クエリに対応:** クエリのパターンを考慮し、複数のクエリで利用できる複合インデックスを設計することが可能です。
+*   **InnoDBセカンダリインデックス:** 主キーを保持しており、インデックス定義に主キーを含めなくてもカバリングインデックスとして機能する場合があります。
+
+**2. カバリングインデックス:**
+*   **カバリングインデックスとは:** クエリに必要な全ての列をインデックスが含んでいる状態を指し、テーブルへのアクセス（テーブルルックアップ）を回避してパフォーマンスを向上させます。EXPLAINの結果で「Using index」と表示されます。
+*   **InnoDBの暗黙のカバリング:** セカンダリインデックスは主キーを保持しているため、主キー列を別途インデックスに含める必要がない場合があります。
+*   **ICP (Index Condition Pushdown):** インデックスでフィルタリングを行いますが、テーブルルックアップが必要な場合です。
+*   **EXPLAINのシグナル:** 「Using index」はカバリングインデックス、「Using index condition」はICPを示し、「Using index」でない場合はカバリングができていないことを意味します。
+*   **使用すべきとき・避けるべきとき:** 広いテーブルから少数の列を高頻度で取得する場合に有効ですが、書き込みが多いテーブルや広い結果セットを返すクエリでは注意が必要です。
+*   **トレードオフ:** 書き込みのオーバーヘッド増加、インデックスサイズの増大、メンテナンスコストの上昇が挙げられます。
+*   **ガイドライン:** 既存インデックスへの列追加を優先し、フィルタ列を先に、カバー列を後に配置します。SELECT * は避け、必要な列のみを選択することが重要です。
+
+**3. 全文検索インデックス:**
+*   **基本的な作成とクエリ:** テキストデータに対するキーワード検索に特化しており、MATCH() AGAINST()構文を使用します。
+*   **MySQLで足りるとき/検索エンジンが必要なとき:** シンプルなキーワード検索にはMySQLの全文検索で十分ですが、複雑なランキングやファジーマッチ、大規模ドキュメント検索にはElasticsearchなどの専用エンジンを検討すべきです。
+*   **主な落とし穴:** 最小語長、ストップワード、部分一致の制限、MATCH()構文とインデックスの関連性、書き込みオーバーヘッドなどが挙げられます。
+
+**4. インデックスのメンテナンスと整理:**
+*   **未使用インデックスの検出:** `performance_schema` の `table_io_waits_summary_by_index_usage` を使用して、読み取り・書き込みが全く行われていないインデックスを特定します。
+*   **冗長インデックスの検出:** `sys.schema_redundant_indexes` ビューで、他のインデックスに包含されるインデックスを検出します。
+*   **インデックスサイズの確認:** `mysql.innodb_index_stats` でインデックスのサイズを確認し、過大なインデックスを特定します。
+*   **インデックスの書き込みオーバーヘッド:** INSERT, UPDATE, DELETE 操作のたびにインデックスが更新されるため、過剰なインデックスは書き込みパフォーマンスを低下させます。一般的に、テーブルあたり1〜5個のインデックスが推奨されます。
+*   **統計情報の更新:** `ANALYZE TABLE` コマンドでテーブルの統計情報を更新し、オプティマイザのパフォーマンスを改善します。
+*   **再構築/領域回収:** `OPTIMIZE TABLE` コマンドでテーブルとインデックスを再構築し、断片化を解消し領域を回収しますが、実行に時間がかかるため注意が必要です。
+*   **不可視インデックス (MySQL 8.0+):** インデックスを削除せずに一時的に無効化し、影響を確認してから削除する安全な方法です。
+*   **メンテナンスツール:** オンラインDDLや`pt-online-schema-change`、`gh-ost`などのツールを利用して、ダウンタイムを最小限に抑えたインデックスメンテナンスが可能です。
+
+**まとめ:**
+SQLインデックスの設計、最適化、メンテナンスは、実際のクエリパターンとパフォーマンス測定に基づいて行うことが重要です。本記事で紹介された4つのスキルを習得し、ワークフローに組み込むことで、より高速で正確なデータベース運用が実現できます。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

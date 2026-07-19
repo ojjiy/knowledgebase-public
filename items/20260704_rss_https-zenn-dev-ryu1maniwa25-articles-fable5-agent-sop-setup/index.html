@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Claude Fable 5 が使えるうちに Agent SOP を導入して整備させる</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>Claude Fable 5 が使えるうちに Agent SOP を導入して整備させる</h1>
+<p><strong>Date:</strong> 2026-07-04</p>
+<p><strong>Source:</strong> rss / Hatena Bookmark Programming</p>
+
+<p><a href="https://zenn.dev/ryu1maniwa25/articles/fable5-agent-sop-setup">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">## Claude Fable 5 の期間限定活用による Agent SOP 整備のすすめ
+
+**はじめに**
+
+Claude Fable 5 は、明確な指示がなくても適切な判断で作業を進める能力に長けたAIモデルですが、その利用は2026年7月7日（太平洋時間）まで、かつ週間利用上限の50%に制限されています。この限られた機会を最大限に活用するため、本記事では、AIエージェントが標準作業手順書（SOP）を生成・整備する「Agent SOP」の導入とその活用法を、Claude Fable 5 への依頼方法と共に解説します。
+
+**Agent SOP とは**
+
+Agent SOP は、AWS Strands Agents チームが2025年11月にOSSとして公開した、AIエージェント版の標準作業手順書です。Amazon社内で5,000以上のSOPが利用されていた仕組みを基盤としており、`.sop.md`という拡張子のマークダウンファイルで定義されます。必須セクションは「Title」「Overview」「Parameters」「Steps」の4つで、制約事項はRFC 2119キーワード（MUST, SHOULD, MAYなど）で記述され、禁止事項（MUST NOT）には必ず理由を添えるルールがあります。
+
+CLAUDE.md がコンテキストの肥大化を招くのに対し、SOPは後述するskill変換を経て、必要な時にだけ読み込まれるオンデマンドな手順書となります。Skills との違いは、SOPが必須セクションや品質規範、バリデーターを持ち、1つのファイルからskillsやMCP prompts、Cursor commandsを生成できる点にあります。SOPは、CLAUDE.mdから手順を切り出し、skillの中身を標準化する役割を担います。
+
+**インストールと Claude Code での使い方**
+
+組み込みSOP（code-assist, pddなど5本）は、プラグインマーケットプレイス経由の2コマンドでインストール可能です。自作SOPをプロジェクトで利用するには、SOPファイルをリポジトリの`agent-sops/`ディレクトリに配置し、以下の2つの方法があります。
+
+1.  **MCP server 方式:** リポジトリ直下の`.mcp.json`に登録します。SOPファイルは変換なしで反映されますが、メンバーごとにMCP serverの初回承認が必要です。
+2.  **skill 変換方式:** SOPをClaude Codeのskill形式に変換してコミットします。変換コマンドを1回実行するだけで、cloneした全員が追加セットアップや承認なしでskillを利用できます。公式リポジトリでは、GitHub Actionsでこの再生成を自動化しています。
+
+**Fable 5 への頼み方**
+
+Claude Fable 5 にAgent SOPの整備を依頼する際のプロンプト例は以下の通りです。
+
+```
+Agent SOP (https://github.com/strands-agents/agent-sop) をこのプロジェクトに整備してください。
+1. Agent SOP の仕様を一次ソース (リポジトリの spec と README) で調査する
+2. 過去の作業記録をすべて読み、複数回繰り返されている作業や、今後確実に再実施される手順を抽出する。対象は docs/worklog/ のような作業ログ、なければ git log や PR の説明文、issue を使う。純粋な調査レポートや戦略文書は手順ではないので除外する
+3. 抽出した候補から再利用頻度の高いものを選び、agent-sops/ に .sop.md として作成する。作業記録に残っている失敗やハマりポイントを Constraints の理由として埋め込むこと
+4. チーム全員が Claude Code から使える配布方法を調査して導入する
+5. 公式の書式検証を通し、結果を報告する
+```
+
+**Fable 5 の成果**
+
+このプロンプトに対し、Fable 5 は以下の行動を取りました。
+
+*   **調査の並列化:** 仕様調査と作業ログ読解を複数のsubagentに分割し、100本超のログから約40の手順候補を抽出。その中から「複数回繰り返し」「今後確実に再実施」されるもの（デプロイ、DB migration、staging環境追加など）に絞り込みました。
+*   **指示外の設計判断:** 作成したSOPが組み込みskillと同名であることに気づき改名したり、配布方式としてMCPとskill変換を比較検討し、チーム共有に適したskill変換方式を選択・提案したりしました。
+*   **作業ログに基づく制約の具体化:** 作業ログの失敗事例を禁止事項の「理由」として埋め込み、プロジェクト固有の「罠」を制約の根拠としました。
+*   **公式バリデーターによる検証:** `agent-sop-author` skillで全SOPを点検し、`Parameters`セクションの不備を自己発見・修正。最終的に13本のSOPすべてをエラーゼロで公式バリデーターに通しました。
+
+**まとめ**
+
+Agent SOP は、AIに実行させたい定型作業を標準化された手順書として定義し、skillやMCPとして配布できる仕組みです。Claude Fable 5 の期間限定という強力なリソースを活用することで、利用期限終了後もチームの資産として活用できるSOPを整備できます。まずは自身のプロジェクトの作業ログなどを読ませて、SOP化の可能性を探ってみることを推奨します。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>個人用メモアプリをつくっている</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>個人用メモアプリをつくっている</h1>
+<p><strong>Date:</strong> 2026-07-04</p>
+<p><strong>Source:</strong> rss / Hatena Bookmark LLM</p>
+
+<p><a href="https://mizzy.org/blog/2026/07/03/2/">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">個人用メモアプリ開発者である筆者は、Obsidianの代替として、自身の使い方に特化したシンプルなWebアプリ「mizzy/memo」を開発しました。ObsidianはPCでの利用には満足していましたが、iOSアプリの挙動不安定さ、特に同期の問題に不満を感じていました。
+
+筆者が求めるのは、Markdownで記述でき、PCとiPhone間で同期が可能なメモツールです。そこで、サーバー側のDBにデータを置くWebアプリ形式を選択し、同期の概念を排除し、PWA（Progressive Web App）としてホーム画面に追加することで、ネイティブアプリに近い起動体験を目指しました。
+
+開発には、Hono + TypeScript、React + Vite + TypeScript、Tiptap（ProseMirrorベース）、Cloudflare D1 + Drizzle ORM、Cloudflare R2、Cloudflare Workers、Terraformといった技術スタックを採用しています。静的アセットとAPIを単一のWorkerで配信することで、CORS設定やCookieの管理を簡素化しています。認証はCloudflare Accessを利用し、個人のGmailアカウントのみを許可しています。
+
+現在の実装機能は、メモの作成・編集・一覧・検索、Obsidianと同様のVault機能、フォルダ機能（デスクトップでは3ペイン構成）、画像添付（R2へアップロード）、PWA対応です。
+
+デザイン面では、モチベーション維持のためClaude Designに依頼し、「夜の書斎×道具」というコンセプトで、ミッドナイトブルーと琥珀色を基調としたハイブリッドデザインを採用しました。Claude CodeとClaude Designの連携が向上したことで、デザインの修正と実装を効率的に行っています。
+
+今後は、自身が使いながら不満点を解消し、Obsidianに蓄積された既存メモの移行を進める予定です。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

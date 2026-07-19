@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ACM ACMEエンドポイントで発行した証明書をCertbotで失効させ、OCSP/CRLへの反映を確認してみた</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>ACM ACMEエンドポイントで発行した証明書をCertbotで失効させ、OCSP/CRLへの反映を確認してみた</h1>
+<p><strong>Date:</strong> 2026-07-09</p>
+<p><strong>Source:</strong> rss / DevelopersIO</p>
+
+<p><a href="https://dev.classmethod.jp/articles/acm-acme-certbot-revoke-ocsp-crl/">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">## ACM ACME エンドポイントで発行した証明書の失効と OCSP/CRL への反映検証
+
+本稿では、前回記事の続編として、ACM ACME エンドポイントで発行した証明書のライフサイクル後半、特に Certificate Transparency (CT) ログへの登録確認、OCSP (Online Certificate Status Protocol) / CRL (Certificate Revocation List) による証明書ステータス確認、そして Certbot による証明書失効処理と、その反映について検証した結果をまとめている。
+
+**ACM ACME 証明書の API サポート状況**
+
+2026年7月時点での ACM ACME 証明書に対する API サポート状況が整理されており、`DescribeCertificate`、`GetCertificate`、`SearchCertificates` はサポートされている一方、`ListCertificates`、`ExportCertificate`、`RevokeCertificate`、`RenewCertificate`、`ResendValidationEmail` はサポートされていないことが示されている。特に、`RevokeCertificate` は ACME 証明書には使用できず、Certbot を用いる必要がある。
+
+**検証環境と CT ログへの登録確認**
+
+検証は `ap-northeast-1` リージョンにて、Route 53 で管理される `acme-demo.cm.suama.net` ドメインに対して行われた。発行された証明書の SCT (Signed Certificate Timestamp) 拡張を確認した結果、DigiCert と Sectigo の CT ログに記録されている2つの SCT が埋め込まれていることが確認できた。これは、ACM ACME 証明書も通常のパブリック証明書と同様に、発行時に CT ログへ自動的に記録されることを示している。`crt.sh` でも発行した証明書が確認できた。
+
+**失効前の状態確認 (OCSP / CRL)**
+
+証明書から抽出した OCSP URI (`http://ocsp.r1001.amazontrust.com`) および CRL 配布ポイント (`http://crl.r1001.amazontrust.com/e2s07/9nABuMVvxLz.crl`) を使用して、失効前の証明書ステータスを確認した。OCSP レスポンスでは、証明書ステータスが `good` であることが確認され、CRL には当該証明書のシリアル番号が含まれていないことが確認できた。
+
+**Certbot による失効処理**
+
+ACM ACME エンドポイントで発行した証明書を Certbot を用いて失効させた。失効処理を実行するには、EAB 作成時に指定した IAM ロールに `acm:RevokeCertificate` アクションの許可を追加する必要がある。また、IAM ロールの信頼ポリシーには `sts:AssumeRole` に加えて `sts:SetSourceIdentity` と `sts:TagSession` も必要となる。失効処理は正常に完了し、`Congratulations! You have successfully revoked the certificate.` というメッセージが表示された。`--no-delete-after-revoke` オプションにより、失効後も証明書ファイルはローカルに残された。
+
+**失効後の状態確認 (ACM / OCSP / CRL)**
+
+失効後、ACM 上で `aws acm describe-certificate` コマンドを実行した結果、証明書のステータスが `REVOKED` に変更され、失効日時と理由も記録されていることが確認できた。OCSP レスポンスは、失効から約3.5時間後に `revoked` に切り替わっており、失効日時も正しく反映されていた。CRL についても、失効から十数分後に更新された CRL が取得できるようになり、当該証明書のシリアル番号が追加されていることが確認できた。OCSP および CRL の失効反映は即時ではないものの、一定時間内に反映されることが示された。
+
+**サポートされない API の挙動**
+
+「はじめに」の表でサポートされないとされていた API (`ExportCertificate`、`RevokeCertificate`、`RenewCertificate`、`ResendValidationEmail`) について、実際に実行した結果、それぞれ `ValidationException` が発生し、ACME 証明書ではこれらの操作がサポートされていないことが確認された。
+
+**注意事項・Tips**
+
+*   OCSP / CRL の失効反映は即時ではなく、ACM 上での確認には `aws acm describe-certificate` を使用することが推奨される。
+*   ACME 証明書を検索するには `search-certificates` API を使用し、`CertificateKeyPairOrigin` を `ACME` でフィルタする必要がある。
+*   OCSP / CRL / CA Issuers のエンドポイントは `amazontrust.com` 配下の HTTP/80 であり、ファイアウォール設定においてはワイルドカードでの許可が必要となる場合がある。
+
+**まとめ**
+
+本検証により、ACM ACME エンドポイントで発行した証明書が、CT ログへの登録、OCSP/CRL によるステータス確認、そして Certbot を用いた失効処理とその反映といった、パブリック CA の標準的な証明書ライフサイクルに対応していることが確認された。特に、Certbot による失効処理と ACM 上での `REVOKED` 反映、OCSP/CRL への失効反映を一通り確認できたことは、ACM ACME エンドポイントを安心して利用するための重要な知見となった。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

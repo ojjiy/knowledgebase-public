@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Scaling the Horizon, Not the Parameters: Reaching Trillion-Parameter Performance with a 35B Agent</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>Scaling the Horizon, Not the Parameters: Reaching Trillion-Parameter Performance with a 35B Agent</h1>
+<p><strong>Date:</strong> 2026-06-29</p>
+<p><strong>Source:</strong> paper / paperswithcode-trending</p>
+
+<p><a href="http://arxiv.org/abs/2606.30616v1">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body"># タイトル
+Scaling the Horizon, Not the Parameters: Reaching Trillion-Parameter Performance with a 35B Agent
+[View Paper](http://arxiv.org/abs/2606.30616v1)
+
+## 1. 問題意識：解決したい問題はなにか
+現在のAIは、長期間にわたる複雑なタスクを自律的に計画・実行・改善する能力に限界があります。特に、現実世界でのソフトウェアエンジニアリングのようなシナリオでは、エージェントは長期間にわたって情報を収集し、タスクを分解し、ツールを使用し、中間結果を検証し、戦略を継続的に調整する必要があります。このような長期間のタスクでは、初期のミスが蓄積し、新しい外部情報が入手可能になるにつれて戦略を修正する必要が生じるため、特に困難です。既存のAIモデルは、パラメータ数を増やすことで性能を向上させるアプローチが主流ですが、これは多大な計算資源とデータ量を必要とし、再現が困難であるという問題があります。
+
+## 2. 提案手法のアプローチ：どのようなアイデア・アプローチで問題を解決しようとしたか
+本論文では、パラメータ数を増やすのではなく、「エージェントのホライゾン（行動範囲や思考の範囲）」をスケーリングするというアプローチで、大規模モデル（1兆パラメータ級）に匹敵する性能を持つ350億パラメータ（35B）のエージェントモデル「Agents-A1」を提案しています。
+
+このアプローチは、以下の2つの観点から「エージェントホライゾン」のスケールを調査することに焦点を当てています。
+1.  **長期間の軌跡（long-horizon trajectories）のスケーリング:** エージェントが長期にわたって一連の行動を取る能力を向上させること。
+2.  **異種エージェント能力（heterogeneous agent abilities）のスケーリング:** 複数の異なるドメインにおける専門的な能力を統合し、汎用的なエージェントとして機能させること。
+
+この目標を達成するために、以下の要素を組み合わせたアプローチを採用しています。
+*   **知識-行動インフラストラクチャの構築:** 外部知識、エージェントの行動、観測結果、検証結果などを連携させるための統合的な基盤を構築しました。これにより、平均45Kトークンに及ぶ長期間のエージェント軌跡を生成し、学習に利用できるようにしました。
+*   **3段階の学習レシピ:**
+    1.  **全ドメイン事前学習（full-domain supervised fine-tuning）:** ベースモデルを広範なエージェント行動に適合させるために、多様なドメインのデータでファインチューニングします。
+    2.  **ドメインレベルの教師モデル学習:** 各ドメインで専門知識を持つ「教師モデル」を訓練します。
+    3.  **マルチティーチャー・ドメインルーテッド・オンポリシー蒸留（multi-teacher domain-routed on-policy distillation）:** 複数の教師モデルの専門知識を、効率的に学生モデル（Agents-A1）に転移させます。これにより、6つの異種ドメインの能力を統合し、単一のデプロイ可能なモデルを構築しました。
+
+## 3. 成果：提案手法により、何が達成できたのか
+Agents-A1は、35Bパラメータという比較的小規模なモデルでありながら、1兆パラメータ級のモデルに匹敵する、あるいはそれを超える長期間タスクにおける性能を達成しました。具体的には、SEAL-0、IFBench、HiPhO、FrontierScience-Olympiad、MolBench-Bindといったベンチマークで、Kimi-K2.6やDeepSeek-V4-proのような1Tパラメータモデルと同等以上の結果を出しました。また、SciCode、HLE、BrowseCompといったベンチマークでも競争力のある性能を示しました。
+この研究は、モデルのパラメータ数を増やすだけでなく、エージェントの「ホライゾン」をスケーリングすることで、高性能なエージェントモデルを構築するための実用的な道筋を提供することを目指しています。
+
+## 4. 課題：本手法の限界・課題にはなにか。本文中で著者が言及しているものと、あなたが想定するもの
+### 著者が言及している課題:
+*   **異種ドメイン間の学習の衝突:** 6つの異なるドメインの知識や推論パターンを単一のモデルに統合する際に、ドメイン間の衝突が発生する可能性があります。これを軽減するためにマルチティーチャー・ドメインルーテッド・オンポリシー蒸留が提案されていますが、完全に解決されているかは別途検証が必要です。
+*   **1Tモデルとの比較における性能差:** SciCodeやMLE-Bench-Liteなどの一部のベンチマークでは、 ainda 1Tパラメータモデルと比較して性能が劣ることが示されています。特にMLE-benchのような、エンジニアリングプロセス全体を要求するタスクでは、目標の維持、過去の意思決定の記憶、反復試行の回避といった点がより高度に要求されるため、35Bモデルでは限界がある可能性があります。
+
+### 想定される課題:
+*   **「エージェントホライゾン」の定義と測定の複雑さ:** 「エージェントホライゾン」という概念は直感的ですが、その具体的な定義や、どのように定量的に測定・評価するかは、依然として研究の余地があると考えられます。本研究では平均45Kトークンの軌跡長を指標としていますが、タスクの複雑性やエージェントの自律性といった側面も考慮する必要があるかもしれません。
+*   **知識-行動インフラストラクチャの構築・維持コスト:** 長期間の軌跡を生成するための知識-行動インフラストラクチャの構築と維持には、専門的な知識と多大な労力が必要となる可能性があります。これを一般のユーザーや研究者が容易に再現できるかは課題です。
+*   **教師モデルの性能依存性:** マルチティーチャー・オンポリシー蒸留の性能は、教師モデルの性能に大きく依存します。もし教師モデルの性能が十分でなければ、学生モデルへの知識転移も限定的になる可能性があります。
+*   **計算資源:** 35Bモデルであっても、長期間の軌跡を生成し、それを学習に利用するためには、相応の計算資源が必要となることが予想されます。1Tモデルと比較すれば少ないですが、それでも小規模なモデル開発と比較すると、ハードルは高いと考えられます。
+
+## 5. 技術詳細：提案手法の技術的な詳細について、できるだけ詳しく。数式やアルゴリズム、モデル構造なども可能な限り詳しく
+
+### モデル構造
+*   **ベースモデル:** Qwen3.5-35B-A3B が初期モデルとして使用されています。
+*   **アーキテクチャ:** 35BパラメータのMixture-of-Experts (MoE) Agentic Model です。MoEアーキテクチャは、複数の「エキスパート」ネットワークを持ち、入力に応じて適切なエキスパートを選択して処理を行うことで、効率的な学習と推論を可能にします。
+
+### 学習アプローチ
+1.  **全ドメイン事前学習 (Full-Domain Supervised Fine-Tuning):**
+    *   **目的:** ベースモデルを広範なエージェント行動に適合させ、長期間のタスク遂行能力の基礎を構築します。
+    *   **データ:** 検索、科学研究、エンジニアリング、エージェントタスク、指示追従など、多様なドメインの長期間軌跡データを使用します。
+    *   **手法:** 標準的な教師ありファインチューニング（SFT）を行います。
+
+2.  **ドメインレベル教師モデル学習:**
+    *   **目的:** 各ドメインに特化した専門知識を持つ教師モデルを訓練します。
+    *   **データ:** 各ドメイン固有のデータセットを使用します。
+    *   **手法:** ドメイン固有のSFTや強化学習（RL）を用いて、各教師モデルを専門化させます。
+
+3.  **マルチティーチャー・ドメインルーテッド・オンポリシー蒸留 (Multi-Teacher Domain-Routed On-Policy Distillation with Salient Vocabulary Alignment - MT-SVA):**
+    *   **目的:** 複数の専門教師モデルの知識を、効率的かつ衝突を最小限に抑えながら、単一の学生モデル（Agents-A1）に統合します。
+    *   **アプローチ:**
+        *   **ドメインルーティング:** 各プロンプト（入力）にドメインラベルを付け、そのドメインに対応する教師モデルのみが蒸留シグナルを提供します。これにより、異なるドメインの教師からの不整合な信号の混入を防ぎます。
+        *   **オンポリシー蒸留 (On-Policy Distillation - OPD):** 学生モデルが生成した軌跡（rollout）に対して、教師モデルが評価とガイダンスを行います。これにより、学生モデルの実際の行動に基づいた学習が可能になります。
+        *   **顕著な語彙アライメント (Salient Vocabulary Alignment - SVA):** 標準的なトークン単位の蒸留では、教師がサポートする確率の高い近傍の代替トークンが制約されないという問題がありました。SVAでは、学生と教師が、教師によってサポートされる限定された語彙（salient vocabulary）上で局所的な分布をアライメントするように学習します。これは、教師が選択した語彙セット `S_i,t^(k)` 上で、学生と教師の生成確率分布の逆KLダイバージェンスを最小化することによって行われます。
+            *   SVA損失関数（概念）:
+                ```python
+                # p_s&#39;(u): 学生モデルのuトークン生成確率
+                # p_t,i(u): ルートされた教師モデルのuトークン生成確率
+                # S_i,t^(k): 学生と教師がともに高確率で生成するトークンのセット
+                
+                def calculate_sva_loss(student_prob, teacher_prob, salient_tokens):
+                    # p_s&#39; と p_t,i を salient_tokens 上で正規化
+                    normalized_student_prob = normalize_prob(student_prob, salient_tokens)
+                    normalized_teacher_prob = normalize_prob(teacher_prob, salient_tokens)
+                    
+                    # 逆KLダイバージェンスを計算
+                    loss = 0
+                    for u in salient_tokens:
+                        if normalized_teacher_prob[u] &gt; 1e-9: # ゼロ除算防止
+                            loss += normalized_student_prob[u] * math.log(normalized_student_prob[u] / normalized_teacher_prob[u])
+                    return loss / len(salient_tokens)
+                ```
+        *   **ドメイン正規化集約 (Domain-Normalized Aggregation):** 異なるドメインの教師からの蒸留損失を、各ドメインのデータ数や損失の大きさに偏らず、均等に影響するように集約します。まず各アクティブドメイン内で損失を平均し、次にアクティブドメイン間で平均することで、頻繁なドメインや高損失ドメインが支配的になるのを防ぎます。
+            *   ドメイン正規化集約損失（概念）:
+                ```python
+                # L_SVA^(i): サンプルiに対するSVA損失
+                # B_d: ドメインdに属するサンプルのセット
+                # D_B: アクティブなドメインのセット
+                
+                total_loss = 0
+                for d in active_domains:
+                    domain_loss = 0
+                    for i in samples_in_domain_d:
+                        domain_loss += calculate_sva_loss(student_rollout_i, teacher_for_domain_d, i)
+                    total_loss += domain_loss / len(samples_in_domain_d)
+                
+                final_loss = total_loss / len(active_domains)
+                ```
+
+### 知識-行動インフラストラクチャ
+*   **知識-行動グラフ (Knowledge-Action Graph - KAG):**
+    *   **目的:** 長期間の軌跡学習に必要な、構造化され、検証可能で、自己拡張可能な教師信号を提供します。
+    *   **構成要素:**
+        *   `C_d`: ドメインの知識チャンク（証拠、エンティティ、事実、制約など）。
+        *   `A_d`: エージェントのアクション（ツール呼び出し、検索クエリ、コード編集、推論ステップなど）。
+        *   `O_d`: アクションの結果としての観測（ツールの戻り値、中間成果物など）。
+        *   `V_d`: 検証結果（正しさ、証拠の裏付け、目標達成度など）。
+    *   **構造:** アクションレコード `s_t` を中心とし、これらのレコード間の関係（証拠、依存、生成、検証、遷移）をエッジとして表現します。これは単なるエンティティ間の関係だけでなく、**プロセスレベルの構造**を保持しており、成功・失敗の両方の軌跡を含みます。
+    *   **生成:** プロポーザー–ソルバー–検証者ゲームを通じて、制約付きタスクを生成し、ツールを用いて解決し、結果を検証します。各タスクは、クエリ `q`、ドメイン `d`、軌跡 `tau`、正解 `y*`、必要な証拠 `E_q`、検証者セット `V_q` として表現されます。
+    *   **例:** 科学研究、機械学習エンジニアリング、命令追従、ツール呼び出しといった異なるドメインで具体的にインスタンス化されています。
+
+### 3段階学習レシピの詳細
+1.  **全ドメインSFT:**
+    *   Qwen3.5-35B-A3Bをベースに、多様なドメイン（検索、科学、エンジニアリング、エージェントタスク、指示追従）の長期間軌跡データでSFT。
+    *   データソース例: GAIA, SciCode, MLE-Bench-Lite, FrontierScience, HLE, BrowseComp, IFBench, etc.
+    *   約1.5M軌跡、平均45Kトークン。
+
+2.  **ドメインレベル教師モデル学習:**
+    *   **検索教師:** SFT + GRPO（Proximal Policy Optimization の変種）で学習。`search`, `visit`, `code` ツールを使用。報酬関数は、正解、検索時間ペナルティ、URL重複ペナルティ、フォーマットペナルティを組み合わせたもの。
+    *   **科学教師:** 2段階SFT。まず内部推論能力を強化し、次にツール（`search`, `visit`, `calculate`, `scholar`）と連携する能力を強化。
+    *   **指示追従教師:** 2段階RL。まず検証可能な制約充足をRLで最適化し、次に長コンテキスト学習能力（証拠の根拠付け、コンテキスト情報への適応）を強化。報酬はルールベース。
+    *   **ツール呼び出し教師:** SFTとRLを組み合わせ。ツール呼び出しの生成、引数の生成、エラーからの回復、タスク完了の判断などを学習。
+
+3.  **MT-SVAによる統合:**
+    *   上記で訓練されたドメイン教師モデル群と、全ドメインSFTで初期化された学生モデル（Agents-A1-SFT）を使用。
+    *   学生モデルは、各プロンプトのドメインラベルに応じてルーティングされた教師モデルからのガイダンスを受けながら、オンポリシーで学習します。
+    *   SVAとドメイン正規化集約により、ドメイン間の衝突を抑えつつ、専門知識を効果的に転移させます。
+
+## 6. この論文を140字以内のツイートで要約すると？
+35BパラメータのAgents-A1、パラメータ数でなく「エージェントホライゾン」を拡張！長期間タスクで1Tモデル級の性能達成。知識-行動インフラとマルチドメイン蒸留で、複雑な問題解決能力を向上。AIの応用範囲を広げる新アプローチ。#AI #LLM #エージェント</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

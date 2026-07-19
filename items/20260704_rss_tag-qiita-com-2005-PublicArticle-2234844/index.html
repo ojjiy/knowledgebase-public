@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>制約が多いからこそ設計しがいがある！？公共領域でのAWSと生成AIの活用</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>制約が多いからこそ設計しがいがある！？公共領域でのAWSと生成AIの活用</h1>
+<p><strong>Date:</strong> 2026-07-04</p>
+<p><strong>Source:</strong> rss / Qiita Trend</p>
+
+<p><a href="https://qiita.com/infra365/items/f12242f65c5f1e20c022?utm_campaign=popular_items&amp;utm_medium=feed&amp;utm_source=popular_items">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">本記事は、公共領域におけるAWSと生成AIの活用について、特にデジタル庁が整備する「ガバメントクラウド」における制約と、それらを乗り越えた設計の面白さについて解説しています。
+
+ガバメントクラウドは、国の行政機関や地方公共団体が利用する政府共通のクラウド基盤であり、AWS、Azure、OCI、Google Cloud、さくらのクラウドの5つのCSPが選定されています。ガバメントクラウドの特徴として、以下の3点が挙げられています。
+
+1.  **アカウント構成の制約:** 自治体側アカウントではAWS Organizationsの機能が利用できず、デジタル庁管理下の親アカウントを利用するため、機能制限があります。
+2.  **ネットワーク構成の複雑さ:** 閉域ネットワーク、ハイブリッド構成、マルチベンダーといった特徴があり、管理主体が異なるアカウント間の調整や全体最適化が難しい場合があります。
+3.  **セキュリティテンプレートの適用:** AWS BLEAをベースにしたセキュリティテンプレートの適用が必須であり、監視・通知の流れを考慮した設計が必要です。
+
+これらの制約下では、AWS Organizationsの機能が使えないため、Security Hubなどでは「招待」機能を用いて集約管理を行うなどの工夫が必要です。
+
+さらに、生成AIの利用においてもガバメントクラウド特有の制約が存在します。これまで、ガバメントクラウド上でAmazon Bedrockを利用するには、ガバメントクラウド外のアカウントを経由するクロスアカウントアクセスが必要でした。しかし、最近になって一部モデルの利用が可能になりました。
+
+著者は、今後すぐに利用したいAI関連サービスとして、運用改善に役立つDevOps AgentやFinOps Agentを挙げており、以前自作したCloudTrailログ分析ツールのような作業がDevOps Agentで容易になることを期待しています。
+
+結論として、ガバメントクラウドのような制約の多い環境だからこそ、その制約を理解し、その中で最適な設計を追求することにエンジニアとしての面白さがある、と結んでいます。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

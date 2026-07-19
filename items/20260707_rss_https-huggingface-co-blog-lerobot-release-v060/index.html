@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>LeRobot v0.6.0: Imagine, Evaluate, Improve</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>LeRobot v0.6.0: Imagine, Evaluate, Improve</h1>
+<p><strong>Date:</strong> 2026-07-07</p>
+<p><strong>Source:</strong> rss / Hugging Face Blog</p>
+
+<p><a href="https://huggingface.co/blog/lerobot-release-v060">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">LeRobot v0.6.0では、ロボット学習のループを閉じることを目指し、「Imagine, Evaluate, Improve」をテーマに、未来を予測して行動するポリシー、ロボットの成功を評価する報酬モデル、失敗を学習データに変換するデプロイメントCLI、そして評価のための6つの新しいシミュレーションベンチマークが導入されました。
+
+**主な機能強化点:**
+
+*   **ワールドモデルポリシー:** VLA-JEPA、LingBot-VA、FastWAMといった、行動前に未来を想像する能力を持つポリシーが追加されました。これにより、推論コストを抑えつつ、学習時に未来の予測を取り入れることが可能になりました。
+*   **VLAs (Vision-Language-Action) モデルの拡充:** GR00T N1.7、MolmoAct2、EO-1、Multitask DiT、EVO1といった、多様なVLAsモデルがLeRobotに追加され、ロボットの汎用性が向上しました。
+*   **報酬モデルAPI:** RobometerやTOPRewardといった新しい報酬モデルAPIが導入され、ロボットの成功や進捗を客観的に評価できるようになりました。
+*   **データセット機能の強化:**
+    *   **高速化:** データローディング速度が最大2倍に向上しました。
+    *   **リッチデータ:** デプスセンシング（深度情報）のサポート、VLM（Vision-Language Model）を活用した自動言語アノテーション、カスタムビデオエンコーディング機能が追加されました。
+*   **ベンチマーク:** 6つの新しいシミュレーションベンチマークがlerobot-eval CLIに統合され、ロボットポリシーの評価が容易になりました。これらはLIBERO-plus、RoboTwin 2.0、RoboCasa365、RoboCerebra、RoboMME、VLABenchです。
+*   **トレーニングと推論:**
+    *   **lerobot-rollout CLI:** デプロイメント専用のCLIが新設され、Daggerスタイルの人間参加型補正機能により、失敗を学習データとして活用できます。
+    *   **FSDPサポート:** 巨大なモデルでもGPUメモリの制約を超えて学習できるよう、FSDP（Fully Sharded Data Parallel）がサポートされました。
+    *   **クラウドトレーニング:** Hugging Face Jobsと連携し、ローカル環境なしでクラウド上で学習を実行できるようになりました。
+*   **コードベースの改善:** 依存関係が削減され、より軽量でクリーンなコードベースになりました。PyTorchのバージョンサポートも拡充され、bfloat16による混合精度トレーニングが強化されました。
+*   **コミュニティとエコシステム:**
+    *   **LeLab:** ブラウザベースのUIでLeRobotワークフロー全体を操作できるツールが登場しました。
+    *   **Isaac Teleop:** NVIDIA Isaac Teleopとの連携により、VRコントローラーでのロボット遠隔操作が可能になりました。
+    *   **ハードウェアガイド:** 新規ユーザー向けのGPU選定や学習時間に関するガイドが追加されました。
+
+これらの機能強化により、LeRobotはロボット学習の効率化、評価の標準化、そしてより高度なロボットポリシーの開発を強力に支援します。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

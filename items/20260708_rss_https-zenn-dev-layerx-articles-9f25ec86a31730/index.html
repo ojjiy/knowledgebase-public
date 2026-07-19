@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Agent Skills自動最適化の研究、中身はほぼ深層学習の訓練ループだった</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>Agent Skills自動最適化の研究、中身はほぼ深層学習の訓練ループだった</h1>
+<p><strong>Date:</strong> 2026-07-08</p>
+<p><strong>Source:</strong> rss / Hatena Bookmark LLM</p>
+
+<p><a href="https://zenn.dev/layerx/articles/9f25ec86a31730">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">本記事は、AIエージェントが自身の実行経験から「スキル」を自動的に学習・最適化する2026年上半期の研究動向を紹介しています。ここでいうスキルとは、Agent Skillsで用いられるSKILL.mdを含むフォルダを指します。
+
+研究の核心は、「ループ・エンジニアリング」という考え方に基づき、エージェントにプロンプトを書かせるのではなく、エージェントを動かすループ自体を設計することにあります。紹介される研究の多くは、深層学習の訓練ループと類似した構造を持っており、以下の要素が置き換えられています。
+
+*   **学習対象:** モデルの重みではなく、スキル文書（SKILL.mdなど）
+*   **訓練データ:** 人が用意したお手本ではなく、エージェント自身の実行トラジェクトリ（成功・失敗の記録）
+*   **損失関数:** モデルの出力の悪さを測るものから、検証信号（書き換えたスキルが以前より良いかをスコア化）
+*   **勾配と学習率:** 重みの更新方向と幅から、テキスト編集とその量の制御
+*   **過学習監視:** 検証データでの監視から、編集の採否判定（評価が改善した場合のみ採用）
+
+**主な研究内容:**
+
+1.  **スキルはトラジェクトリから蒸留する:**
+    *   **Trace2Skill:** エージェントの実行記録からエラー分析・成功分析を行い、スキルへの修正案（パッチ）を提案し、それらをマージして統合します。繰り返される編集を「そのタスク領域に共通する性質」とみなし、偶然の過適合を防ぎます。
+    *   **MIND-Skill:** 成功トラジェクトリからスキルを生成する帰納エージェントと、生成されたスキルだけで元のトラジェクトリを再現できるか検証する演繹エージェントを組み合わせ、品質保証されたスキル生成を目指します。
+
+2.  **正解がなくても検証信号は作れる:**
+    *   **CoEvoSkills:** スキル生成器と「Surrogate Verifier（代理検証器）」というもう1つのエージェントを共進化させます。スキル生成器は検証器からの診断を元にスキルを改修し、検証器は「合格と判断したのにテストが落ちた」という不一致を基にテストスイートを難しくしていきます。
+    *   **OpenSkill:** タスクに関連する知識を外部から収集し、真偽を確かめられる「検証アンカー」から仮想テストを組み立てます。この仮想テストに合格するようにスキルを修正し、最終評価として隠しておいた正解テストで検証します。
+
+3.  **SKILL.mdを、テキスト空間の勾配降下で更新する:**
+    *   **SkillOpt:** エージェントモデルは凍結したまま、スキル文書のみを学習パラメータとして扱います。深層学習の訓練ループのアナロジーを徹底し、テキスト編集の学習率予算、メタ更新などの仕組みを導入します。
+    *   **SkillGrad:** SkillOptのアナロジーをさらに進化させ、スキルフォルダ全体をメタデータ、SKILL.md本文、参照リソースの三層に分けて扱います。また、繰り返し現れる失敗パターンを「momentum」として蓄積し、編集判断に活用します。
+
+**課題と展望:**
+
+これらの研究は、スキルの自動生成・最適化において大きな進展を示していますが、「正しく採点できる環境（検証信号）」の構築が依然として最も難しい課題であると指摘されています。また、スキルを持たせること自体の効果についても、すべてのスキルが有効ではないという報告があり、効果のあるスキルを見分ける（作成する）ための評価の重要性が強調されています。
+
+結論として、SKILL.mdは単なる静的な文書ではなく、訓練ループの中で更新され続ける「パラメータ」として捉えられており、エージェントの自己改善の重要な一部となっています。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

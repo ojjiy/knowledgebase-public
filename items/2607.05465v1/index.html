@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CanvasAgent: Enabling Complex Image Creation and Editing via Visual Tool Orchestration</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>CanvasAgent: Enabling Complex Image Creation and Editing via Visual Tool Orchestration</h1>
+<p><strong>Date:</strong> 2026-07-06</p>
+<p><strong>Source:</strong> paper / hf-papers</p>
+
+<p><a href="http://arxiv.org/abs/2607.05465v1">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body"># CanvasAgent: Enabling Complex Image Creation and Editing via Visual Tool Orchestration
+[View Paper](http://arxiv.org/abs/2607.05465v1)
+
+## 1. 問題意識：解決したい問題はなにか
+複雑な画像生成や編集タスクは、単一の生成・編集モデルだけでは対応が難しい。例えば、画像を合成し、オブジェクトを特定し、領域をセグメンテーションし、選択したコンテンツを編集し、中間アセットを合成し、テキストを読み取り、最終結果を強化するといった一連の作業が必要となる場合がある。既存のマルチモーダルエージェントは、主に知覚（perception）や検索、特定ドメインの編集に最適化されており、実行可能な画像作成の軌跡（trajectory）に対する大規模な教師データが不足している。このような、複数の視覚ツールを協調させて複雑な画像作成・編集を行うための、より汎用的で効果的なマルチモーダルエージェントの開発が求められている。
+
+## 2. 提案手法のアプローチ：どのようなアイデア・アプローチで問題を解決しようとしたか
+著者らは、この問題に対処するために、以下の2つの主要な要素を提案した。
+
+1.  **CanvasCraft データセット**: 複雑な画像生成・編集のための大規模なマルチモーダルツール利用データセットを構築した。これは、140,000件の完全注釈付き実行可能軌跡（CanvasCraft-SFT）と、10,000件の強化学習（RL）タスク仕様（CanvasCraft-RL）から構成される。
+    *   **CanvasCraft-SFT**: ユーザー指示がどのように分解され、実際のツールの実行を通じて完了するかを示す、ステップごとの推論、ツール呼び出し、パラメータ、中間アセット、最終出力を含む完全な実行可能軌跡を提供する。これにより、エージェントは有効なツール呼び出し、アセット参照、クロスツール依存関係を学習できる。
+    *   **CanvasCraft-RL**: 期待されるツールセットのみを提供する弱教師信号であり、エージェントが代替的なツールの順序付け、パラメータ化、検証、停止戦略を探索することを可能にする。これは、推論の複雑さ、軌跡の長さ、ツールの多様性という3つのタスク次元で構成される。
+2.  **CanvasAgent**: 異種混合な視覚ツールのオーケストレーション（協調・管理）を学習するツール拡張型マルチモーダルエージェントを開発した。
+    *   **2段階学習パイプライン**:
+        *   **SFT (Supervised Fine-Tuning)**: CanvasCraft-SFTデータセットを用いて、実行可能な推論・アクション軌跡を学習させる。これにより、モデルは有効なツール呼び出しフォーマット、JSON形式のツール呼び出し、パラメータ生成、クロスツール依存関係、中間アセットへの参照などを安定して習得する。
+        *   **GRPO (Group Relative Policy Optimization)**: CanvasCraft-RLデータセットを用いて、強化学習でエージェントを最適化する。これは、ハイブリッド報酬（結果レベルとプロセスレベルの信号を組み合わせたもの）を使用し、タスク分解、ツール計画、適応的な意思決定を促進する。
+
+このアプローチにより、エージェントは単に知覚するだけでなく、視覚的な状態を能動的に変換する「操作中心」の視覚的作成能力を獲得することを目指した。
+
+## 3. 成果：提案手法により、何が達成できたのか
+CanvasAgentは、複雑な画像作成および編集タスクにおいて、以下の顕著な成果を達成した。
+
+*   **複雑な画像作成・編集タスクの実行**: 複数の視覚ツールを協調させて、単一の生成・編集モデルでは困難な、高度な画像作成・編集タスクを実行できるようになった。具体例として、看板のテキスト抽出・翻訳・合成・シーンへの配置といった、複数のステップとアセット管理を伴うタスクを成功裏に実行した。
+*   **パフォーマンスの向上**: 提案手法（CanvasCraft-SFT + GRPO）は、SFTのみで学習したモデルと比較して、全体的なハイブリッド報酬、アライメント（指示への一致）、美学（見た目の良さ）、軌跡品質（タスク実行の適切さ）といった主要な指標で大幅な改善を示した。
+*   **ツール利用能力の向上**: GRPOによる強化学習により、エージェントはより多くのツール（平均ツール呼び出し回数の増加）を効果的に利用するようになり、動的なタスク分解、ツール計画、中間結果に基づいた適応的な意思決定を行う能力が向上した。
+*   **データセットの有効性**: 提案されたCanvasCraftデータセット（SFTおよびRL）が、このような複雑なマルチツール画像作成ワークフローを学習するために効果的であることが実験によって示された。
+*   **人間による評価との一致**: 人間による評価でも、CanvasAgentは指示への整合性、主要な詳細の維持、視覚品質の全てにおいて最良のスコアを達成し、提案された評価方法（LLM-as-judge）の有効性も示唆された。
+
+## 4. 課題：本手法の限界・課題にはなにか。本文中で著者が言及しているものと、あなたが想定するもの
+### 著者が言及している課題:
+*   **悪用の可能性**: 強力な画像生成・編集能力は、偽装や有害な視覚コンテンツの作成に悪用される可能性がある。このため、責任あるリリース、データセットのフィルタリング、意図された用途と限界の明確な文書化が重要であると強調している。
+*   **外部依存性**: 現在のCanvasAgentは、外部のマルチモーダル大規模言語モデル（MLLM）ジャッジに依存している。
+*   **ツールの固定性**: 現在使用しているツールセットは11個に固定されており、動的なツール発見機能は持っていない。
+*   **RLロールアウト時のリアルタイム実行**: 強化学習のロールアウト中に実際のツール実行が必要であり、計算コストがかかる。
+
+### 想定される課題:
+*   **汎化能力の限界**: CanvasCraftデータセットで学習されたツールセットやタスクの範囲を超える、未知のツールや完全に新しいタスクに対する汎化能力には限界がある可能性がある。
+*   **評価の主観性**: LLM-as-judgeによる評価は、依然としてある程度の主観性を含み、人間の評価者との完全な一致を保証するものではない。特に、美学や創造性といった、より微妙な品質の評価は難しい場合がある。
+*   **計算リソース**: 大規模なデータセットの構築、SFT、そして特にGRPOによる強化学習の実行には、相当な計算リソースが必要となる。
+*   **アセット管理の複雑化**: 非常に長くて複雑なワークフローでは、中間アセットの管理や参照がさらに複雑になり、エラーが発生しやすくなる可能性がある。
+*   **ツールの網羅性**: 11個のツールセットが、あらゆる複雑な画像作成・編集タスクを網羅しているとは限らない。より多様なタスクに対応するためには、ツールの拡充が必要となる可能性がある。
+
+## 5. 技術詳細：提案手法の技術的な詳細について、できるだけ詳しく。数式やアルゴリズム、モデル構造なども可能な限り詳しく
+CanvasAgentは、CanvasCraftデータセットと、SFTおよびGRPOを組み合わせた2段階学習パイプラインによって学習される。
+
+### 1. CanvasCraft データセット
+*   **ツールセット**: 11個の異種混合な視覚ツール（生成、編集、グラウンディング、セグメンテーション、抽出、合成、クロッピング、OCR、回転、反転、超解像）。各ツールは構造化されたJSONスキーマを持つ。
+*   **CanvasCraft-SFT**:
+    *   **データ構造**: $d_{\mathrm{SFT}}=(Q,I,\tau,I_{\mathrm{final}})$
+        *   $Q$: ユーザー指示
+        *   $I$: 入力画像セット（オプション）
+        *   $\tau$: 実行可能ツール利用軌跡（推論、ツール呼び出し、パラメータ、中間アセット、最終出力のシーケンス）
+        *   $I_{\mathrm{final}}$: 最終出力画像
+    *   **構築パイプライン**:
+        1.  原子的な視覚操作と代表的なツール間依存関係をカバーするツールチェーンテンプレートの設計。
+        2.  PICO-Banana-400Kから入力画像をサンプリング。
+        3.  意図されたツール利用行動から自然なユーザー指示を逆エンジニアリング。
+        4.  ツール環境で指示を実行し、推論トレース、JSON形式のツール呼び出し、中間アセット、最終画像を生成。
+        5.  ツールの解析可能性、パラメータの妥当性、アセット参照の一貫性、実行成功、冗長性などの品質管理を通過した軌跡のみを保持。
+*   **CanvasCraft-RL**:
+    *   **データ構造**: $d_{\mathrm{RL}}=(Q,\mathcal{I}_{0},\mathcal{T})$
+        *   $Q$: ユーザー指示
+        *   $\mathcal{I}_{0}$: オプションの入力画像セット
+        *   $\mathcal{T}$: 期待されるツールセット（弱教師信号）
+    *   **構築パイプライン**:
+        1.  推論（R）、軌跡長（L）、ツール多様性（D）の3つのタスク次元をカバーする多様なタスクシードを生成。
+        2.  各シードを自然なユーザー指示と期待されるツールセットに展開。
+        3.  R/L/D次元に沿ってタスクを特徴付け、難易度レベルを割り当て。
+        4.  DeepSeek-V4-Flashでフィルタリングし、人間が曖昧さや低品質なインスタンスを除去。
+        5.  視覚的グラウンディングタスクには、指示に一致する初期画像を生成。
+
+### 2. CanvasAgent 学習パイプライン
+*   **ベースモデル**: Qwen3-VL-8B-Instruct
+*   **学習ステージ**: 2段階学習（SFT + GRPO）
+
+#### SFT ステージ:
+*   **目的**: 実行可能な推論・アクション軌跡の模倣。
+*   **データ**: CanvasCraft-SFT。
+*   **学習目標**: 次トークン予測（標準的な言語モデリング）。
+*   **学習内容**:
+    *   有効な推論・アクションフォーマット。
+    *   JSON形式のツール呼び出し。
+    *   パラメータ生成。
+    *   クロスツール依存関係。
+    *   中間視覚アセットへの参照。
+
+#### GRPO ステージ:
+*   **目的**: 強力なマルチツール計画と適応的な意思決定の最適化。
+*   **データ**: CanvasCraft-RL。
+*   **学習アルゴリズム**: Group Relative Policy Optimization (GRPO)。
+    *   追加の価値モデルを必要とせず、複数の実行可能ロールアウトの相対的な報酬に基づいてポリシーを更新する。
+*   **報酬関数 (ハイブリッド報酬)**:
+    $R(\tau) = \underbrace{0.3\cdot R_{\mathrm{align}}(\tau)+0.1\cdot R_{\mathrm{aes}}(\tau)}_{\text{Outcome Score}}(\tau)+\underbrace{0.2\cdot R_{\mathrm{traj}}(\tau)+0.4\cdot R_{\mathrm{rule}}(\tau)}_{\text{Process Score}}(\tau)$
+    *   **Outcome Score**:
+        *   $R_{\mathrm{align}}(\tau)$: LLM-as-judgeによる、最終画像がユーザー指示を満たしているかの評価。
+        *   $R_{\mathrm{aes}}(\tau)$: LLM-as-judgeによる、最終画像の知覚品質（構図、色、照明、鮮明さ、テクスチャ、スタイル、アーティファクト、ぼかしなど）の評価。
+    *   **Process Score**:
+        *   $R_{\mathrm{traj}}(\tau)$: LLM-as-judgeによる、軌跡の妥当性（タスク分解、ツールの選択、依存関係の遵守、無関係な操作の回避など）の評価。
+        *   $R_{\mathrm{rule}}(\tau)$: ルールベースの報酬。
+            $R_{\mathrm{rule}}(\tau)=0.4\cdot R_{\mathrm{format}}(\tau)+0.6\cdot R_{\mathrm{action}}(\tau)-\lambda_{\mathrm{eff}}P_{\mathrm{eff}}(\tau)$
+            *   $R_{\mathrm{format}}(\tau)$: 推論・アクションプロトコルの形式的妥当性（JSON形式、単一ツール呼び出し、適切な終了など）。
+            *   $R_{\mathrm{action}}(\tau)$: 各ツール呼び出しの実行可能性。
+                $R_{\mathrm{action}}(\tau)=\frac{1}{N}\sum_{i=1}^{N}q_{i}$
+                $q_{i}=0.25r_{i}^{\mathrm{name}}+0.25r_{i}^{\mathrm{schema}}+0.20r_{i}^{\mathrm{ref}}+0.20r_{i}^{\mathrm{spec}}+0.10r_{i}^{\mathrm{exec}}$
+                *   $r_{i}^{\mathrm{name}}$: ツール名が期待されるツールセットに含まれているか。
+                *   $r_{i}^{\mathrm{schema}}$: 必須引数が存在し、空でないか。
+                *   $r_{i}^{\mathrm{ref}}$: 画像/アセット参照が有効なアセットを指しているか。
+                *   $r_{i}^{\mathrm{spec}}$: ツール固有の制約（バウンディングボックス、マスク、合成位置など）を満たしているか。
+                *   $r_{i}^{\mathrm{exec}}$: ツール実行が成功したか。
+                *   アセット更新: 成功した画像生成ツールの出力IDを現在の状態 $\mathcal{A}_{i}$ に追加。$\mathcal{A}_{i}=\mathcal{A}_{i-1}\cup\{\mathrm{OutputID}(f_{i},i)\}$ if $f_{i}\in\mathcal{T}_{\mathrm{img}}$ and $r_{i}^{\mathrm{exec}}=1$
+            *   $P_{\mathrm{eff}}(\tau)$: 効率ペナルティ。
+                $P_{\mathrm{eff}}(\tau)=P_{\mathrm{error}}(\tau)+P_{\mathrm{repeat}}(\tau)+P_{\mathrm{length}}(\tau)+P_{\mathrm{cost}}(\tau)+P_{\mathrm{miss}}(\tau)$
+                （エラー、繰り返し、過剰な長さ、コスト、見逃しなどをペナルティ）
+
+### 3. 評価
+*   **評価データセット**: CanvasCraft-RLの評価分割（5Kサンプル）。
+*   **比較手法**:
+    *   汎用MLLM（例: Qwen3-VL-8B-Instruct）+ CanvasCraftツールセット（CanvasCraftで訓練されていない）。
+    *   画像のみの参照モデル（例: InstructPix2Pix, Emu Edit）。
+    *   CanvasCraftで学習されたモデル:
+        *   CanvasAgent (SFT): SFTのみ。
+        *   CanvasAgent (SFT+RL): SFT + GRPO。
+*   **評価指標**:
+    *   ハイブリッド報酬
+    *   LLM-as-judgeスコア（アライメント、美学、軌跡品質）
+    *   ルールベーススコア
+    *   平均ツール呼び出し回数
+    *   人間による評価（タスクアライメント、キー詳細アライメント、美学品質）
+
+## 6. この論文を140字以内のツイートで要約すると？
+複雑な画像編集を可能にする「CanvasAgent」登場！多様な視覚ツールを協調させる新データセットCanvasCraftと2段階学習（SFT+RL）で、指示理解から実行までを自動化。手作業を減らし、創造的な画像生成を支援します。#AI #画像生成 #マルチモーダル</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

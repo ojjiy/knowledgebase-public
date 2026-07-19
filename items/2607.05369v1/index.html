@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>GaP: A Graph-as-Policy Multi-Agent Self-Learning Harness For Variational Automation Tasks</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>GaP: A Graph-as-Policy Multi-Agent Self-Learning Harness For Variational Automation Tasks</h1>
+<p><strong>Date:</strong> 2026-07-06</p>
+<p><strong>Source:</strong> paper / paperswithcode-trending</p>
+
+<p><a href="http://arxiv.org/abs/2607.05369v1">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body"># タイトル
+GaP: A Graph-as-Policy Multi-Agent Self-Learning Harness For Variational Automation Tasks
+[View Paper](http://arxiv.org/abs/2607.05369v1)
+
+## 1. 問題意識：解決したい問題はなにか
+従来のロボットシステムは、決まった作業を繰り返す「固定自動化」には高い信頼性を示すものの、オブジェクトの形状や姿勢にばらつきが大きい「変動自動化（Variational Automation: VA）」タスクにおいては、信頼性の確保が困難である。VAタスクは、商業・産業用途で継続的かつ確実に実行される必要があるが、モデルフリーのポリシーではこの信頼性のギャップを埋めるのが難しい。
+
+## 2. 提案手法のアプローチ：どのようなアイデア・アプローチで問題を解決しようとしたか
+「Graph-as-Policy (GaP)」という、マルチエージェントによるコーディングハーネスを提案する。GaPは、モジュール化されたロボットスキルライブラリ（MORSL）から、知覚、計画、制御ノードを持つ有向計算グラフを生成する。生成されたグラフは、内部シミュレーション環境で並列的にタスクインスタンスをリハーサルし、グラフ構造とパラメータを反復的に洗練することで、成功率とスループットを向上させる。これにより、 interpretable（解釈可能）なロボットプログラミングと、オープンワールドでの適応性を両立させることを目指す。
+
+## 3. 成果：提案手法により、何が達成できたのか
+- 8つの新しい変動自動化（VA）タスクベンチマーク（シミュレーション4つ、実機4つ）で評価した結果、GaPはベースライン手法を大幅に上回る成功率を達成した。
+- 特に、オブジェクトの位置変動が大きいタスクにおいて、従来のVLAモデルの性能低下を抑え、高いロバスト性を示した。
+- 「Fulfill Grocery Orders」タスクでは、実機で25/25（100%）の成功率を達成した。
+- USB-Cケーブル挿入タスクでは、0.93の成功率を達成し、手動で設計されたROSベースのグラフと同等の性能を示した。
+- 協力的な二腕操作タスク（crate washing）においても、手動で調整されたベースラインに迫る信頼性とスループットを達成した。
+- ablation study（要素除去実験）により、グラフ構造、マルチエージェントアーキテクチャ、自己学習メカニズムが性能向上に不可欠であることを示した。
+
+## 4. 課題：本手法の限界・課題にはなにか。本文中で著者が言及しているものと、あなたが想定するもの
+**著者が言及している課題:**
+- 産業レベルの実行信頼性にはまだ達しておらず、さらなる自己学習とパラメータ調整が必要である。
+- 実行時間は依然として業界標準（例：500 units/hour、7秒/インスタンス）よりも遅く、VLM推論リクエストやIKモーションプランニング時間の削減が必要である。
+- 提案した8つのベンチマークは、 quasi-static（準静的）なピッキング・プレース操作に焦点を当てており、変形可能なオブジェクト、動的な力、移動ターゲットを扱うタスクへの適用にはさらなる研究が必要である。
+
+**想定される課題:**
+- **大規模タスクへのスケーラビリティ:** 非常に複雑で長大なタスクを分解し、グラフ構造として効率的に表現・最適化する際の計算コストや管理の複雑さが増大する可能性がある。
+- **スキルライブラリの網羅性:** MORSLライブラリのスキルがタスクの要求を完全に満たせない場合、GaPの性能は限界に達する。新しいスキルや既存スキルの改良が継続的に必要となる。
+- **エージェント間の協調と競合:** マルチエージェントシステムは、エージェント間の効果的な協調が鍵となる。エージェント間の意図しない競合や、非効率なリソース配分が発生する可能性も考えられる。
+- **シミュレーションと実世界のギャップ:** シミュレーションでの自己学習の成果が、実世界で期待通りに汎化しない場合がある。特に、物理的な相互作用やセンサーノイズなどの要素が、パフォーマンスに影響を与える可能性がある。
+
+## 5. 技術詳細：提案手法の技術的な詳細について、できるだけ詳しく。数式やアルゴリズム、モデル構造なども可能な限り詳しく
+GaPは、変動自動化（VA）タスクを解くためのマルチエージェント（LLM/VLM）ベースのコーディングハーネスである。その核となるのは、ロボットのポリシーを計算グラフとして表現する「Graph-as-Policy (GaP)」の概念である。
+
+**1. システムアーキテクチャ:**
+GaPは、主に以下の要素から構成される。
+- **Orchestration Agent（オーケストレーションエージェント）:** 高レベルのタスク仕様（自然言語）を受け取り、タスクを機能的なセグメントに分割し、各セグメントを担当するSkill Agentに指示を出す。
+- **Skill Agents（スキルエージェント）:** 特定の機能（知覚、計画、制御など）を担当し、モジュール化されたロボットスキルライブラリ（MORSL）から原子的なノード（スキル）を合成し、局所的な計算グラフ（サブグラフ）を生成する。
+- **Modular Open Robot Skill Library (MORSL):** ロボットの基本機能（知覚、把持計画、モーションプランニング、制御など）をカプセル化した原子的な「スキル」の集合。各スキルは、入力、出力、セマンティックパラメータ、事前条件を宣言するメタデータを持つ。
+- **Multi-agent Self-Learning Harness:** LLMおよびVLMエージェントを協調させ、生成された計算グラフを内部シミュレーション環境で並列的に実行・評価し、反復的にグラフ構造とパラメータを最適化する。
+- **Graph Interpreter（グラフインタープリター）:** 最適化された計算グラフをロボット上で実行する。
+
+**2. 変動自動化 (VA) タスクの定義:**
+VAタスクは、以下のタプルで形式化される。
+$\mathcal{T}=\langle\mathcal{L},\mathcal{E},\mathcal{R},\mathcal{O},\mathcal{X},\mathcal{B},\mathcal{J}\rangle$
+
+- $\mathcal{L}$: 自然言語でのタスク指示（Language Space）
+- $\mathcal{E}$: 作業環境（Environment）
+- $\mathcal{R}$: ロボットとセンサー設定（Robot Configuration）
+- $\mathcal{O}$: オブジェクトセット（Object Set）
+- $\mathcal{X}$: 状態空間（State Space）
+- $\mathcal{B}$: 認識空間（Belief Space）: オブジェクトの姿勢などの確率分布
+- $\mathcal{J}$: 報酬関数（Reward Function）: $w_{s}\cdot\mathbb{I}(\text{success})+w_{t}\cdot\Phi$ （成功率とスループットの加重和）
+
+**3. ポリシー表現（計算グラフ）:**
+ロボットのポリシーは、有向実行グラフ $\mathcal{G}$ で表現される。
+- **Nodes (ノード):** 「スキル」と呼ばれる原子的な機能単位。各ノードは、単一のロボット操作（例：カメラフレーム取得、推論実行、モーションプランニング） encapsulate する。
+- **Edges (エッジ):**
+    - **Data Edges (データエッジ):** ノード間のデータフローと実行順序を定義する。
+    - **Control Edges (制御エッジ):** 条件分岐を担う。
+
+**4. GaPによるグラフ生成と自己学習:**
+
+**a. グラフ生成:**
+1. **タスク分解:** Orchestration Agent が $\mathcal{L}$ を受け取り、タスクをセグメントに分割する。
+2. **サブグラフ合成:** 各 Skill Agent が、担当セグメントに対応するMORSLスキルノードからサブグラフを合成する。
+3. **グラフ集約:** Orchestration Agent がサブグラフを集約し、実行可能な計算グラフ $\mathcal{G}$ を構築する。
+
+**b. 自己学習（Graph Rehearsal and Optimization）:**
+アルゴリズムの疑似コード:
+```python
+G = Graph_Init(L)  # 初期グラフ生成
+for j in range(M):  # M回のイテレーション
+    # タスクインスタンスのサンプリング
+    sampled_task_instances = []
+    for _ in range(N):  # N個のタスクインスタンス
+        task_instance = sample_from_belief_space(B)
+        sampled_task_instances.append(task_instance)
+
+    # 並列リハーサル
+    rollout_results = []
+    for instance in sampled_task_instances:
+        # 内部シミュレーション環境でグラフGを実行
+        execution_trace = Rehearsal(instance, G)
+        rollout_results.append(execution_trace)
+
+    # 失敗分析
+    failure_analysis_results = []
+    for trace in rollout_results:
+        if not trace.is_success():
+            failure_reason = Analyze_Failure(trace, G, sampled_task_instances)
+            failure_analysis_results.append(failure_reason)
+
+    # グラフ更新
+    G = Graph_Update(failure_analysis_results) # LLMエージェントがグラフ構造やパラメータを更新
+
+G_optimal = G # 最適化されたグラフ
+```
+
+- **Rehearsal (リハーサル):** 内部シミュレーション環境（例：NVIDIA Isaac Sim）で、サンプリングされたタスクインスタンス $\hat{s}_i$ に対して現在のグラフ $\mathcal{G}_{j-1}$ を実行する。
+- **Analyze_Failure (失敗分析):** リハーサル結果から失敗の原因を分析し、LLMエージェントにフィードバックとして提供する。これは、シミュレーションされたオブジェクトの状態変化や接触情報などを基に行われる。
+- **Graph_Update (グラフ更新):** LLMエージェントは、失敗分析の結果に基づき、グラフのトポロジー（ノードの追加・削除・置換、エッジの変更）やノードのパラメータ（例：把持オフセット、軌道パラメータ）を修正・更新する。
+
+**c. MORSLにおけるスキル例:**
+- **Perception:** SAM2, Grounding DINO, Point to object, VQA
+- **Grasp Planning:** GraspGen, Contact GraspNet, M2T2
+- **Motion Planning:** CuRobo (Cartesian Linear Motion Planning), ROS Translator
+- **Vision Utilities:** DBSCAN for point cloud processing
+- **Control:** Visuomotor Interactive Perception Policies
+
+**d. ROSとの統合:**
+GaPは、ROSノードをラップしたスキルとして統合できる。これにより、既存のROSベースのシステムとの連携が可能になる。例えば、ケーブル挿入タスクでは、ROSノード（`align_to_port`, `touch_port`, `insert`, `extract`）をGaPのスキルとして利用し、長距離タスクのためのサブグラフを生成した。
+
+**e. 失敗フィードバックの例（Make Popcorn タスク）:**
+- **Perception:** PanのOBB（Oriented Bounding Box）がStoveのOBBと重ならず、接触していない。
+- **Grasp:** グリッパーが開いたままで、Panがテーブルに残る（gripper_open_fraction=1.0）。
+- **Placement:** Panがリリースされた後、StoveのXYフットプリントとの重なりが70%未満である（pan_coverage_of_burner &lt;= 0.7）。
+
+これらのフィードバックを受け、LLMエージェントは、把持方法の改善、Panの配置ターゲットとリリース姿勢の調整、またはGrashGenとOBB把持プランナーを組み合わせたスキルの使用などを検討する。
+
+## 6. この論文を140字以内のツイートで要約すると？
+ロボットの変動自動化タスクに、LLMと計算グラフで挑む！GaPは、スキルを繋いだグラフをシミュレーションで学習・改善し、複雑な作業を自律的にこなす。実機・ sim で高成功率を達成。 #ロボット工学 #AI #自動化</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

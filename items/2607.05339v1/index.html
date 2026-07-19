@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TREK: Distill to Explore, Reinforce to Refine</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>TREK: Distill to Explore, Reinforce to Refine</h1>
+<p><strong>Date:</strong> 2026-07-06</p>
+<p><strong>Source:</strong> paper / hf-papers</p>
+
+<p><a href="http://arxiv.org/abs/2607.05339v1">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body"># タイトル
+TREK: Distill to Explore, Reinforce to Refine [View Paper](http://arxiv.org/abs/2607.05339v1)
+
+## 1. 問題意識：解決したい問題はなにか
+Group Relative Policy Optimization (GRPO)のような既存の強化学習手法は、現在のポリシーが有用な推論経路を生成できる場合には有効ですが、正解の解法モードが学習対象（学生モデル）のオンポリシーサポート外にあるような難しいプロンプト（hard prompts）に対しては性能が停滞するという問題があります。これは、学習対象モデルが探索できる範囲が限られており、正解にたどり着くための経路を自身では生成できないことが原因です。したがって、学習対象モデルの探索範囲を効果的に拡大し、より難しい問題に対処できるようにすることが課題です。
+
+## 2. 提案手法のアプローチ：どのようなアイデア・アプローチで問題を解決しようとしたか
+本研究では、この問題を解決するためにTREK（Teacher-Routed Exploration via Forward KL）という段階的な手法を提案しています。TREKは、蒸留（distillation）を模倣のためではなく、探索空間の拡大（exploration support expansion）のために利用します。
+
+TREKの主なアプローチは以下の通りです。
+
+*   **教師（Teacher）によるルーティングと提案:** 既存のGRPOが苦戦する「正解モードが学習対象のオンポリシーサポート外にある」ような難しいプロンプトを特定します。これらのプロンプトに対して、外部の教師モデル（ブラックボックス、ホワイトボックス問わず）や、追加の推論時コンテキストを与えられた同一モデル（セルフコンテキスト）から、検証済みの解答候補（verified candidate solutions）を生成させます。
+*   **学習対象モデルとの近さによる選別:** 生成された解答候補の中から、現在の学習対象モデルの生成確率（likelihood）が最も高い上位r個の候補を選びます。これにより、学習対象モデルにとって学習しやすい、かつ正解である可能性の高い候補に絞り込みます。
+*   **Forward-KLによるサポート拡大:** 選ばれた候補解答に対し、短いForward-KL（Forward Kullback-Leibler divergence）フェーズを適用します。これは、学習対象モデルがこれらの検証済み解法モードを自身のサポート内に取り込むように促すものです。
+*   **GRPOによる洗練:** サポートが拡大された後、標準的なオンポリシーGRPOによる洗練フェーズに戻ります。これにより、学習対象モデルは探索範囲が拡大されたことで、以前は生成できなかった正解経路を生成できるようになり、最終的な性能が向上します。
+
+このアプローチの鍵は、教師からの情報を「模倣対象」としてではなく、「探索の方向性を示す提案」として利用する点にあります。
+
+## 3. 成果：提案手法により、何が達成できたのか
+TREKを導入することで、様々なタスクにおいて顕著な性能向上が達成されました。
+
+*   **数学的推論:**
+    *   Qwen3モデル（1.7B、8B、14Bスケール）において、AIME 2024およびAIME 2025のテストで、DeepSeek-V4を教師としたTREKが標準のGRPOを全てのスケールで一貫して上回りました。
+    *   Qwen3-8Bモデルでは、AIME 2025の正解率が36.9%から40.3%に、AIME 2024では47.9%から51.1%に向上しました（avg@16）。
+    *   外部教師を使用しないセルフコンテキスト（failure-lesson memoryを付加した同一モデル）のバリアントでも、Qwen3-8BモデルのAIME 2025で38.5%、AIME 2024で49.6%という高い性能を達成しました。
+*   **エージェントタスク:**
+    *   ALFWorld（Qwen2.5-7B-Instruct使用）では、成功率が75.8%から82.8%に向上しました。
+    *   ScienceWorldでは、成功率が12.5%から26.7%に大幅に向上しました。
+    *   特に、最も難しいタスクタイプにおいては、TREKは学習初期段階で高い成功率を達成しました。一方、教師なしGRPOでは同等のレベルに到達するために、より多くの最適化ステップを必要としました。これは、TREKが学習初期から困難なタスクに対する解決能力を加速できることを示しています。
+
+これらの結果は、TREKが学習対象モデルの探索能力を効果的に拡大し、特に困難なプロンプトやタスクにおいて、既存手法の限界を克服できることを示しています。
+
+## 4. 課題：本手法の限界・課題にはなにか。本文中で著者が言及しているものと、あなたが想定するもの
+### 本文中で著者が言及している課題
+*   **検証器（Verifier）の品質への依存:** 提案手法の性能は、解答候補のフィルタリングに用いる検証器の品質に依存します。より強力な検証器は、より有益な候補選定を可能にしますが、検証器の性能が低い場合、選定される候補の質も低下します。
+*   **探索範囲の拡大における「近さ」の指標:** 現在の学習対象モデルとの「近さ」（reachability proxy、trimmed NLL）の指標は、候補のランキングには有効ですが、細かい学習可能性（learnability）を捉えきれない場合があります。また、冗長性（verbosity）や表面的な形式（surface form）に影響を受けやすい可能性があります。
+*   **オーバーヘッドの増加:** 教師クエリや検証器の呼び出しが、通常のGRPOに加えて行われるため、計算コストが増加します。より適応的なスケジューリングによりオーバーヘッドを削減できる可能性はありますが、追加のエンジニアリングが必要となります。
+*   **検証済みのみのルールの保守性:** 現在、検証済みの解答のみを採用するルールは保守的な選択であり、本質的な要件ではありません。検証に失敗した教師の経路にも、有用な推論パターンや代替的な分解、サブゴール構造が含まれる可能性があり、これらを活用することで探索範囲を広げられる可能性があります。しかし、現時点では、検証に失敗した経路は学習対象モデルのサポートから大きく外れていることが多く、統合（consolidation）が不安定になるため、検証済みの経路に限定しています。
+
+### あなたが想定する課題
+*   **教師モデルの選択と性能:** 提案手法は教師モデルの性能に大きく依存します。強力な教師モデルを用意できない場合や、教師モデルが学習対象モデルとあまりにもかけ離れている場合、効果が限定的になる可能性があります。
+*   **ハイパーパラメータチューニング:** 上位r個の候補を選定する`r`や、Forward-KLのフェーズの長さ、ルーティングの閾値`tau_low`など、いくつかのハイパーパラメータが存在します。これらの適切な設定を見つけるためには、実験的なチューニングが必要となる可能性があります。
+*   **「hard prompts」の定義と特定:** `p_S(x) &lt;= tau_low` という基準でhard promptsを特定していますが、この閾値がタスクやモデルの特性によって最適値が異なる可能性があります。また、動的に変化する学習対象モデルの能力に合わせて、この閾値を適応的に調整する仕組みが必要になるかもしれません。
+*   **セルフコンテキストにおける「failure-lesson memory」の構築コスト:** セルフコンテキストバリアントで利用されるfailure-lesson memoryは、事前に大量の失敗例から生成する必要があり、その構築にコストがかかる可能性があります。このmemoryの質も性能に影響を与えると考えられます。
+*   **計算リソース:** 大規模言語モデルの学習には、そもそも多大な計算リソースが必要です。TREKは、教師モデルの利用や追加の計算ステップにより、さらにリソース要求を増加させる可能性があります。
+
+## 5. 技術詳細：提案手法の技術的な詳細について、できるだけ詳しく。数式やアルゴリズム、モデル構造なども可能な限り詳しく
+### アルゴリズム概要
+TREKは、以下の段階的なプロセスで構成されます。
+
+1.  **ルーティング (Routing):**
+    *   各プロンプト`x`について、現在の学習対象モデル`pi_theta`による unaided student pass rate `p_S(x)` を推定します。
+    *   `p_S(x) &lt;= tau_low` を満たすプロンプトを「hard prompts」として特定します。これらのプロンプトのみが、提案（proposal）生成の対象となります。`tau_low` はハイパーパラメータです。
+
+2.  **提案生成 (Proposal Generation):**
+    *   hard prompts に対して、外部の教師モデル（`pi_T`）またはセルフコンテキスト（`pi_theta` + additional context）を用いて、解答候補（trajectories）`y_T` を生成します。
+    *   教師モデルは、ブラックボックス、ホワイトボックス、または追加コンテキストを持つ同一モデルのいずれでも構いません。
+
+3.  **選別 (Selection):**
+    *   生成された解答候補`y_T`の中から、検証器`V`によって合格したもの（`V(y_T) == 1`）のみを残します。
+    *   合格した候補の中から、現在の学習対象モデル`pi_theta`における尤度（likelihood）に基づいて、上位`r`個の候補を選びます。この尤度は、trimmed length-normalized NLL (`d_S(y_T | x)`) で測定され、値が小さいほど学習対象モデルとの近さを示します。
+    *   選ばれた集合を `Y_reach(x)` とします。
+    ```python
+    # pseudocode for selection
+    verified_proposals = [proposal for proposal in generated_proposals if verifier(proposal)]
+    if verified_proposals:
+        # Measure reachability using trimmed NLL
+        reachability_scores = [trimmed_nll(proposal, student_model) for proposal in verified_proposals]
+        # Sort by reachability score and take top r
+        sorted_proposals = sorted(zip(verified_proposals, reachability_scores), key=lambda x: x[1])
+        Y_reach = [proposal for proposal, score in sorted_proposals[:r]]
+    else:
+        Y_reach = []
+    ```
+
+4.  **統合 (Consolidation) - Forward-KLフェーズ:**
+    *   選ばれたプロンプトと候補のペア `(x, y_T)` の集合 `D_scaf = {(x, y_T) | p_S(x) &lt;= tau_low, y_T in Y_reach(x)}` に対して、短い Forward-KL アップデートを行います。
+    *   目的関数は、提案分布 `q_prop` と学習対象モデルのポリシー `pi_theta` の間のKLダイバージェンスを最小化することです。
+    *   提案分布 `q_prop(y | x)` は、検証済みの候補 `y_T` を持つ分布として定義されます。教師の確率 `pi_T` が利用可能であれば `q_prop(y | x) ~ pi_T(y | x) * I(V(y)=1) * I(y in Y_reach(x))` となりますが、ブラックボックスやセルフコンテキストの場合は、単に選ばれた候補 `y_T` を用いて `q_prop` を近似します。
+    *   教師の確率が利用できない場合、この目的関数は、選ばれた候補 `y_T` に対する学習対象モデルの負の対数尤度（NLL）の平均として簡略化されます。
+    ```python
+    # pseudocode for consolidation
+    # For each (prompt, proposal) in D_scaf:
+    #  Calculate proposal distribution q_prop from proposal
+    #  Minimize KL(q_prop || pi_theta)
+    #  This is equivalent to minimizing negative log-likelihood on proposal samples:
+    #  L_prop = - sum(log(pi_theta(proposal_token | prompt, prev_tokens))) over tokens in proposal
+    ```
+    *   このフェーズは、学習対象モデルのサポートを、検証済み解答モードへと近づけることを目的とします。
+
+5.  **洗練 (Refinement) - GRPOフェーズ:**
+    *   Forward-KLフェーズでサポートが拡大されたプロンプトは、通常のGRPOのルーチンに戻されます。
+    *   GRPOは、学習対象モデルの現在のポリシーからサンプリングされた経路に対して、検証器からの報酬を用いて学習を行います。
+    *   GRPOの目的関数は、グループ内での相対的な優位性（advantage）に基づき、クリップされた目的関数として定義されます。
+
+### 数式・用語の詳細
+
+*   **GRPO (Group Relative Policy Optimization):**
+    *   プロンプト `x` に対して、ポリシー `pi_theta` から `G` 個の候補経路 `{y_i}_{i=1}^G` をサンプリングします。
+    *   各経路 `y_i` に報酬 `r_i` が与えられます。
+    *   グループ正規化されたアドバンテージ `A_i` は次のように定義されます。
+        `A_i = (r_i - mean({r_j}_{j=1}^G)) / (std({r_j}_{j=1}^G) + epsilon)`
+    *   クリップされたGRPOの目的関数は以下のようになります。
+        `L_GRPO(x) = - (1/G) * sum_{i=1}^G sum_{t=1}^{|y_i|} min(rho_{i,t} * A_i, clip(rho_{i,t}, 1-epsilon, 1+epsilon) * A_i) + beta * KL(pi_theta || pi_ref)`
+        ここで `rho_{i,t} = pi_theta(y_{i,t} | x, y_{i,&lt;t}) / pi_theta_old(y_{i,t} | x, y_{i,&lt;t})` です。
+    *   GRPOの限界は、学習対象モデルが既にサンプリングできる経路モードのみを強化できる点です。
+
+*   **Unaided Student Pass Rate `p_S(x)`:**
+    *   プロンプト `x` に対する、学習対象モデル `pi_theta` の自力での正解率。
+    *   `p_S(x) = (1/K) * sum_{i=1}^K Indicator(V(y_S^i) == 1)`
+    *   ここで `y_S^i ~ pi_theta(. | x)` は、学習対象モデルからの `K` 個の独立したサンプルです。
+
+*   **Trimmed Length-Normalized NLL `d_S(y_T | x)`:**
+    *   教師から得られた経路 `y_T` が、学習対象モデル `pi_theta` のサポートにどれだけ近いかを示す指標。
+    *   `l_t(y_T | x) = -log(pi_theta(y_{T,t} | x, y_{T,&lt;t}))` をトークンレベルのNLLとします。
+    *   `I(alpha, beta)(y_T)` は、トークン損失の `alpha` 分位から `beta` 分位までのインデックスの集合です。
+    *   `d_S(y_T | x) = (1 / |I(alpha, beta)(y_T)|) * sum_{t in I(alpha, beta)(y_T)} l_t(y_T | x)`
+    *   この指標は、低位と高位の損失をトリムすることで、ボイラープレートやフォーマット、あるいは外れ値の影響を軽減します。値が小さいほど、学習対象モデルとの近さを示します。
+
+*   **Forward-KL Consolidation:**
+    *   学習対象モデルのサポートを、提案されたモードに近づけるための目的関数。
+    *   `L_FKL(x) = KL(q_prop(. | x) || pi_theta(. | x))`
+    *   `= E_{y ~ q_prop} [-log(pi_theta(y | x))] + const.`
+    *   教師の確率 `pi_T` が利用できない場合（ブラックボックスやセルフコンテキスト）、これは選ばれた提案 `y_T` に対する、学習対象モデルの NLL の最小化に相当します。
+    *   `L_prop(x, y_T) = - sum_{t=1}^{|y_T|} log(pi_theta(y_{T,t} | x, y_{T,&lt;t}))`
+
+### モデル構造
+TREK自体は、モデル構造というよりは、既存のモデル（学習対象モデルと教師モデル）をどのように組み合わせて学習を進めるかという「学習フレームワーク」です。
+
+*   **学習対象モデル (Student Model):** GRPOなどの強化学習手法を用いて、最終的にデプロイされるモデル。
+*   **教師モデル (Teacher Model):**
+    *   **外部教師:** より強力な別のLLM（例: DeepSeek-V4）。ブラックボックスまたはホワイトボックスとして利用可能。
+    *   **セルフコンテキスト:** 学習対象モデルと同じチェックポイントを使用し、推論時に追加のコンテキスト（例: failure-lesson memory）を付加したもの。
+*   **検証器 (Verifier):** モデルの出力を評価し、正解かどうかを判断するメカニズム。数学問題であれば、解答の正確性をチェックするもの。エージェントタスクであれば、環境での成功を判定するもの。
+
+### アルゴリズムフロー
+```
+Initialize student model (pi_theta) and teacher model (pi_T)
+
+For each training epoch/round:
+    // 1. Routing &amp; Unaided Rollouts
+    For each prompt x:
+        Generate K unaided trajectories {y_S^i} from pi_theta
+        Estimate pass rate p_S(x) = count(V(y_S^i) == 1) / K
+
+    // Identify hard prompts
+    hard_prompts = {x | p_S(x) &lt;= tau_low}
+    easy_prompts = {x | p_S(x) &gt; tau_low}
+
+    // 2. Proposal Generation (for hard prompts)
+    generated_proposals = {}
+    For each x in hard_prompts:
+        Generate proposals y_T from teacher (pi_T or pi_theta + context)
+        generated_proposals[x] = proposals
+
+    // 3. Selection
+    D_scaf = [] # Stores (prompt, verified_proposal) pairs for consolidation
+    For each x in hard_prompts:
+        verified_proposals = [p for p in generated_proposals[x] if verifier(p)]
+        If verified_proposals:
+            # Calculate reachability scores (e.g., trimmed NLL) w.r.t current pi_theta
+            reachability_scores = [(p, trimmed_nll(p, pi_theta)) for p in verified_proposals]
+            sorted_proposals = sorted(reachability_scores, key=lambda item: item[1])
+            top_r_proposals = [p for p, score in sorted_proposals[:r]]
+            For each proposal y_T in top_r_proposals:
+                D_scaf.append((x, y_T))
+
+    // 4. Consolidation (Forward-KL phase)
+    If D_scaf is not empty:
+        # Apply a short Forward-KL update on D_scaf
+        # This is effectively supervised learning on the verified proposals
+        # L_prop = E_{(x, y_T) ~ D_scaf} [- sum(log(pi_theta(y_T,t | x, y_T,&lt;t))) over tokens t]
+        # Update pi_theta using L_prop (e.g., with optimizer like Adam)
+        # This phase is typically short (e.g., one epoch)
+
+    // 5. Refinement (GRPO phase)
+    // Prompts in D_scaf are now candidates for GRPO
+    // Prompts in easy_prompts are also candidates
+    all_prompts_for_grpo = easy_prompts + list(set([p for p, _ in D_scaf]))
+
+    For each x in all_prompts_for_grpo:
+        Generate G trajectories {y_i} from current pi_theta
+        Get rewards r_i for {y_i} using verifier
+        Calculate GRPO objective L_GRPO(x)
+        # Update pi_theta using L_GRPO(x) (e.g., with PPO or similar algorithm)
+
+    // Periodically refresh routing decisions (e.g., at the start of each epoch)
+```
+
+## 6. この論文を140字以内のツイートで要約すると？
+GRPOはhard promptで停滞。TREKは教師誘導で探索空間を拡大！難しい問題も、教師の「ヒント」を近さで選び、Forward-KLで模倣、最後にGRPOで強化。数学・エージェントタスクで性能向上、学習も加速！#LLM #強化学習</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

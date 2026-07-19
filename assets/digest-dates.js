@@ -1,1 +1,1 @@
-window.KB_DIGEST_DATES = [{"date": "2026-06-27", "count": 108}];
+window.KB_DIGEST_DATES = [{"date": "2026-07-09", "count": 143}, {"date": "2026-07-07", "count": 111}, {"date": "2026-07-05", "count": 79}, {"date": "2026-06-27", "count": 108}];

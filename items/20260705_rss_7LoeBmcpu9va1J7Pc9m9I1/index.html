@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Claude Codeの回答待ちに対する自動続行設定(askUserQuestionTimeout)について調査してみた</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>Claude Codeの回答待ちに対する自動続行設定(askUserQuestionTimeout)について調査してみた</h1>
+<p><strong>Date:</strong> 2026-07-05</p>
+<p><strong>Source:</strong> rss / DevelopersIO</p>
+
+<p><a href="https://dev.classmethod.jp/articles/claude-code-ask-user-question-timeout/">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">Claude Codeでは、エージェントが作業中にユーザーに選択式の質問を投げかける「AskUserQuestion」という機能があります。しかし、この質問が表示されたままユーザーが離席すると、回答があるまでエージェントの作業が停止してしまうという課題がありました。
+
+この問題を解決するために、**`askUserQuestionTimeout`** という設定キーが導入されました。この設定を有効にすると、AskUserQuestionの質問ダイアログが一定時間操作されない（アイドル状態が続く）場合に、その時点で選択されているオプションを自動的に採用して処理を続行します。
+
+**`askUserQuestionTimeout` の主な仕様:**
+
+*   **設定キー:** `askUserQuestionTimeout`
+*   **デフォルト値:** `&#34;never&#34;` (無期限に回答を待つ)
+*   **指定可能な値:** `&#34;60s&#34;`、`&#34;5m&#34;`、`&#34;10m&#34;` のような時間指定文字列、または `&#34;never&#34;`
+*   **設定スコープ:** ユーザー設定 (`~/.claude/settings.json`) のみ
+*   **必要バージョン:** Claude Code v2.1.200以降
+
+**設定方法:**
+ユーザー設定ファイル (`~/.claude/settings.json`) に、トップレベルキーとして `askUserQuestionTimeout` を追加します。例えば、5分間操作がなければ自動続行させたい場合は、以下のように記述します。
+
+```json
+{
+  &#34;askUserQuestionTimeout&#34;: &#34;5m&#34;
+}
+```
+
+**注意点:**
+
+*   **ユーザースコープ専用:** この設定はユーザー個人に紐づく設定であり、プロジェクト設定 (`.claude/settings.json`) やローカル設定 (`.claude/settings.local.json`) では読み取られません。
+*   **自動続行されるのは事前選択中のオプション:** タイムアウト時に採用されるのは、その時点でダイアログ上に選択されているオプションです。意図しない選択肢で処理が進む可能性もあるため、長時間の自動作業や重要な判断が伴うタスクでは、タイムアウト値を長めに設定するか、`&#34;never&#34;` のままにしておくなど、タスクの内容に応じて使い分けることが推奨されます。
+
+この `askUserQuestionTimeout` 設定は、Claude Codeを長時間の自律作業に利用する際に、質問で作業が止まり続けることを防ぐのに役立ち、エージェントに作業を任せて放置するワークフローとの相性が良いと言えます。ただし、質問への回答はユーザーの判断を反映する重要な要素であるため、自動続行に過度に依存せず、タスクの性質に応じてタイムアウト値を適切に設定することが重要です。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>PL/SQLのバッチ処理をTemplate Methodパターンで共通化する</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>PL/SQLのバッチ処理をTemplate Methodパターンで共通化する</h1>
+<p><strong>Date:</strong> 2026-07-07</p>
+<p><strong>Source:</strong> rss / Qiita Trend</p>
+
+<p><a href="https://qiita.com/take-yoda/items/a8e097a488923360b03b?utm_campaign=popular_items&amp;utm_medium=feed&amp;utm_source=popular_items">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">PL/SQLで、複数のバッチ処理の共通化をTemplate Methodパターンを用いて実現する方法について解説しています。
+
+**課題:**
+PL/SQLのストアドプロシージャでバッチ処理を実装する際、ログ出力やエラーハンドリングなどの共通部分を毎回コピー＆ペーストして記述しており、コードの重複や保守性の低下、記述のばらつきが生じやすい。
+
+**解決策:**
+GoFデザインパターンのTemplate Methodパターンを、PL/SQLのTYPEオブジェクト（オブジェクト指向機能）を用いて実装する。これにより、バッチ処理の「骨格（アルゴリズム）」を親クラスで固定し、各バッチ固有の処理（抽出、検証、変換、ロードなど）のみを子クラスで実装する構成にする。
+
+**Template Methodパターンの概要:**
+*   親クラス：処理の全体的な手順（テンプレートメソッド）と共通処理（ログ出力、エラーハンドリングなど）を定義する。
+*   子クラス：親クラスのテンプレートメソッドから呼び出される、個別のステップ（抽象メソッド）を実装する。
+*   子クラスは親クラスを継承し、必要に応じて共通処理（フックメソッド）をオーバーライドできる。
+*   呼び出し側は、子クラスの具体的な型を意識せず、親クラスの型として扱える（ポリモーフィズム）。
+
+**PL/SQLでの実装:**
+1.  **親タイプ (`t_batch_template`) の定義:**
+    *   `CREATE TYPE ... AS OBJECT` でクラスを定義。
+    *   `NOT INSTANTIABLE MEMBER PROCEDURE` で、各バッチ処理ステップ（`extract_data`, `validate_data`, `transform_data`, `load_data`）を抽象メソッドとして宣言。これらはサブタイプで必ず実装する必要がある。
+    *   `MEMBER PROCEDURE on_error` のようなフックメソッドを定義。デフォルト実装を持ち、必要に応じてサブタイプでオーバーライド可能。
+    *   `FINAL MEMBER PROCEDURE run` で、処理の骨格となるテンプレートメソッドを定義。`FINAL`キーワードにより、サブタイプからのオーバーライドを禁止する。このメソッド内で、抽象メソッドやフックメソッドが順番に呼び出される。
+    *   `NOT INSTANTIABLE NOT FINAL` をTYPEレベルに指定し、このTYPE自体は直接インスタンス化できない抽象クラスであることを示す。
+
+2.  **サブタイプの実装:**
+    *   `UNDER` キーワードで親タイプを継承して、各バッチ処理用のサブタイプ（例: `t_customer_sync_batch`, `t_order_aggregate_batch`）を作成。
+    *   `OVERRIDING MEMBER PROCEDURE` で、親タイプで宣言された抽象メソッドを実装する。ここに各バッチ固有のビジネスロジックを記述する。
+    *   必要に応じて、フックメソッド（例: `on_error`）をオーバーライドする。
+
+3.  **実行:**
+    *   各サブタイプのインスタンスを作成し、`run()` メソッドを呼び出す。
+    *   親タイプのコレクションに異なるサブタイプのインスタンスを格納し、ループで一括実行することで、ポリモーフィズムの効果を享受できる。
+
+**実装例:**
+*   **顧客データ同期バッチ (`t_customer_sync_batch`):** ステージングテーブルから顧客データを抽出し、検証・変換してマスタテーブルにロードする。
+*   **注文集計バッチ (`t_order_aggregate_batch`):** 注文データを集計し、日次集計テーブルに保存する。
+
+**エラーハンドリング:**
+`run` メソッド内の `EXCEPTION` ブロックで `SELF.on_error()` が呼び出され、エラーログが出力される。サブタイプで `on_error` をオーバーライドすることで、エラー発生時の追加処理（Slack通知など）も実装可能。
+
+**実務での注意点:**
+*   **TYPEの変更:** 稼働中のTYPEの変更は、依存オブジェクトへの影響を考慮し慎重に行う必要がある。
+*   **テーブルの列としてのTYPE:** TYPEをテーブルの列として使用する場合、`SUBSTITUTABLE AT ALL LEVELS` の指定が必要になる場合がある。
+*   **パフォーマンス:** オブジェクトメソッドの呼び出しには若干のオーバーヘッドがあるが、通常のバッチ処理では無視できる範囲。大量データ処理の場合はパフォーマンス検証を推奨。
+*   **ログの永続化:** `DBMS_OUTPUT` は対話的なセッションでのみ確認可能。本番運用では `UTL_FILE` パッケージなどを用いてログファイルに書き出すか、テーブルに記録することを検討する。`log_step` メソッドを親タイプに一元化することで、ログ出力方法の変更も容易に行える。
+
+**まとめ:**
+PL/SQLのTYPEオブジェクトを活用することで、Template Methodパターンを効果的に適用し、バッチ処理の共通化と保守性の向上を実現できる。これにより、コードの重複を防ぎ、開発効率を高めることが可能となる。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

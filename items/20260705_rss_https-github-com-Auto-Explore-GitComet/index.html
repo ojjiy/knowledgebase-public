@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>GitHub - Auto-Explore/GitComet: GitComet is fastest open source user interface for GIT workflows</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>GitHub - Auto-Explore/GitComet: GitComet is fastest open source user interface for GIT workflows</h1>
+<p><strong>Date:</strong> 2026-07-05</p>
+<p><strong>Source:</strong> rss / Hatena Bookmark Technology Hotentry</p>
+
+<p><a href="https://github.com/Auto-Explore/GitComet">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">## GitComet: 高速・ローカルファーストなオープンソースGit GUI
+
+GitCometは、高速なGit操作、ローカルファーストなプライバシー、使い慣れたワークフロー、そしてオープンソースの自由度を求めるチームのために開発された、オープンソースのGit GUIクライアントです。Linux、Windows、macOSに対応しています。
+
+### 主な特徴
+
+*   **高速なGit操作:** 巨大なリポジトリやファイル差分を扱う際にも、応答性・機能性を維持することを目指して開発されました。
+*   **ローカルファーストなプライバシー:** データの大部分をローカルで処理するため、プライバシーが保護されます。
+*   **使い慣れたワークフロー:** 既存のGitツールに慣れているユーザーでも、スムーズに移行できるようなインターフェースを提供します。
+*   **オープンソース:** 誰でも無料で利用、改変、再配布が可能です。
+*   **クロスプラットフォーム対応:** Linux、Windows、macOSで利用できます。
+
+### インストール方法
+
+各種OS向けに、GitHub Releasesからプリビルドバイナリ/インストーラーをダウンロードできます。
+
+*   **Windows:** インストーラーまたはポータブルバイナリ
+*   **macOS:** Homebrew (`brew tap auto-explore/gitcomet &amp;&amp; brew install --cask gitcomet`)
+*   **Linux:**
+    *   AppImage (Homebrew経由でもインストール可能)
+    *   APTリポジトリ (Debian, Ubuntu, WSLg向け)
+    *   AURパッケージ (Arch Linux向け)
+    *   リリースtarball、.debパッケージ
+    *   (aptパッケージ以外をDebian/Ubuntu/WSLgにインストールした場合、GUIランタイムライブラリの別途インストールが必要な場合があります: `sudo apt install libxcb1 libxkbcommon0 libxkbcommon-x11-0`)
+
+### 要件
+
+GitCometは、Git 2.50以降のローカルGitインストールが必要です。
+
+### エディション（計画中）
+
+*   **オープンソース (無料):**
+    *   ローカルファーストなデスクトップワークフロー
+    *   Gitリモート、プル/プッシュ、ステージング、コミット
+    *   ワークツリー、ブランチ、履歴全体
+    *   マルチリポジトリブラウジング
+    *   インラインおよびサイドバイサイド差分表示
+    *   2者間・3者間マージツール
+
+*   **プロフェッショナル (€20 ライフタイムアクセス、早期導入者限定):**
+    *   オープンソースエディションの全機能に加え、以下の機能が含まれます:
+        *   Claude Code, Codex, GitHub CLI連携
+        *   コードテストカバレッジワークフロー
+        *   GitHubおよびAzure DevOps連携
+        *   早期アクセス期間中の優先的な機能改善
+
+### 開発者向け情報
+
+*   **ソースからのビルド:** `cargo build -p gitcomet --features ui-gpui,gix`
+*   **コントリビューション:** 開発環境設定、ワークスペースレイアウト、テスト、カバレッジに関するドキュメントは `CONTRIBUTING.md` に記載されています。
+
+### Git difftool / mergetoolとしての利用
+
+GitCometは、`git difftool` および `git mergetool` から呼び出せるスタンドアロンの差分・マージツールとしても利用できます。ヘッドレスモード（アルゴリズムのみ）とGUIモード（インタラクティブなGPUIウィンドウ）の両方をサポートします。
+
+*   **設定/アンインストール:**
+    *   `gitcomet setup` コマンドで、グローバルにGitCometを差分・マージツールとして設定します。
+    *   `gitcomet uninstall` コマンドで、安全に統合を解除できます。
+    *   `--local` オプションで現在のリポジトリのみを対象にできます。
+    *   `--dry-run` オプションで、実行されるコマンドを確認できます。
+    *   設定は、GUIが表示可能な場合はGUIツールを、そうでない場合はヘッドレスツールを自動的に選択するように構成されます。
+
+### CLIモード
+
+*   **Difftool:** `gitcomet difftool --local &lt;path&gt; --remote &lt;path&gt; [--path &lt;display_name&gt;] [--label-left &lt;label&gt;] [--label-right &lt;label&gt;]`
+*   **Mergetool:** `gitcomet mergetool --local &lt;path&gt; --remote &lt;path&gt; --merged &lt;path&gt; [--base &lt;path&gt;] [--label-local &lt;label&gt;] [--label-remote &lt;label&gt;] [--label-base &lt;label&gt;]`
+
+KDiff3やMeldとの互換性も考慮されています。
+
+### テーマ
+
+GitCometは、組み込みテーマとユーザー提供のカスタムテーマをサポートしています。カスタムテーマは、JSONバンドルファイルとして読み込まれます。
+
+### クラッシュログ
+
+クラッシュ発生時、GitCometはクラッシュログを記録し、次回の起動時にGitHub issueとして報告するオプションを提供します。
+
+### ライセンス
+
+GitCometはGNU Affero General Public License Version 3 (AGPL-3.0-only) の下でライセンスされています。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

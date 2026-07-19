@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>GPUのメモリ（VRAM）を仮想ディスクにしちゃうトンデモアプリ「VRAMDISK」が登場／確かにメインメモリを「RAMディスク」にするのは一時期定番だったけど……【やじうまの杜】</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>GPUのメモリ（VRAM）を仮想ディスクにしちゃうトンデモアプリ「VRAMDISK」が登場／確かにメインメモリを「RAMディスク」にするのは一時期定番だったけど……【やじうまの杜】</h1>
+<p><strong>Date:</strong> 2026-07-09</p>
+<p><strong>Source:</strong> rss / Hatena Bookmark Technology Hotentry</p>
+
+<p><a href="https://forest.watch.impress.co.jp/docs/serial/yajiuma/2123636.html">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">GPUのメモリ（VRAM）を仮想ディスクとして利用できる、Windows向けのフリーソフトウェア「VRAMDISK」が登場しました。このアプリは、GPUのVRAMの一部を「RAMディスク」のようにマウントし、通常のストレージドライブとして利用できるようにします。
+
+「VRAMDISK」の最大の特徴は、VRAM上に置かれたファイルをそのままGPUの強力な並列計算能力を使って、超高速に圧縮、ハッシュ値計算、エンコードなどを行える点です。これにより、特にGPGPUを活用するような処理において、劇的なパフォーマンス向上が期待できます。
+
+利用するには、Maxwell世代以降のNVIDIA製GPUを搭載したWindows 10/11デバイスが必要です。また、仮想ファイルシステムを構築するために、別途「WinFsp」ドライバーのインストールが必須となります。
+
+「VRAMDISK」の使い方は、まず「vramdisk.exe」を起動し、使用するGPUデバイス、マウント先のドライブレターまたはフォルダー、そしてディスクサイズを指定して「マウント」ボタンをクリックするだけです。マウント後は、エクスプローラー上で通常のドライブと同様にファイルの読み書きが可能になります。
+
+ただし、注意点として、VRAMディスクに保存されたデータは、アンマウントやプログラムの終了時に消えてしまうため、一時的な作業領域として利用するのが適しています。
+
+なお、GPU上での圧縮やハッシュ値計算などの機能を利用するには、NVIDIAのGPU圧縮ライブラリ「nvCOMP」の追加導入が必要です。
+
+「RAMディスク」は、かつてHDDが主流だった時代にシステム高速化のために利用されていましたが、SSDの普及によりその役割は限定的になっていました。しかし、「VRAMDISK」はGPUの演算能力をストレージアクセスと連携させるという、新たなアプローチで注目を集めています。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

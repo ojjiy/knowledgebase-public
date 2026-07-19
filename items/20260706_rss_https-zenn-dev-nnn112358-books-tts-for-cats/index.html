@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TTS ― テキストが音になるまで</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>TTS ― テキストが音になるまで</h1>
+<p><strong>Date:</strong> 2026-07-06</p>
+<p><strong>Source:</strong> rss / Zenn ML</p>
+
+<p><a href="https://zenn.dev/nnn112358/books/tts-for-cats">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">本記事は、テキスト音声合成（TTS）技術の発展と主要なモデルについて、全31章にわたって解説するものです。
+
+まず、TTSの基本的な構成要素として、文字を音素に変換するG2P、音素をメルスペクトログラムに変換する音響モデル、そしてメルスペクトログラムを音声波形に変換するボコーダについて説明します。ボコーダの進化としては、WaveNet、HiFi-GAN、iSTFTNet、そして高速化を実現したVocosなどが紹介されます。
+
+次に、近年のTTS技術を牽引するVITSとその派生モデルに焦点が当てられます。VITSは、VAE（Variational Autoencoder）、Flow（正規化フロー）、GAN（Generative Adversarial Network）を統合したモデルであり、MAS（Multi-Accent Speaker）による音素と音の対応付け、SDP（Stochastic Duration Prediction）による自然なリズム生成が特徴です。Glow-TTSはVITSの前身となるモデルであり、VITS2ではその弱点を改良しています。StyleTTS 2は、Style DiffusionとWavLMを導入し、人間を超える音声を生成できるとしています。
+
+また、BERTのような言語モデルがTTSの自然な抑揚生成に貢献すること、LLM（大規模言語モデル）を音声生成に応用する発想や、Qwen3-TTSのような低遅延ストリーミングTTS、zero-shot TTS（学習していない人の声で話せる技術）についても触れられています。
+
+さらに、E2E（End-to-End）TTSの原点であるTacotron、Tacotron 2、そして非自己回帰で高速かつ速度調整可能なFastSpeechなどが解説されます。音声を「言語モデルで生成する」という概念を先駆けたVALL-E、音声を離散トークンに変換するEnCodec、ノイズからデータを生成するFlow Matching、継続長予測やテキストエンコーダを不要としたF5-TTS、G2P不要のLLM TTSであるFish-Speech、拡散モデルを用いてメルスペクトログラムを生成するGrad-TTS、そしてマスク予測による完全非自己回帰zero-shot TTSであるMaskGCTについても言及されています。
+
+全体として、本記事はTTS技術の基礎から最先端のモデルまでを網羅し、その進化の過程を詳細に解説することで、読者の理解を深めることを目的としています。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

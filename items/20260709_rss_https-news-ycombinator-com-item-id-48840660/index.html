@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Llama 2 LLM on DOS (2025)</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>Llama 2 LLM on DOS (2025)</h1>
+<p><strong>Date:</strong> 2026-07-09</p>
+<p><strong>Source:</strong> rss / Hacker News LLM</p>
+
+<p><a href="https://yeokhengmeng.com/2025/04/llama2-llm-on-dos/">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">本記事は、レトロコンピューティング愛好家が、MetaのLlama 2大規模言語モデル（LLM）を、1990年代および2000年代初頭のDOSで動作する古いPC上で実行させることに成功した経緯と技術的な詳細について説明しています。
+
+**背景:**
+近年、ローカル環境でLLMを実行することが可能になりつつありますが、一般的には高性能なGPUと大量のVRAMを必要とすると考えられています。しかし、2023年にAndrej Karpathy氏が公開した単一CファイルでLlama 2モデルの推論を可能にする「llama2.c」プロジェクトにより、この常識は覆されました。このプロジェクトは、Windows 98やPowerbook G4、さらにはマイクロコントローラーにまで移植されており、筆者はこれをさらに古いプラットフォームであるDOSへの移植を試みました。
+
+**技術的な詳細:**
+*   **llama2.cプロジェクト:** Karpathy氏のllama2.cは、シンプルさ、可読性、移植性を重視しつつ効率を追求したプロジェクトです。テストのために、TinyStoriesデータセットで学習された260K、15M、42M、110Mといった小規模なモデルが用意されています。
+*   **コンパイラとDOSエクステンダー:** 筆者はOpen Watcom v2 (OWC) をコンパイラとして選択しました。DOSプログラムを32ビットモードで動作させるために、DOSエクステンダーとしてDOS/4GまたはDOS/32を使用しました。これは、LLMの推論には最低でも32ビットシステムと、640KBを超えるメモリへのアクセスが必要なためです。
+*   **移植作業:**
+    *   **浮動小数点演算:** OWCの浮動小数点演算のサポートが限定的だったため、既存の倍精度関数をマクロでラップして対応しました。
+    *   **メモリマップ:** OWCではmmap関数がサポートされていなかったため、LLMファイルを丸ごとメモリにロードする方式に変更しました。これにより初期ロード時間は増加しますが、LLMの性質上、結局ほとんどの重みが使用されるため、シンプルさを優先しました。
+    *   **タイミング:** 推論速度計測のために、POSIXの`clock_gettime`に相当するAPIがなかったため、OWCの`clock()`関数を使用しました。
+    *   **ファイル名制限:** DOSの8.3ファイル名制限に対応するため、トークナイザーファイルのファイル名を短縮しました。
+
+**ベンチマーク:**
+30年前のPCから最新システムまで、様々な環境でLLMの推論速度（トークン/秒）を測定しました。DOS 6.22、メモリマネージャーなしの環境下での比較です。結果として、システムが新しいほど高速な推論が可能でしたが、最新のデスクトップPCでも、DOSエクステンダーの制限またはCPU/マザーボードの実装上の問題により、大規模モデルのロードに失敗するという興味深い現象も観測されました。Thinkpad T42 (2004年製) のパフォーマンスが、16年新しいThinkpad X13 Gen 1 (2020年製) と同等レベルになるという結果も示されています。
+
+**結論:**
+筆者は、この移植作業とテストを週末で行ったと述べており、Andre Karpathy氏の功績の大きさを強調しています。そして、依然として古いシステムでも達成できることの可能性に驚きを示しています。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

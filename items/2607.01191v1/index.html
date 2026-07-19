@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Perceive-to-Reason: Decoupling Perception and Reasoning for Fine-Grained Visual Reasoning</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>Perceive-to-Reason: Decoupling Perception and Reasoning for Fine-Grained Visual Reasoning</h1>
+<p><strong>Date:</strong> 2026-07-01</p>
+<p><strong>Source:</strong> paper / paperswithcode-trending</p>
+
+<p><a href="http://arxiv.org/abs/2607.01191v1">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body"># タイトル
+[Perceive-to-Reason: Decoupling Perception and Reasoning for Fine-Grained Visual Reasoning](http://arxiv.org/abs/2607.01191v1)
+
+## 1. 問題意識：解決したい問題はなにか
+高解像度画像に埋め込まれた、小さくても重要な視覚的手がかりを扱う、細粒度（fine-grained）の視覚的推論タスクにおいて、既存のビジョン・言語モデル（VLM）の性能が課題となっています。特に、これらのタスクでは、問題に関連する微妙な視覚的証拠を正確に特定（知覚）し、それに基づいて推論することが求められます。既存のアプローチでは、局所的な証拠を導入するために繰り返しクロッピングしたり、テスト時に視覚的検索を行ったりしますが、知覚（Perception）と推論（Reasoning）を明確に分離していません。そのため、モデルが証拠の特定に失敗するか、特定できても推論が不十分になるという問題がありました。
+
+## 2. 提案手法のアプローチ：どのようなアイデア・アプローチで問題を解決しようとしたか
+本論文では、細粒度視覚的推論を2段階のプロセスとして捉える「Perceive-to-Reason (P2R)」という統一フレームワークを提案しています。このアプローチの核心は、知覚と推論を明確に分離することです。
+1.  **Perceiver（知覚者）**: まず、モデルは質問に関連する証拠を画像の中から特定（局在化）します。
+2.  **Reasoner（推論者）**: 次に、Perceiverが特定した証拠（アノテーション付き画像やクロップされた領域）に基づいて、質問に回答します。
+これにより、証拠の特定を、単なる回答生成の副産物ではなく、明示的な中間ステップとして位置づけています。
+
+さらに、この分離された定式化に訓練を適合させるために、「Perception-Reasoning Alternating GRPO (PRA-GRPO)」という、役割を認識する強化学習戦略を導入しています。これは、最終的な回答のみを教師信号として使用し、知覚に焦点を当てた更新と推論に焦点を当てた更新を交互に行うことで、分離された学習を可能にします。
+
+## 3. 成果：提案手法により、何が達成できたのか
+P2Rフレームワークは、Qwen3-VL-Instruct-2B/4B/8Bモデルを基盤として、モデルスケール全体で一貫して性能を向上させました。具体的には、P2R-4Bは以下のベンチマークで優れた結果を達成しました。
+*   V-Star: 93.2%
+*   HR-Bench-4K: 81.9%
+*   HR-Bench-8K: 80.5%
+これらの結果は、対応するバックボーンモデルを大幅に上回っています。さらに、P2Rの利点は高解像度ベンチマークにとどまらず、より広範なマルチモーダル推論タスクにも拡張できることが示されました。これは、知覚と推論を明示的に分離することが、細粒度視覚的推論に効果的なフレームワークを提供することを示唆しています。
+
+## 4. 課題：本手法の限界・課題にはなにか。本文中で著者が言及しているものと、あなたが想定するもの
+**著者が言及している課題:**
+*   **推論コストの増加**: 2段階のパイプラインは、直接的なプロンプトと比較して、推論時の追加コストが発生します。
+*   **大規模学習の未探索**: 計算リソースの制約により、より大規模な学習スケールでのPRA-GRPOの挙動は完全には調査されていません。
+*   **疎 Sparse な学習信号**:PRA-GRPOは最終的な回答のみを教師信号として利用するため、バウンディングボックスのアノテーションを必要としませんが、学習信号が疎になる可能性があります。
+*   **汎化性の限界**: 現在の評価は主に細粒度視覚的推論に焦点を当てていますが、インタラクティブなシナリオや長期間にわたるタスクへの汎化性は今後の課題です。
+*   **プライバシーと倫理的考慮**: 細粒度知覚能力の向上は、プライバシーに敏感な設定で、画像内の微細な詳細を特定するリスクを高める可能性があります。また、モデルの出力は完全な説明とは見なすべきではありません。
+
+**想定される課題（本文から直接言及されていないが、示唆されるもの）:**
+*   **Perceiverの誤った局在化による推論の誤り**: Perceiverが誤った証拠を局在化した場合、Reasonerが正しい推論を行っても最終的な回答は間違ったものになる可能性があります。
+*   **PRA-GRPOにおける役割間のバランス**: 知覚フェーズと推論フェーズの交互更新において、どちらか一方の学習が過度に偏ると、全体の性能に影響を与える可能性があります。
+*   **クロップ領域のサイズと内容の最適化**: Perceiverが生成するクロップ領域のサイズや、その中に含まれるべき証拠の範囲をどのように最適化するかは、依然として洗練の余地があるかもしれません。例えば、あるケースでは、正解に必要な証拠の一部しかクロップされなかったために誤った回答に至る可能性も示唆されています。
+*   **データ効率の限界**: 10Kというデータセットサイズで高い性能を達成していますが、より多様で複雑なタスクにおいては、さらなるデータ拡張や、より洗練されたデータ構築手法が必要となる可能性があります。
+
+## 5. 技術詳細：提案手法の技術的な詳細について、できるだけ詳しく。数式やアルゴリズム、モデル構造なども可能な限り詳しく
+
+P2Rフレームワークは、主に以下の2つの要素から構成されます。
+
+### 5.1. P2R 推論パイプライン (Perceive-to-Reason Inference Pipeline)
+
+P2Rは、細粒度視覚的推論を2つの連続するステージに分解します。同一の基盤となるVLM（Qwen3-VL-Instruct）の共有パラメータ$\theta$を使用します。
+
+1.  **Perceiver (知覚者) ステージ**:
+    *   目的: 質問 $Q$ に関連する視覚的証拠（バウンディングボックス）を画像 $I$ から局在化する。
+    *   入力: 元の画像 $I$、質問 $Q$ から派生した知覚用プロンプト $\tilde{Q}_p$。
+    *   出力: 画像 $I$ 上の矩形領域のセット $\mathcal{B} = \{ (x_1, y_1, x_2, y_2, \text{label}) \}_{i=1}^N$ 。
+    *   モデル: $\pi_p(\cdot \mid I, \tilde{Q}_p; \theta)$ としてモデル化される。
+    *   プロンプト例:
+        ```
+        &#34;Please carefully observe the image first to identify the object(s) referred to in the question. Note that each object type appears only once in the image. Then provide the 2D bounding box coordinates and labels of the related objects in JSON format.&#34;
+        ```
+    *   出力の活用: 予測されたバウンディングボックスは、以下の2つの補完的な視覚的入力に変換されます。
+        *   **アノテーション付き画像** ($I_a$): 元の画像 $I$ に予測されたバウンディングボックスがオーバーレイされたもの。
+        *   **クロップされた画像** ($I_c$): 予測されたバウンディングボックスに対応する領域を抽出したもの。論文では、最初の3つの予測ボックスからクロップされた領域を使用しています。
+
+2.  **Reasoner (推論者) ステージ**:
+    *   目的: 知覚ステージで得られた情報に基づき、質問 $Q$ に回答する。
+    *   入力: アノテーション付き画像 $I_a$、クロップされた画像 $I_c$、元の質問 $Q$。
+    *   出力: 最終的な回答 $Y$。
+    *   モデル: $\pi_r(\cdot \mid I_a, I_c, Q; \theta)$ としてモデル化される。
+    *   プロンプト例:
+        ```
+        &#34;The key visual regions have been highlighted and cropped for you. Think step by step.&#34;
+        ```
+
+この2段階の定式化により、細粒度視覚的推論は明示的に構造化されたプロセスとなり、証拠の特定が回答生成の暗黙的な副産物ではなく、明確な中間ステップとなります。
+
+### 5.2. PRA-GRPO (Perception-Reasoning Alternating GRPO)
+
+これは、P2Rの分離された定式化に訓練を適合させるための役割認識強化学習戦略です。最終的な回答のみを教師信号として利用し、知覚と推論の役割を交互に更新します。
+
+*   **基本フレームワーク**: GRPO (Group-wise Reinforcement Learning Policy Optimization) をベースとしています。
+*   **役割認識**: GRPOの更新は、PerceiverとReasonerのどちらかの役割に焦点を当てて行われます。
+*   **交互更新**:
+    *   **Perceiverフェーズ**: Perceiver ($\pi_p$) を更新し、Reasoner ($\pi_r$) は固定します。
+    *   **Reasonerフェーズ**: Reasoner ($\pi_r$) を更新し、Perceiver ($\pi_p$) は固定します。
+*   **報酬**: 最終的な回答の正誤のみに基づくバイナリ報酬 $r$ を使用します。
+    ```
+    r = 1 if predicted_answer == ground_truth_answer else 0
+    ```
+*   **学習目標**: GRPOの目的関数 $\mathcal{J}_{\mathrm{GRPO}}^{\phi}(\theta)$ を用いて、アクティブな役割（PerceiverまたはReasoner）のみを更新します。ここで $\phi$ はアクティブな役割を示します。
+    ```
+    J_GRPO^(phi)(theta) = E_x, {o_i}_{i=1}^G [ (1/G) * sum(min(rho_i * A_i, clip(rho_i, 1-epsilon, 1+epsilon) * A_i)) - beta * KL[pi_phi,theta || pi_ref] ]
+    ```
+    ここで:
+    *   $x$ は入力データ（画像、質問など）。
+    *   $\{o_i\}_{i=1}^G$ は $G$ 個のロールアウト（生成されたシーケンス）。
+    *   $A_i$ はグループ相対アドバンテージ。
+    *   $\rho_i$ は重要度サンプリング比率。
+    *   $\pi_{\phi,\theta}$ は現在のポリシー、$\pi_{\phi,\theta_{old}}$ は古いポリシー、$\pi_{\mathrm{ref}}$ は参照ポリシー（通常は古いポリシー）。
+    *   $\beta$ はKLペナルティの係数。
+    *   $\epsilon$ はクリッピングパラメータ。
+*   **アドバンテージ計算**:
+    ```
+    A_i = (r_i - mean({r_j}_{j=1}^G)) / (std({r_j}_{j=1}^G) + epsilon)
+    ```
+*   **利点**:
+    *   最終的な回答の正誤を、より属性付け可能な役割固有の学習信号に変換します。
+    *   バウンディングボックスのアノテーションなしで、Perceiverの証拠特定能力を向上させることができます。
+    *   単一のVLMで両方の役割を学習することで、パラメータ共有による効率化と汎化能力の向上が期待できます。
+
+### 5.3. モデル構造と訓練
+
+*   **基盤モデル**: Qwen3-VL-Instruct-2B/4B/8B
+*   **パラメータ共有**: PerceiverとReasonerは同じVLMのパラメータ$\theta$を共有します。
+*   **訓練データ**: DeepEyes (3K), ZwZ (4K), VisualProbe (3K) の合計10Kサンプルを使用。これらは、容易なものから非常に難しいものまで、多様な難易度の細粒度知覚・証拠局在化データを提供します。
+*   **訓練プロセス**: PerceiverフェーズとReasonerフェーズを交互に実行します。各フェーズでは、アクティブな役割のみをGRPOを用いて更新します。
+*   **バウンディングボックスの処理**: JSON形式で出力されたバウンディングボックスをパースし、アノテーション付き画像やクロップ画像の生成に使用します。
+
+## 6. この論文を140字以内のツイートで要約すると？
+細粒度視覚推論の難問に挑む！「Perceive-to-Reason」は、画像認識(Perceive)と質問回答(Reason)を分離し、強化学習(PRA-GRPO)で効率学習。高解像度画像での精度向上に成功！ #AI #画像認識 #VLM</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

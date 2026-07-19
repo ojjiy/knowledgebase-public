@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>設計判断を属人化させないために、DDDの判断フローをWebアプリにしてみた</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>設計判断を属人化させないために、DDDの判断フローをWebアプリにしてみた</h1>
+<p><strong>Date:</strong> 2026-07-08</p>
+<p><strong>Source:</strong> rss / Hatena Bookmark Programming</p>
+
+<p><a href="https://zenn.dev/shimpei_takeda/articles/b63ecf44777fab">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">本記事では、設計判断の属人化を防ぐために、ドメイン駆動設計（DDD）の判断フローをWebアプリケーション化した「Design Decision Toolkit」について紹介しています。
+
+**問題点:**
+
+*   設計やアーキテクチャに関する判断は、結論だけを共有しても背景や判断の流れが追えないため、組織やチームの知見として再利用が困難である。
+*   口頭での説明やドキュメントだけでは、条件による分岐、採用・不採用の理由、必要な詳細度の違いなどを網羅的に伝えるのが難しく、結果として詳しい人に確認が集中してしまう。
+*   再利用したいのは、単なる方式名ではなく、入力条件、推奨理由、採用しない案、リスク、再検討条件まで含めた「判断の流れそのもの」である。
+
+**解決策:**
+
+*   「Design Decision Toolkit」という静的Webアプリケーションを開発。
+*   このツールは、必要な時に誰でも同じ条件を選び直し、判断の流れをたどれるように設計されている。
+*   DDDの考え方を起点としつつ、業務上の事実から判断できるような表現を優先している。
+
+**ツールの概要:**
+
+*   **2つの入口:**
+    *   **設計方式判断:** 新たに業務ロジックの実装方式やアーキテクチャを決定する際に使用。顧客への影響、データ構造の複雑さ、テスト方針などを順に確認する。
+    *   **設計変更診断:** 既存設計に違和感が出てきた際に使用。現場の課題（例: 業務ルール変更時の修正箇所把握困難、検索性能問題）から入り、現行方式で改善できるか、段階的な設計変更が必要かなどを確認する。
+*   **操作できる画面:**
+    *   分岐が多く複雑な判断フローを、UIを通じて詳細度を調整しながら進められる。
+    *   ラジオボタンやチェックボックスで現在の条件を選択し、必要な情報（詳細説明、コード例、移行手順など）だけを開くことができる。
+    *   結果はMarkdownメモとして持ち帰ることができ、設計レビューやADR（Architecture Decision Records）の作成に活用できる。
+*   **判断フローで守った設計方針:**
+    *   **用語ではなく、観察できる事実から始める:** DDDの用語に引っ張られることを避けるため、現場の事実に基づいた質問から開始する。
+    *   **重い方式をすぐには提案しない:** ドメインモデル、CQRSなどの影響範囲の大きい方式は、導入条件を慎重に確認した上で提示する。
+    *   **非採用案と再検討条件も提示:** なぜ別の方式を採用しなかったのか、どのような条件で再検討すべきかを明確にする。
+    *   **コード例とメモで持ち帰れる:** 概念だけでなく、責務の置き場所を確認するためのコード例や、具体的な変更手順などを提供する。
+
+**実装:**
+
+*   HTML、CSS、JavaScript（Vanilla JS）を中心とした静的Webで実装。
+*   フローチャートはSVG、コードハイライトはhighlight.js、処理シーケンスはMermaidを使用。
+*   サーバー側の状態管理が不要なため、バックエンド、データベース、認証などは排除し、保守対象を減らしている。
+
+**目的:**
+
+*   設計判断を説明できる形に分解し、レビューやADRでの議論を促進する。
+*   設計やDDDに悩む時間を、方式名の暗記ではなく、業務ルールや変更条件の整理に充てることを目指す。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AlayaWorld: Long-Horizon and Playable Video World Generation</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>AlayaWorld: Long-Horizon and Playable Video World Generation</h1>
+<p><strong>Date:</strong> 2026-07-07</p>
+<p><strong>Source:</strong> paper / hf-papers</p>
+
+<p><a href="http://arxiv.org/abs/2607.06291v1">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body"># AlayaWorld: Long-Horizon and Playable Video World Generation
+[View Paper](http://arxiv.org/abs/2607.06291v1)
+
+## 1. 問題意識：解決したい問題はなにか
+
+従来のゲーム世界の構築は、多大な労力とコストがかかる生産パイプラインに依存しており、カスタマイズやデプロイ後の修正が困難でした。この問題に対し、近年注目されているビデオワールドモデルは、コンポーネントを明示的に作成するのではなく、現在の世界の状態とユーザーのインタラクションに基づいて将来の観測を生成することで、プレイ可能な世界をオンラインで生成できる新しいパラダイムを提供します。しかし、既存のビデオワールドモデルは、以下の課題を抱えています。
+
+*   **プレイアビリティの限界 (Playability)**: プレイヤーが探索できる範囲は限られており、行動も事前に設定された物理法則によって制約される。
+*   **一貫性の問題 (Consistency)**: 生成される世界が、物理的に妥当な自然なダイナミクスを保ちつつ、空間的・時間的に一貫しているか。
+*   **長期間生成の課題 (Long-Horizon Generation)**: 長時間の生成において、視覚的なドリフト（劣化）なしに一貫性を保てるか。
+*   **リアルタイム生成の遅延 (Real-time Generation)**: 低遅延でリアルタイムに生成できるか。
+
+これらの課題を解決し、より自由で、インタラクティブかつ拡張性の高い生成ワールドの実現を目指しています。
+
+## 2. 提案手法のアプローチ：どのようなアイデア・アプローチで問題を解決しようとしたか
+
+AlayaWorldは、これらの課題に対処するために、以下の革新的なアプローチを組み合わせたフルスタックのオープンソースフレームワークを提案します。
+
+1.  **ビデオワールドモデルの活用**: ゲームプレイ録画と実世界のビデオの両方で学習したビデオワールドモデルを使用し、多様な視覚的表現と物理的ダイナミクスを捉えます。これにより、ゲーム以外のエンボディド・インテリジェンスなどの分野への応用も可能になります。
+2.  **長期間・プレイアブルな生成**:
+    *   **ナビゲーションとプロンプト駆動型アクション**: ユーザーが自由に移動し、戦闘、呪文詠唱、モンスター召喚などの多様なアクションを実行できる、オープンエンドなリアルタイムインタラクションを可能にします。
+    *   **プロンプトスイッチングメカニズム**: 生成のチャンク（断片）ごとにテキスト条件を切り替えることで、以前に生成されたコンテンツに影響を与えずに新しいコンテンツを生成し、再生成を回避します。
+3.  **一貫性と長期間生成のためのモジュール**:
+    *   **3Dキャッシュ**: 過去に生成されたフレームから3Dキャッシュを構築し、ターゲットカメラ軌道に沿ってレンダリングします。これにより、プレイヤーが以前訪れた領域に戻ってきた際に、その領域のジオメトリと外観の整合性を高めます。
+    *   **履歴圧縮モジュール**: 短い埋め込みに最近のフレーム履歴を圧縮し、空間キャッシュだけでは捉えきれない時間的なダイナミクスを補完します。
+    *   **エラーバンク**: トレーニング中に、生成プロセスで発生する可能性のある誤差を格納し、それを構造化された摂動として、メモリ条件とターゲットセグメントの両方に注入します。これにより、モデルは汚染された履歴下での生成を安定させ、誤差の累積を防ぐことを学習します。
+4.  **リアルタイム生成のための最適化**:
+    *   **数ステップ蒸留 (Few-step Distillation)**: 生成に必要なノイズ除去ステップ数を削減し、生成速度を向上させます。
+    *   **短い時間チャンク**: 生成のチャンクサイズを小さくすることで、各生成呼び出しの遅延を低く抑え、ユーザーコマンドが短い遅延で出力に反映されるようにします。
+    *   **モジュラーで拡張可能なアーキテクチャ**: データ準備、モデルアーキテクチャ、モデルトレーニング、推論アクセラレーション、デプロイメントまで、開発プロセス全体を統合し、研究とアプリケーション開発の基盤を提供します。
+
+このアプローチにより、AlayaWorldは、単にフレームを生成するだけでなく、視覚的な品質、オブジェクトの同一性、動きの連続性、そして制御可能性を維持しながら、長時間にわたるインタラクティブな生成ワールドを構築することを目指しています。
+
+## 3. 成果：提案手法により、何が達成できたのか
+
+AlayaWorldは、以下の成果を達成しました。
+
+*   **長期間かつプレイアブルな生成ワールドの実現**:
+    *   ユーザーが自由にナビゲートし、戦闘、呪文詠唱、モンスター召喚といった多様なアクションを実行できる、オープンエンドなリアルタイムインタラクションを可能にしました。
+    *   「Leave-and-return」のようなループクロージング軌道において、以前に訪れた領域のジオメトリ、レイアウト、テクスチャの一貫性を維持し、効果的なループクロージャーを実証しました。
+    *   1分間の生成でも、視覚的な品質、オブジェクトの同一性、動きの連続性を維持し、アーティファクトの顕著な蓄積なしに、順方向探索下での強力な安定性を示しました。
+*   **正確なカメラ制御**: 要求された視点変更や移動を忠実に追従し、シーンの同一性とジオメトリの妥当性を維持しながら、インタラクティブな制御下での正確なカメラ生成能力を示しました。
+*   **応答性の高いプロンプト変更**: 生成のチャンク境界でテキストプロンプトを更新することで、生成シーケンス全体を再生成することなく、短い遅延で新しいプロンプトに移行し、視覚的な連続性を維持しました。これにより、変化するユーザーの意図にインタラクティブな遅延で追従し、応答性の高い制御を可能にしました。
+*   **多様なスタイルでの一貫性維持**: 現実的なスタイルから、Minecraft、インク画、油絵、サイバーパンク、ピクセルアート、ゼルダ風スタイルまで、幅広い視覚スタイルでシーンの一貫性を維持しました。レンダリングスタイルは大きく変化しても、シーンのジオメトリ、カメラ軌道、セマンティックコンテンツは一貫して保たれました。
+*   **開発基盤の提供**: フレームワーク、再現可能なパイプライン、参照実装、評価ツール、包括的なドキュメントを公開し、ビデオワールドモデルに関する将来の研究とリアルタイムアプリケーションのための実用的な基盤を確立しました。
+
+## 4. 課題：本手法の限界・課題にはなにか。本文中で著者が言及しているものと、あなたが想定するもの
+
+### 本文中で著者が言及している課題
+
+*   **動的なオブジェクトの表現**: 3Dキャッシュは主に静的な構造を表すため、時間とともに状態が変化する動的なオブジェクトの表現が困難である可能性があります。
+*   **パイプラインの複雑さ**: 3Dキャッシュのレンダリングや、ジオメトリ推定、レンダリング品質、ソースビデオのカバレッジ、または参照モーションの利用可能性への依存により、パイプラインが重くなる可能性があります。
+*   **計算コスト**: リアルタイム生成を目指しているものの、高品質な生成には依然として計算リソースが必要となる可能性があります。特に、高解像度や複雑なシーンでの処理には限界が生じることが想定されます。
+
+### あなたが想定する課題
+
+*   **学習データの多様性**: モデルの性能は学習データに大きく依存するため、学習データに存在しないような非常に珍しいシナリオやオブジェクトに対する生成能力には限界がある可能性があります。
+*   **物理法則の厳密性**: 生成される世界はビデオデータから学習されたものであり、厳密な物理法則に常に従うとは限りません。特に、複雑な物理現象（例：流体、破壊、相互作用）の正確なシミュレーションには限界がある可能性があります。
+*   **意図しない生成物の可能性**: 生成モデルの性質上、意図しない、または不適切なコンテンツが生成されるリスクは常に存在します。特に、インタラクティブな操作が自由であるほど、このリスクは高まります。
+*   **評価の難しさ**: 生成されたワールドの「プレイアビリティ」や「創造性」といった定性的な側面を客観的かつ網羅的に評価することは依然として困難であり、評価指標の確立が課題となる可能性があります。
+*   **倫理的・安全性の考慮**: 生成されたコンテンツが悪用される可能性や、現実世界との区別がつかなくなることによる社会的影響など、倫理的・安全性の側面からの検討がさらに必要になる可能性があります。
+
+## 5. 技術詳細：提案手法の技術的な詳細について、できるだけ詳しく。数式やアルゴリズム、モデル構造なども可能な限り詳しく
+
+AlayaWorldは、ビデオワールドモデルのバックボーンとして、DiT (Diffusion Transformer) をベースとしたモデル（LTX-2.3）をファインチューニングし、独自のモジュールを組み込んでいます。
+
+### モデルアーキテクチャの概要
+
+AlayaWorldは、以下の主要なコンポーネントで構成されます。
+
+*   **バックボーンモデル**: LTX-2.3（DiTベースのビデオ生成モデル）
+*   **カメラ制御モジュール**: AdaLN-style Camera-Control Module
+*   **長期記憶モジュール**:
+    *   3D Cache
+    *   History Compression Module (Frame Preservationベース)
+*   **安定化モジュール**: Error Bank
+*   **インタラクションメカニズム**: Prompt-switching Mechanism
+
+### 各コンポーネントの詳細
+
+1.  **バックボーンモデル (LTX-2.3)**:
+    *   DiT (Diffusion Transformer) アーキテクチャを採用しており、ビデオ生成を Transformer のフレームワークで扱います。
+    *   ノイズ除去プロセスを Transformer ブロックの連鎖として実行します。
+    *   テキスト条件付けやその他の条件を、Transformer の注意機構や線形層などを介して注入します。
+    *   LTX-2.3 は、長距離の依存関係を捉える能力に優れていることが期待されます。
+
+2.  **カメラ制御モジュール (AdaLN-style Camera-Control Module)**:
+    *   **機能**: ユーザーのナビゲーション（カメラの移動や回転）をモデルに注入し、生成されるビデオの視点を制御します。
+    *   **アプローチ**:
+        *   **3Dキャッシュのレンダリング**: ユーザーのターゲットカメラ軌道に従って、3Dキャッシュからレンダリングされたビューを生成します。これは、生成器にターゲット視点に関する具体的な視覚的証拠を提供し、軌道追従とクロスビューの一貫性を向上させます。
+        *   **AdaLN-style Modulation**: 3Dキャッシュからのレンダリングされたビューに加えて、カメラの状態（例：位置、向き）を compact な条件として、AdaLN (Adaptive Layer Normalization) スタイルのモジュレーションを介して DiT の特徴量に注入します。
+            *   AdaLN は、カメラ条件に依存するアフィン正規化パラメータを生成し、DiT の特徴量を変調します。
+            *   このモジュレーションは、モデルのパラメータと計算オーバーヘッドをわずかに増加させるだけで、カメラ条件を効率的に注入できます。
+    *   **分離された役割**:
+        *   3Dキャッシュ: 空間的に固定された外観とジオメトリを提供。
+        *   カメラモジュレーション: バックボーン内部での軌道認識を可能に。
+
+3.  **長期記憶モジュール**:
+    *   **3D Cache**:
+        *   **構築**: 過去に生成されたフレームから、深度情報などを利用して 3D キャッシュ（例：点群、メッシュ、ボクセルグリッド）を構築します。
+        *   **利用**: プレイヤーのターゲットカメラ軌道に合わせて、この 3D キャッシュをレンダリングし、生成器への条件として使用します。これにより、以前訪問した領域のジオメトリと外観の参照を提供し、ループクロージャー（再訪問時の整合性）を強化します。
+        *   **注意点**: 主に静的な構造を表現するため、動的なオブジェクトの扱いは課題となり得ます。
+    *   **History Compression Module**:
+        *   **機能**: 最近のフレーム履歴を圧縮し、短期的な時間的ダイナミクスや一時的な変化を捉えます。
+        *   **アプローチ**: Frame Preservation [先行研究] の手法などを参考に、軽量な履歴エンコーダーを使用して、長いビデオ履歴を短い埋め込みにマッピングします。
+        *   **役割**: 3Dキャッシュと組み合わせて、空間的な持続性と時間的な持続性の両方をカバーします。
+
+4.  **安定化モジュール (Error Bank)**:
+    *   **目的**: 長期間の自動回帰生成における視覚的なドリフト（誤差の蓄積）を軽減すること。
+    *   **アプローチ**:
+        1.  **誤差の蓄積**: 自動回帰生成中に発生する残差誤差（現在の生成結果とクリーンなターゲットとの差）を蓄積します。
+        2.  **エラーバンクへの格納**: 蓄積された誤差を「エラーバンク」に格納します。
+        3.  **学習時の利用**: トレーニング中に、エラーバンクからサンプリングされた誤差を、メモリ条件およびターゲットセグメントの両方に構造化された摂動として注入します。
+    *   **利点**:
+        *   モデルは、汚染された履歴下での生成を学習します。
+        *   誤差が累積するのを防ぎ、長期間の生成での安定性を向上させます。
+        *   単にクリーンなビデオを継続するだけでなく、不安定な状態でも生成を安定させる能力を学習します。
+
+5.  **インタラクションメカニズム (Prompt-switching Mechanism)**:
+    *   **機能**: 生成の途中でテキストプロンプトを動的に変更し、生成されるコンテンツをリアルタイムに更新できるようにします。
+    *   **アプローチ**:
+        *   **チャンク単位での切り替え**: 生成を短い時間チャンク（例：約1秒）に分割し、各チャンクの境界でプロンプトを切り替えます。
+        *   **KV-Cache の再利用**: 新しいプロンプトで KV-Cache を再計算し、以前に生成されたフレームのコンテキストを維持しながら、新しいプロンプトの指示を迅速に反映させます。これにより、以前のセグメントの再生成なしに、変化するユーザーの意図に対応します。
+    *   **利点**:
+        *   重いランタイムキャッシュエンジニアリングや専門的な KV-recache 機構を必要としません。
+        *   生成速度（数ステップ蒸留）とインタラクションの粒度（短いチャンク）を重視します。
+        *   シンプルで予測可能なインタラクションループを提供します。
+
+### アルゴリズムの疑似コード例 (概念)
+
+**トレーニング時のエラーバンク利用**:
+
+```python
+def train_step(model, data_loader, optimizer, error_bank):
+    for batch in data_loader:
+        # 1. クリーンな履歴とターゲットを取得
+        clean_history, clean_target = batch
+
+        # 2. 汚染された履歴をシミュレート (誤差注入)
+        perturbed_history = inject_errors_from_bank(clean_history, error_bank)
+        # (オプション) ターゲットにも誤差を注入
+        perturbed_target = inject_errors_from_bank(clean_target, error_bank)
+
+        # 3. モデルによる生成
+        generated_output = model(perturbed_history) # autoconditional generation
+
+        # 4. 損失計算 (例: MSE)
+        loss = calculate_loss(generated_output, perturbed_target)
+
+        # 5. 誤差の更新 (生成された出力とターゲットの差)
+        current_errors = calculate_errors(generated_output, perturbed_target)
+        error_bank.update(current_errors) # エラーバンクに誤差を追加・更新
+
+        # 6. バックプロパゲーションと最適化
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
+```
+
+**生成時のインタラクション**:
+
+```python
+def generate_interactive_world(model, initial_prompt, num_chunks):
+    current_prompt = initial_prompt
+    generated_frames = []
+    
+    for i in range(num_chunks):
+        # 1. 現在のプロンプトと履歴に基づいてチャンクを生成
+        # (model has internal state or KV cache for autoregression)
+        current_chunk_frames = model.generate_chunk(
+            prompt=current_prompt,
+            previous_frames=generated_frames, # Autoregressive context
+            num_steps=4 # Few-step distillation
+        )
+        generated_frames.extend(current_chunk_frames)
+        
+        # 2. ユーザーからの新しいプロンプトを取得
+        new_prompt_if_any = user_input.get_new_prompt()
+        
+        # 3. プロンプトが変更された場合、チャンク境界で更新
+        if new_prompt_if_any and i &lt; num_chunks - 1: # Avoid changing after last chunk
+            current_prompt = new_prompt_if_any
+            # Model internally handles KV-cache update for the next chunk
+            # This is where prompt-switching mechanism works
+            
+        # 4. (オプション) 3Dキャッシュや履歴圧縮モジュールの更新
+        # model.update_memory_modules(generated_frames)
+        
+    return generated_frames
+```
+
+### 数式（概念）
+
+*   **ノイズ除去プロセス (Diffusion Model)**:
+    $x_t = \sqrt{\bar{\alpha}_t} x_0 + \sqrt{1-\bar{\alpha}_t} \epsilon$, where $\epsilon \sim \mathcal{N}(0, I)$
+    Diffusion Transformer $ \epsilon_\theta(x_t, t, c) $ predicts noise $\epsilon$ given noisy data $x_t$, timestep $t$, and condition $c$.
+    Objective: Minimize $ \mathbb{E}_{t, x_0, \epsilon} [ ||\epsilon - \epsilon_\theta(\sqrt{\bar{\alpha}_t} x_0 + \sqrt{1-\bar{\alpha}_t} \epsilon, t, c)||^2 ] $
+
+*   **AdaLN Modulation**:
+    Given camera condition vector $c_{cam}$, generate affine parameters $\gamma, \beta$:
+    $ \gamma, \beta = Linear(c_{cam}) $
+    Then, modulate features $z$:
+    $ z_{mod} = \gamma \cdot \frac{z - \mu_z}{\sigma_z} + \beta $
+    where $ \mu_z, \sigma_z $ are mean and std dev of $z$.
+
+*   **Error Bank Update**:
+    Let $ \hat{x}_{t+1} $ be the generated frame and $ x_{t+1} $ be the ground truth frame.
+    Error $ e_{t+1} = x_{t+1} - \hat{x}_{t+1} $
+    Error Bank $ EB $ stores recent errors. Update strategy could be:
+    $ EB.add(e_{t+1}) $ or $ EB.update(e_{t+1}, decay\_rate) $
+
+## 6. この論文を140字以内のツイートで要約すると？
+AlayaWorld: 長期間・プレイアブルな生成ワールドを構築するフルスタックOSSフレームワーク🎉 3Dキャッシュとエラーバンクで一貫性・安定性を実現し、プロンプト切り替えでリアルタイムインタラクションを可能に！ゲームやロボットシミュレーションへの応用が期待！#AI #生成AI #ワールド生成</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

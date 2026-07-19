@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TorchJD: Training with multiple losses in PyTorch [P]</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>TorchJD: Training with multiple losses in PyTorch [P]</h1>
+<p><strong>Date:</strong> 2026-07-07</p>
+<p><strong>Source:</strong> reddit / MachineLearning</p>
+
+<p><a href="https://www.reddit.com/r/MachineLearning/comments/1upzxk2/torchjd_training_with_multiple_losses_in_pytorch_p/">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">### 1. このポストの内容を説明してください。
+
+このRedditのポストは、PyTorchで複数の損失関数を扱うためのライブラリである **TorchJD** について紹介しています。
+
+投稿者は、機械学習モデルのトレーニングにおいて、複数の損失関数（例えば、複数のタスク、制約、補助的な損失、正則化項など）を扱う場合の一般的な2つのアプローチを説明しています。
+
+1.  **Scalarization (スカラー化)**: 複数の損失を単一の損失値にまとめる方法です。例えば、それらを単純に平均したり、学習可能な重みで組み合わせたりします。その後、この単一の損失に対して勾配降下法を行います。
+2.  **Jacobian Descent (ヤコビアン降下法)**: 各損失関数ごとに勾配を計算し（つまり、損失ベクトル全体のヤコビアンを計算）、それらを組み合わせて（集約して）更新ベクトルを生成します。この更新ベクトルは、平均損失だけでなく、個々の損失を減少させるように設計されています。集約方法には様々なバリエーションがあります。
+
+投稿者は、スカラー化は一般的にメモリ効率が良いが、目的間に大きな不一致がある場合にはヤコビアン降下法の方が適している場合があると述べています。TorchJDライブラリには、これらの両方のカテゴリにおける既存の多くの手法が実装されており、数行のコード変更で試すことができるとしています。
+
+さらに、TorchJDがPyTorchエコシステムに受け入れられたこと、そして「複数の損失関数でのトレーニングのためのデファクトスタンダード」になることを目指していることを伝えています。プロジェクトの発展に貢献したい人（新しいアイデア、貢献、バグレポート、実験、フィードバックなど）をDiscordで募集しており、効率化のための多くのアイデアがあるが、それらを実現するために協力者を求めていることを強調しています。最後に、GitHubでのスターを支援としてお願いしています。
+
+### 2. このポストに対するコメントのうち、特に興味深いものを教えてください。
+
+このポストには、TorchJDの機能や、多目的最適化に関する深い議論を促す興味深いコメントがいくつかあります。
+
+*   **ヤコビアン降下法によるメモリ使用量とOptimizerへの影響について**:
+    あるコメントでは、ヤコビアン降下法が「勾配のインメモリサイズを線形に増加させるか」という質問をしています。さらに、ADAMのような統計情報を時間とともに追跡するオプティマイザも、より大きなフットプリントを持つのかどうかを尋ねています。これは、ヤコビアン降下法が単純な勾配計算以上の複雑さを持つ可能性を示唆しており、実践的な運用におけるトレードオフを理解する上で重要な論点です。
+
+*   **Scalarization と Jacobian Descent の比較に関する疑問**:
+    あるコメントでは、ヤコビアン降下法の利点が明確ではないと指摘しています。論文をざっと見た限りでは、従来の損失平均化よりもわずかに速い収束を示しているように見えるが、より多くのメモリを使用するため、バッチサイズを小さくする必要があり、結果的に収束が遅くなる可能性があると述べています。さらに、論文での比較は、収束回数ではなく収束時間で行うべきであり、また同じVRAM使用量を考慮すべきだと提案しています。最終的には、収束速度よりも多目的最適化における「経験的結果」に焦点を当てるべきだと提言しています。これは、理論的な手法の有効性を、具体的な実験結果やリソース制約と照らし合わせて評価することの重要性を示しています。
+
+*   **libMTLとの比較と、アルゴリズム選択の指針**:
+    あるコメントでは、TorchJDが既存のライブラリである [libMTL](https://libmtl.readthedocs.io/en/latest/) のより新しいバージョンではないかと質問しています。libMTLも多目的最適化を扱っており、GitHubを調べると重複が見られるため、TorchJDとの違いや、libMTLから切り替えるべきかどうかの判断材料を求めています。
+    さらに、このコメントでは、多目的最適化において「原則に基づいたアルゴリズム選択の方法」についての助言を求めています。彼らはこれまでいくつかのアルゴリズムを試してうまく機能したものを選んだが、これは専門分野ではないため、より体系的なアプローチを知りたいと考えているようです。これは、単にライブラリの紹介にとどまらず、実際の研究や開発で直面する「どのように選ぶか」という実践的な課題に光を当てています。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Edge AI ASL Recognition on Raspberry Pi 5 – Looking for Feedback on My System Design [P]</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>Edge AI ASL Recognition on Raspberry Pi 5 – Looking for Feedback on My System Design [P]</h1>
+<p><strong>Date:</strong> 2026-07-06</p>
+<p><strong>Source:</strong> reddit / MachineLearning</p>
+
+<p><a href="https://www.reddit.com/r/MachineLearning/comments/1up3kby/edge_ai_asl_recognition_on_raspberry_pi_5_looking/">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">### 1. このポストの内容を説明してください。
+
+このRedditのポストは、Raspberry Pi 5上で、インターネット接続なしでアメリカ手話（ASL）を認識するシステムを構築しているユーザーが、そのシステム設計についてフィードバックを求めているものです。
+
+**システムの概要:**
+
+*   **目的:** オフライン（インターネット接続不要）でASLのアルファベットを認識し、テキストと音声に変換する。
+*   **使用技術:**
+    *   **MediaPipe hand landmarks:** 手のランドマーク（21点）を取得。
+    *   **TensorFlow Lite:** Raspberry Pi 5上で軽量な機械学習モデルを実行。
+    *   **OLED display:** 認識結果を画面に表示。
+    *   **Offline TTS (Text-to-Speech):** 認識結果を音声で出力。
+*   **現在のパイプライン:** MediaPipeで手のランドマークを取得 → ランドマークを正規化 → Raspberry Pi 5上のTensorFlow Liteモデルで分類 → OLEDディスプレイに表示、オフラインTTSで音声出力。
+
+**ユーザーの質問（設計上の検討事項）:**
+
+ユーザーは、手のランドマーク情報を元にした分類モデルとして、以下の3つのアーキテクチャで迷っています。
+
+*   1D CNN (畳み込みニューラルネットワーク)
+*   MLP (多層パーセプトロン)
+*   GRU (Gated Recurrent Unit)
+
+ユーザーの最優先事項は、「**最大精度よりも、低遅延と効率的なエッジデプロイメント（組み込みデバイスでの実行）**」であるため、これらのアーキテクチャのトレードオフや、組み込みデバイスでの機械学習モデル展開における注意点について、経験者からの意見を求めています。
+
+### 2. このポストに対するコメントのうち、特に興味深いものを教えてください。
+
+このポストに対するコメントの中で、特に興味深いのは以下の部分です。
+
+**コメント:**
+&#39;&#39;&#39;
+That&#39;s a solid setup for the Pi 5. I tried something similar with MediaPipe but the hand landmark model was eating too much CPU even on the 8GB version. You planning to quantize the model or you keeping it full precision?
+
+optimize, we are only in proposal state
+&#39;&#39;&#39;
+
+**興味深い点:**
+
+1.  **過去の経験からの示唆（CPU負荷の問題）:** コメント主は、投稿者と同じようにMediaPipeを使った類似の試みをRaspberry Piで行った経験があり、**「hand landmark modelがCPUを大量に消費した」**という具体的な問題を指摘しています。これは、投稿者が「低遅延と効率的なエッジデプロイメント」を重視している点と直接関連しており、**実際のエッジデバイスでの運用における潜在的なボトルネック**を示唆しています。投稿者が検討しているモデル（1D CNN, MLP, GRU）だけでなく、MediaPipe自体のランドマーク抽出部分もCPU負荷の原因となりうることを示唆しています。
+2.  **モデル最適化の重要性（量子化）:** コメント主は、CPU負荷の問題を受けて、**「モデルを量子化（quantize）する計画はあるか」**と質問しています。量子化は、モデルの精度を多少犠牲にする代わりに、モデルのサイズを小さくし、計算量を減らすことで、エッジデバイスでの実行を高速化・効率化するための一般的な手法です。これは、投稿者の「効率的なエッジデプロイメント」という目標に合致しており、どのような最適化手法が有効かという議論に繋がります。
+3.  **投稿者の返信（最適化の検討段階）:** 投稿者の返信である「optimize, we are only in proposal state」（最適化については、まだ提案段階です）は、**この問題（CPU負荷やモデル最適化）を認識しており、現在検討中であることを示しています。** これは、コメント主の指摘がタイムリーであり、投稿者がまさに直面している、あるいはこれから直面するであろう課題であることを裏付けています。
+
+このコメントは、投稿者が求めている「アーキテクチャのトレードオフ」や「潜在的な落とし穴」に関する具体的な情報を提供しており、単なる感想ではなく、実践的なアドバイスを含んでいるため、特に興味深いと言えます。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

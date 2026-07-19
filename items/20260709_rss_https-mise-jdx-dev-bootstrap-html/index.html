@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Bootstrap | mise-en-place</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>Bootstrap | mise-en-place</h1>
+<p><strong>Date:</strong> 2026-07-09</p>
+<p><strong>Source:</strong> rss / Hatena Bookmark Technology Hotentry</p>
+
+<p><a href="https://mise.jdx.dev/bootstrap.html">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">Bootstrap は、OS パッケージ、Git リポジトリ、ドットファイル、mise シェルアクティベーション、macOS のデフォルト設定、macOS LaunchAgents、Linux systemd ユーザーサービス、ユーザーのログインシェル、ツール、およびプロジェクト固有の最終タスクなどを、1 つのコマンドで現在の設定に合わせてマシンをセットアップする機能です。
+
+**主な機能と実行順序:**
+
+1.  **パッケージのインストール:** `mise bootstrap packages` は、`[bootstrap.packages]` で定義された不足している OS パッケージをインストールします。
+2.  **リポジトリのクローン/更新:** `mise bootstrap repos` は、`[bootstrap.repos]` で定義された Git リポジトリをクローンまたは更新します。
+3.  **ドットファイルの適用:** `mise bootstrap dotfiles` は、`[dotfiles]` で定義されたドットファイルを適用します。
+4.  **シェルアクティベーションの設定:** `mise bootstrap mise-shell-activate` は、`[bootstrap.mise_shell_activate]` に基づいてシェルのアクティベーションを設定します。
+5.  **macOS デフォルト設定の適用:** `mise bootstrap macos defaults` は、`[bootstrap.macos.defaults]` に基づいて macOS のユーザー設定を適用します。
+6.  **macOS LaunchAgents の適用:** `mise bootstrap macos launchd-agents` は、`[bootstrap.macos.launchd.agents]` に基づいて macOS の LaunchAgents を書き込み、ロードします。
+7.  **Linux systemd ユニットの適用:** `mise bootstrap linux systemd-units` は、`[bootstrap.linux.systemd.units]` に基づいて Linux の systemd ユーザーサービスを管理します。
+8.  **ユーザー設定の適用:** `mise bootstrap user` は、`[bootstrap.user]` に基づいてユーザー固有の設定（ログインシェルなど）を適用します。
+9.  **ツールのインストール:** `mise install` は、`[tools]` で定義された不足しているツールをインストールします。
+10. **タスクの実行:** `mise run bootstrap` は、`tasks.bootstrap` で定義されたカスタムタスクを実行します。
+11. **フックの実行:** `[bootstrap.hooks.final]` で定義された最終フックが実行されます。
+
+**オプション:**
+
+*   `--skip &lt;part&gt;`: 特定の部分の実行をスキップします（例: `mise bootstrap --skip tools,task`）。
+*   `--only &lt;part&gt;`: 特定の部分のみを実行します。
+*   `--update`: パッケージインストールの前にシステムパッケージマネージャーのメタデータを更新します。
+*   `--dry-run`: 実際には何も変更せず、実行される内容をプレビューします。
+*   `--force-dotfiles`: ドットファイルが競合する場合に、ローカルファイルを上書きして適用します。
+*   `--yes`: 確認プロンプトをスキップします。
+
+**ステータス確認:**
+
+*   `mise bootstrap status`: 現在の宣言的なブートストラップ状態を確認します。
+*   `mise bootstrap status --missing`: 不足している項目のみを確認します。
+*   個別の `status` コマンド（例: `mise bootstrap packages status`）で、各部分の状態を確認できます。
+
+**設定項目:**
+
+*   `[bootstrap.packages]`: OS パッケージ（apk, apt, brew など）。
+*   `[bootstrap.repos]`: Git リポジトリ。
+*   `[dotfiles]`: ドットファイル。
+*   `[bootstrap.mise_shell_activate]`: シェル起動ファイルへの mise アクティベーションスニペット。
+*   `[bootstrap.macos.*]`: macOS の設定（Dock, Finder, Keyboard, Trackpad など）。
+*   `[bootstrap.macos.defaults]`: macOS のユーザー設定。
+*   `[bootstrap.macos.launchd.agents]`: macOS の LaunchAgents。
+*   `[bootstrap.linux.systemd.units]`: Linux の systemd ユーザーサービス。
+*   `[bootstrap.user]`: ユーザー設定（ログインシェルなど）。
+*   `[bootstrap.hooks]`: 定義されたフェーズで実行されるコマンド。
+*   `[tools]`: mise で管理される開発ツール。
+*   `[tasks.bootstrap]`: ツールインストール後に実行されるカスタムタスク。
+
+Bootstrap は、宣言的に状態を管理できる項目には宣言的セクションを、そうでない命令的なセットアップには `[tasks.bootstrap]` を使用することが推奨されます。フックは、`mise bootstrap` が明示的に呼び出された場合にのみ実行され、設定階層全体でマージされます。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

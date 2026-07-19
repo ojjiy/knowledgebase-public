@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AIコーディングの「ループ」4種類を完全入門　Anthropic公式が分かりやすく整理して解説</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>AIコーディングの「ループ」4種類を完全入門　Anthropic公式が分かりやすく整理して解説</h1>
+<p><strong>Date:</strong> 2026-07-07</p>
+<p><strong>Source:</strong> rss / Hatena Bookmark Technology Hotentry</p>
+
+<p><a href="https://atmarkit.itmedia.co.jp/ait/articles/2607/07/news014.html">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">Anthropicは、AIコーディングアシスタント「Claude Code」における「ループ」の概念について、4つの主要なタイプに整理して解説する記事を公開しました。これは、AIがコードを生成する際に、単に指示を出すだけでなく、より人間のように思考し、タスクを完了させるための重要な要素です。
+
+**ループの4つのタイプ**
+
+Claude Codeが提案するループの4つのタイプは、以下の通りです。
+
+1.  **Turn-based (ターンベース):**
+    *   人間とAIが交互に、コードの断片や指示をやり取りしながら、タスクを進める形式です。
+    *   例: 人間が「この関数を書いて」と指示し、AIがコードを生成、人間がそれをレビューして次の指示を出す、といった流れです。
+
+2.  **Goal-based (ゴールベース):**
+    *   最終的な目標をAIに伝え、AIがその目標達成のために必要なステップを自律的に実行する形式です。
+    *   例: 「このWebサイトのUIを改善して」と指示すると、AIがUIの改善に必要なタスクを分解し、順番に実行します。
+
+3.  **Time-based (タイムベース):**
+    *   特定の時間制限やスケジュールに基づいて、AIがタスクを実行する形式です。
+    *   例: 「5分以内にこのプルリクエストをレビューして」といった指示で、AIが指定された時間内にタスクを完了させます。
+
+4.  **Proactive (プロアクティブ):**
+    *   AIが状況を判断し、必要に応じて自律的に行動を起こす形式です。
+    *   例: AIがコードの潜在的な問題を検知し、自動的に修正案を提示したり、改善策を実行したりします。
+
+**ループの重要性**
+
+これらのループの概念は、AIコーディングにおける以下の点を改善することを目指しています。
+
+*   **AIの自律性と思考力の向上:** 単なる指示実行にとどまらず、AIがより深く思考し、状況に応じて柔軟に対応できるようになります。
+*   **効率的なコード生成:** 複雑なタスクも、AIが適切なループ構造を用いて、より効率的かつ正確に処理できるようになります。
+*   **人間との協調性の強化:** 人間とAIが、それぞれの強みを活かして連携し、より高度な成果を生み出すことが可能になります。
+
+Anthropicは、これらのループの概念を、Claude Codeの基盤となる「routines」という考え方と統合し、AIがより高度なコーディングタスクを実行できるように開発を進めています。
+
+**各ループタイプの詳細な動作例**
+
+記事では、各ループタイプについて、具体的な使用例や、AIがどのようにタスクを実行するかを詳細に解説しています。
+
+*   **Turn-based:** AIがコードを生成し、人間がレビューして承認、AIが次のステップに進むといった流れ。
+*   **Goal-based:** 最終目標を定義し、AIがその達成のために複数のステップを実行。例えば、特定機能の開発を依頼した場合、AIがタスクを分解し、コード生成、テスト、ドキュメント作成などを順に行います。
+*   **Time-based:** 特定の時間制限内でタスクを実行。例として、Slackへの投稿やCI/CDパイプラインの実行などが挙げられています。
+*   **Proactive:** AIが自律的に問題を発見し、修正や改善を実行。例えば、コードのバグを検知し、自動的に修正案を生成してプルリクエストを作成するといったシナリオです。
+
+**まとめ**
+
+Anthropicのこの発表は、AIコーディングの進化において、単にコードを生成するだけでなく、AIがより戦略的かつ自律的にタスクを遂行できるようになるという、重要な一歩を示しています。これらのループの概念は、AIコーディングの可能性を大きく広げ、開発者の生産性向上に貢献すると期待されます。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

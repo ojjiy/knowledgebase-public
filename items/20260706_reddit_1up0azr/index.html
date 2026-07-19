@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CPU TTS benchmark with UTMOS MOS scoring: Kokoro, Supertonic, Inflect-Nano, and Kyutai&#39;s new Pocket TTS [P]</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>CPU TTS benchmark with UTMOS MOS scoring: Kokoro, Supertonic, Inflect-Nano, and Kyutai&#39;s new Pocket TTS [P]</h1>
+<p><strong>Date:</strong> 2026-07-06</p>
+<p><strong>Source:</strong> reddit / MachineLearning</p>
+
+<p><a href="https://www.reddit.com/r/MachineLearning/comments/1up0azr/cpu_tts_benchmark_with_utmos_mos_scoring_kokoro/">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">## 1. このポストの内容を説明してください。
+
+このRedditのポストは、CPU上で動作するテキスト音声合成（TTS）モデルのベンチマーク結果を共有するものです。投稿者は、特に小規模なTTSモデルの評価に役立つことを目的として、6つの異なる設定（6つのテキスト長、5回の実行）で180回のテストを行い、その結果をUTMOSという客観的なMOS（Mean Opinion Score）スコアで評価しています。
+
+**評価対象となったモデル:**
+
+*   **Kokoro 82M:** StyleTTS2にインスパイアされたモデル（PyTorchとONNX Runtimeで実行）
+*   **Supertonic 3:** 2ステップと5ステップのフローマッチングステップでの評価
+*   **Inflect-Nano-v1:** 小規模（4.6Mパラメータ）なFastSpeechスタイルのモデル
+*   **Pocket TTS:** KyutaiのMimiニューラルオーディオコーデック上で動作するストリーミングLM（約100Mパラメータ）
+
+**テスト環境:**
+
+*   CPU: Intel Xeon 8272CL
+*   コア数: 4
+*   RAM: 15.6GB
+*   CUDA無効、ONNXセッションはCPUExecutionProviderに固定
+
+**主な評価項目:**
+
+*   **Mean RTF (Real-Time Factor):** 音声合成に実際にかかった時間と、生成された音声の長さの比率。RTFが低いほど高速です。
+*   **UTMOS:** 客観的なMOSスコア。高いほど自然な音声と評価されます。
+
+**投稿者が発見した興味深い点:**
+
+1.  **Pocket TTSのフラットなRTFスケーリング:** ストリーミングLMアーキテクチャにより、Pocket TTSはテキストの長さに比例して一定の速度で音声を出力するため、RTFがテキスト長全体でほぼ一定でした。これは、インタラクティブなシステムでの最悪遅延を予測する上で有利です。
+2.  **UTMOSの小規模ボコーダーにおける失敗モード:** Inflect-Nano-v1はUTMOSスコアは中程度でしたが、実際には「うるさく、ロボット的」な音声でした。UTMOSは、クリーンな音声（HiFi-GANなどのボコーダー出力）を高く評価する傾向があり、それが「クリーンで機械的」と「クリーンで自然」を区別できない場合があることが指摘されています。
+3.  **Inflect-Nanoの非公開の約15秒出力制限:** モデル設定により、Inflect-Nanoは入力テキストの長さに関わらず、約14.93秒で音声生成を停止していました。これにより、長文に対するRTFやスループットの数値が実際よりも良く見えてしまう問題がありました。
+4.  **KokoroのONNX vs PyTorch結果の逆転:** 以前のベンチマークではAMD EPYCでPyTorch版がONNX版より高速でしたが、今回のXeonではONNX版がわずかに高速でした。CPU推論におけるハードウェア（Intel vs AMD）とカーネル最適化の違いが、ランキングを逆転させるほど影響している可能性が示唆されています。
+
+**ベンチマークでは評価しきれない機能:**
+
+*   **ゼロショット音声クローニング:** Pocket TTSは、他のモデルにはない、CPU上で約5秒の参照音声からゼロショットで音声をクローンする能力を持っています。これはRTFやMOSの評価軸では捉えきれない機能であり、別途評価が必要であることが示唆されています。
+
+**制限事項:**
+
+*   単一のハードウェアプラットフォームでのテスト
+*   英語のみの評価
+*   UTMOSという単一のMOS予測値のみ
+*   音声クローニングの品質評価は実施せず
+*   バッチ推論はテストせず
+
+**開示:** ベンチマークツールはAIエンジニアリングエージェント（Neo）によって作成されたものであることが明記されています。
+
+投稿者は、リポジトリ（GitHub）にコード、生データ（CSV）、MOSデータ、および音声サンプルが公開されており、プロトコルやMOS手法、音声クローニング評価方法に関するフィードバックを求めています。
+
+## 2. このポストに対するコメントのうち、特に興味深いものを教えてください。
+
+このポストに対するコメントの中で、特に興味深いものは以下の3点です。
+
+1.  **Pocket TTSのフラットなRTFスケーリングとレイテンシ予測:**
+    *   コメント：「the flat RTF on Pocket TTS is what caught my eye too, been thinking about worst-case latency for voice assistants and constant cost is way easier to budget for than something that spikes on long input」
+    *   **興味深い理由:** 投稿者の見解（「Streaming LM architecture produces flat RTF scaling」）に同意し、特に音声アシスタントのようなリアルタイム性が求められるアプリケーションにおいて、Pocket TTSの「一定のコスト」が、入力テキストの長さに応じてレイテンシが変動する他のモデルよりも「最悪遅延」を予測・管理する上で非常に有用であることを指摘しています。これは、理論的な性能だけでなく、実用上のメリットに焦点を当てたコメントです。
+
+2.  **Inflect-Nano-v1のUTMOSスコアと実際の音声品質の乖離:**
+    *   コメント：「kinda surprised Inflect-Nano even got 3.48 on UTMOS, when i tried it everything came out sounding like an old GPS unit, clean but completely lifeless」
+    *   **興味深い理由:** 投稿者が指摘したUTMOSの「失敗モード」（「UTMOS has a known failure mode on small vocoders」）を、自身の体験談として裏付けています。Inflect-Nano-v1がUTMOSで3.48という比較的良いスコアを獲得したにも関わらず、コメント主は「古いGPSのような、クリーンだが全く生命感のない」音声だと感じており、客観的な評価指標（UTMOS）と主観的な音質評価との乖離を具体的に示しています。これは、UTMOSのような指標の限界と、実際の人間による評価の重要性を再認識させます。
+
+3.  **Inflect-Nanoの非公開出力制限による比較の不公平さ:**
+    *   コメント：「the undocumented output cap is a bit sneaky though, if you&#39;re comparing throughput numbers across models and one just stops rendering after 15 seconds that&#39;s not really apples to apples」
+    *   **興味深い理由:** 投稿者が「Inflect-Nano has an undocumented ~15s output cap」として挙げた問題点に対し、その「ずる賢さ（sneaky）」を指摘し、モデル間のスループット比較が「apples to apples（リンゴとリンゴの比較、つまり公正な比較）」になっていないという批判的な視点を提供しています。これは、ベンチマーク結果の解釈において、単なる数値だけでなく、その数値がどのように算出されたか、またモデルに隠された制限がないかを考慮することの重要性を示唆しています。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

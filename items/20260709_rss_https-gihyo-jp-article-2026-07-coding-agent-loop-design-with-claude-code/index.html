@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Anthropic、Claude CodeでAIエージェントを活用するループ設計を紹介 | gihyo.jp</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>Anthropic、Claude CodeでAIエージェントを活用するループ設計を紹介 | gihyo.jp</h1>
+<p><strong>Date:</strong> 2026-07-09</p>
+<p><strong>Source:</strong> rss / Hatena Bookmark Technology Hotentry</p>
+
+<p><a href="https://gihyo.jp/article/2026/07/coding-agent-loop-design-with-claude-code">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">AnthropicのClaude Codeチームは、「Getting started with loops」と題した記事で、AIコーディングエージェントを活用する際の「ループ」の概念を紹介しました。ループとは、エージェントが停止条件を満たすまで作業サイクルを繰り返す仕組みです。単にプロンプトを毎回入力するだけでなく、終了条件や実行間隔を設計することで、作業を継続させることが可能になります。
+
+この記事では、ループを「何をきっかけに動くか」「どの条件で止まるか」「Claude Codeのどの基本機能を使うか」「どの種類の作業に向くか」という観点から、4種類に分類しています。すべての作業で複雑なループが必要なわけではなく、まずは単純な方法から始め、必要に応じて選択的に利用することが推奨されています。
+
+4つのループ分類は以下の通りです。
+
+1.  **ターンベースのループ:**
+    ユーザーのプロンプトをきっかけに開始され、Claudeがコードの読み込み、編集、テストを繰り返します。Claudeが作業完了または追加の文脈が必要と判断した時点で応答し、1ターンが終了します。作業の進行は人間が行うため、短い作業や定期的でない作業に適しています。自己検証の精度を高めるために、人間が行う確認手順を具体的に記述することが有効です。
+
+2.  **ゴールベースのループ:**
+    1回のやり取りでは完了できない複雑な作業に用いられます。`/goal` コマンドを使用し、完了条件を事前に指定すると、評価モデルが条件を確認します。条件を満たさない場合はClaudeが作業を再開し、条件を満たすか、指定したターン数上限に達すると終了します。テスト通過数やLighthouseスコアのような機械的に確認できる条件が効果的です。
+
+3.  **時間ベースのループ:**
+    定期的な作業や外部システムの変化に反応する作業に適しています。`/loop` コマンドは指定した間隔でプロンプトを再実行しますが、ユーザーがキャンセルするか、対象の作業が完了すると停止します。ただし、この機能はユーザーのコンピューター上で動作するため、コンピューターの電源を切ると停止します。クラウド上で継続したい場合は、`/schedule` を使用してルーチンを作成します。
+
+4.  **プロアクティブなループ:**
+    ユーザーが直接促さなくても、イベントやスケジュールをきっかけに進めたい作業に利用されます。Issue作成やフィードバック投稿、定期チェックなどが対象となり、人間がリアルタイムで介在しない作業に向いています。個々の作業は目標達成で終了しますが、ルーチン自体はユーザーが停止するまで継続します。バグ報告、Issueのトリアージ、依存関係の更新など、繰り返し発生する作業に適しています。`/schedule` や Dynamic workflows と `/goal`、Auto mode を組み合わせることで、フィードバック確認から修正案の検討、レビューまでを自動化する例も紹介されています。
+
+ループ設計においては、品質維持とトークン管理も重要です。
+品質維持のためには、コードベースの整理、チームが考える「よい結果」のスキルへの記述、フレームワークやライブラリへのアクセス容易化、別のエージェントによるコードレビューなどが挙げられます。また、結果が基準を満たさなかった場合も、その場限りの修正でなく、今後の反復に活かせる仕組みとして記述することが推奨されています。
+
+トークン使用量の管理については、作業に合った機能とモデルの選択、成功条件と停止条件の明確化、小さな範囲での試行と拡大が推奨されています。自動処理できる作業はスクリプトに任せる考え方や、対象の変化に合わせて実行間隔を調整することも重要です。Dynamic workflows では多数のエージェントを起動する場合があるため、大規模実行前に利用量を確認する必要があります。`/usage`、`/goal`、`/workflows` コマンドで、スキル、サブエージェント、外部連携、各エージェントのトークン使用量を確認できます。
+
+記事のまとめとして、まず自身がボトルネックとなっている作業を1つ選び、エージェントに任せられる部分を特定することが推奨されています。確認手順が書けるか、ゴールが明確か、作業が決まったタイミングで発生するかを見極め、実際にループを回して観察・改善していく進め方が紹介されています。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

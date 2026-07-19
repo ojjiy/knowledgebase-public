@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>How Anthropic&#39;s marketing operations team uses Claude Cowork to automate reporting and campaign builds</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>How Anthropic&#39;s marketing operations team uses Claude Cowork to automate reporting and campaign builds</h1>
+<p><strong>Date:</strong> 2026-07-08</p>
+<p><strong>Source:</strong> rss / Claude</p>
+
+<p><a href="https://claude.com/blog/how-anthropics-marketing-operations-team-uses-claude-cowork-to-automate-reporting-and-campaign-builds">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">Anthropicのマーケティングオペレーションチームは、Claude Coworkを活用して、これまで手作業で行っていたレポート作成やキャンペーン構築のプロセスを自動化し、大幅な時間節約と業務効率化を実現しています。
+
+**1. 週次マーケティング指標レポートの自動化**
+マーケティングオペレーション担当のIan Chan氏は、以前は週に1～2日かけて、データソースの確認、データの収集、レポート作成を行っていました。Claude Coworkを導入したことで、この作業は大幅に短縮されました。
+
+*   **自動化されたプロセス:**
+    *   毎週日曜日の夜に、Claudeが前週のレポート、最新の会議議事録、Slackの営業チームの注力分野、データウェアハウスの情報を読み取り、レポートの数値と注力すべき領域の提案をフォルダにまとめます。
+    *   月曜日の朝、Ian氏はClaude Coworkで初期レポート（指標テーブルと見出し案を含む）を確認し、必要に応じてClaudeに詳細な説明や事例の追加を指示します。
+    *   四半期ごとのレポートでは、四半期計画を主軸とし、Claudeが同データと物語からリーダーシップ向けのスライドを生成します。
+    *   フォローアップ事項はAsanaタスクとして自動生成されます。
+*   **Claude Coworkの活用:**
+    *   「準備スキル」：レポートの組み立て、注力分野、見出し、詳細情報の拡充を行います。
+    *   「校正スキル」：ドラフトの数値を検証済みソースと照合します。
+    *   「アクションアイテムスキル」：フォローアップをAsanaタスクに変換します。
+*   **効果:**
+    *   作業時間が最大2日から2時間に短縮。
+    *   Ian氏は、マーケターの質問のフレーミング、プロンプトの洗練、データ解釈の支援といった、より戦略的な業務に時間を割けるようになりました。
+    *   データレイヤーへの深掘りや、Claudeがデータウェアハウスと同じように数値を解釈しているかどうかの確認といった業務も可能になりました。
+
+**2. イベント構築とデータインポートの自動化**
+キャンペーンオペレーション担当のAnnabel Custer氏は、これまで手動で行っていたイベント、ウェビナー、統合キャンペーンの構築プロセスをClaude Coworkで自動化しました。
+
+*   **自動化されたプロセス:**
+    *   リクエスターは、Slackチャンネルで必要なサポートの種類（イベント構築、データインポート、参加申し込み、承認サポートなど）を指定します。
+    *   「ディスパッチャースキル」が1時間ごとにチャンネルを読み取り、最も緊急性の高いリクエストを選択し、重複作業を防ぐためにチケットにスタンプを押し、専門スキルに引き渡します。
+    *   「イベント構築スキル」は、CRMキャンペーン作成、マーケティングオートメーションキャンペーン（ワークフローやリストを含む）、イベントプラットフォーム設定、メール作成、ランディングページ生成、およびそれらの連携まで、エンドツーエンドで処理します。
+    *   構築完了後、「監査エージェント」がテスト登録を行い、確認メールをチェックし、問題がなければAsanaタスクを完了させます。
+*   **Claude Coworkの活用:**
+    *   「ディスパッチャースキル」：リクエストを適切な専門スキルにルーティングします。
+    *   「イベント構築スキル」：プラットフォームを横断したエンドツーエンドのセットアップを実行します。
+    *   「ウェビナーランディングページ作成スキル」：ウェビナー用のランディングページを生成します。
+    *   「監査スキル」：イベント構築スキルの出力を検証します。
+    *   「参加申し込みスキル」：登録フローの途中変更に対応します。
+    *   「承認サポートスキル」：イベント承認を処理し、適切なメールを送信します。
+    *   「データインポートスキル」：リストをスクラブし、参加者データを処理します。
+*   **効果:**
+    *   手作業によるエラー（例：都市名の誤り、壊れたランディングページ）が減少し、構築の一貫性と品質が向上しました。
+    *   Annabel氏は、より戦略的なプロジェクト（イネーブルメント、プロセス自動化・最適化、キャンペーンアーキテクチャの改善）に注力できるようになりました。
+
+**AnthropicのMarketing Opsチームからのアドバイス**
+
+*   **繰り返し発生する修正はスキル化する:** 同じ修正をClaudeに何度も行う場合は、それをスキルとして組み込みます。Claude自身にスキル構築を依頼することも可能です。
+*   **校正スキルを最初に構築する:** Claudeがレポートに記載する数値が、検証済みソースに遡れるかどうかをチェックするスキルは非常に役立ちます。
+*   **Claudeに「振り返り」を促す:** 新しいワークフローの最初の実行後、Claudeに指示のどこが難しかったかなどを質問することで、スキルの改善に繋がります。
+*   **スケジュールタスクを活用する:** 毎週決まった時間に自動実行されるタスクは、人間が実行を忘れる心配がありません。
+
+Claude Coworkは、Anthropicのマーケティングオペレーションチームにとって、単なる時間節約ツールではなく、業務の質を高め、より戦略的な活動に注力するための強力なパートナーとなっています。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

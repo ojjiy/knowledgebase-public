@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Embodied.cpp: A Portable Inference Runtime of Embodied AI Models on Heterogeneous Robots</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>Embodied.cpp: A Portable Inference Runtime of Embodied AI Models on Heterogeneous Robots</h1>
+<p><strong>Date:</strong> 2026-07-02</p>
+<p><strong>Source:</strong> paper / hf-papers</p>
+
+<p><a href="http://arxiv.org/abs/2607.02501v2">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body"># タイトル
+[View Paper](http://arxiv.org/abs/2607.02501v2)
+
+## 1. 問題意識：解決したい問題はなにか
+現在のEmbodied AIモデル（Vision-Language-Action (VLA) モデルやWorld-Action Models (WAMs)）は、実用的なデプロイメントにおいて、モデル固有のPythonスタック、バックエンドの仮定、ロボット側のグルーコードが断片化しており、特に多様なエッジデバイス上での展開が困難である。既存の推論ランタイムは、主にリクエスト・レスポンス型のサービング向けに設計されており、以下のEmbodiedデプロイメント特有の要件を満たしていない：
+1.  **マルチレート実行 (Multi-rate execution)**: クローズドループ制御内で異なるレートで実行する必要がある。
+2.  **レイテンシー優先のバッチ1推論 (Latency-first batch-1 inference)**: 多様なハードウェア上で、レイテンシーを最優先したバッチサイズ1での推論が求められる。
+3.  **拡張可能なEmbodiedインターフェース (Extensible embodied interfaces)**: 固定されたトークン入出力以上の、カスタムオペレータやEmbodiedマルチモーダル入出力をサポートする必要がある。
+
+これらの問題を解決し、多様なEmbodied AIモデルを、様々なデバイス、ロボット、シミュレーターに効率的かつ統一的にデプロイできるポータブルな推論ランタイムを提供したい。
+
+## 2. 提案手法のアプローチ：どのようなアイデア・アプローチで問題を解決しようとしたか
+著者らは、代表的なVLAモデルとWAMsのアーキテクチャ分析に基づき、それらに共通する実行パスを抽出し、これを5つのレイヤーに整理した「Embodied.cpp」というポータブルなC++推論ランタイムを提案している。このアプローチは、以下の3つの設計原則に基づいている：
+
+1.  **モジュラーマルチレート実行 (Modular Multi-rate Execution)**: 各コンポーネントの異なるリフレッシュレートを分離し、単一の同期パスを強制することなく、異なるレートで実行できるようにする。
+2.  **レイテンシー優先のフューズド実行 (Latency-First Fused Execution)**: 多様なデバイス上での効率的なバッチサイズ1推論のために、グラフ再生、バッファ再利用、オペレータ融合、バックエンド固有ディスパッチ、ホスト・デバイス間のデータ移動を注意深く行うことで、安定した制御性能を優先する。
+3.  **拡張可能なオペレータとI/Oサポート (Extensible Operator and I/O Support)**: 型付けされたEmbodiedインターフェース、プラグ可能なヘッド、デプロイメントアダプター、十分なバックエンドとオペレータのカバレッジを提供し、新しいEmbodiedパラダイムをランタイム全体を再構築することなく実装可能にする。
+
+これらの原則は、以下の5つのレイヤーからなる統一されたアーキテクチャとして具体化されている：
+*   **Input Adapters**: 多様なセンサーデータやオフラインデータセットを入力として受け入れる。
+*   **Sequence Builders**: 入力データをモデルが処理できるシーケンスに構築する。
+*   **Backbone Execution**: VLAモデル、WAMs、および将来のEmbodiedモデルに共通するコアとなる実行パス。
+*   **Head Plugins**: モデル固有の予測モジュールやアクションヘッドなどをプラグインとして統合する。
+*   **Deployment Adapters**: ランタイムの出力をシミュレーターや実際のロボットのソフトウェアスタックに接続する。
+
+このアーキテクチャにより、モデル構造、ハードウェアターゲット、Embodiedインターフェースが進化しても、デプロイメント境界を安定に保ちながら、多様なEmbodiedモデルを効率的にデプロイすることが可能になる。
+
+## 3. 成果：提案手法により、何が達成できたのか
+Embodied.cppによるEmbodied AIモデルのデプロイメントにおいて、以下の成果が達成された：
+
+*   **VLAモデルのクローズドループ実行成功**: HY-VLAモデルは100.0%のタスク成功率、pi0.5モデルは91.0%のタスク成功率を達成した。これにより、提案ランタイムが多様なVLAアーキテクチャを単一のC++ランタイム内でサポートできることが示された。
+*   **メモリ使用量の削減**: LingBot-VA Transformerブロックのベンチマークにおいて、Python実装（BF16重み）の312.2 MiBから、Embodied.cppによるGGUF Q4_K量子化ブロックでは88.1 MiBへと、ブロックメモリを大幅に削減できた。
+*   **デプロイメント効率の向上と精度の維持**: 上記のメモリ削減は、限定的な出力ドリフト（MAEが非常に小さい）と引き換えに達成されており、Embodied.cppが、多様なEmbodiedモデルアーキテクチャにわたって、デプロイメント効率を向上させつつ高い精度を維持できることを示している。
+*   **ポータビリティと統一性**: 単一のバックエンド抽象化を通じて、多様なデバイス、ロボット、シミュレーターへのデプロイメントが可能になった。
+
+これらの結果は、Embodied.cppがEmbodied AIモデルのデプロイメントにおける断片化の問題を解決し、実用的なロボットシステムへの展開を促進する可能性を示唆している。
+
+## 4. 課題：本手法の限界・課題にはなにか。本文中で著者が言及しているものと、あなたが想定するもの
+### 本文中で著者が言及している課題：
+*   **WAMの完全なクローズドループ結果の欠如**: LingBot-VAの完全なモデルについては、制約のあるローカルエッジセットアップでの安定性がまだ確保されていないため、本稿ではTransformerブロックのみのマイクロベンチマークに留まっている。完全なクローズドループでの評価は今後の課題である。
+*   **レイテンシーとメモリ依存性**: VLAモデルのレイテンシーとメモリ使用量は、バックボーンのサイズ、視覚入力の複雑さ、アクションチャンクの長さに依存することが示された。これらの要素の最適化は、モデルやハードウェアの制約によって異なるアプローチが必要となる可能性がある。
+
+### あなたが想定する限界・課題：
+*   **新しいモデルアーキテクチャへの対応**: Embodied.cppは拡張性を重視しているものの、将来的に出現する全く新しいアーキテクチャのモジュールやオペレータ、I/O形式に対して、プラグインやアダプターの設計・実装に開発リソースが必要となる可能性がある。
+*   **リアルタイム性能の保証**: レイテンシー優先の設計を目指しているが、非常に厳しいリアルタイム性が要求されるロボット制御タスク（例: 高速なアーム操作）において、CPU、GPU、NPUなどの多様なハードウェア構成でのパフォーマンスチューニングが、どの程度容易かつ効果的に行えるかについては、さらなる検証が必要となる場合がある。
+*   **デバッグの複雑性**: C++ベースのシステムであり、また多様なモジュールが連携する構造のため、問題発生時のデバッグは、Pythonベースのフレームワークに比べて複雑になる可能性がある。特に、マルチレート実行や非同期通信が絡む場合、状態の追跡や原因特定が困難になることが想定される。
+*   **開発エコシステムの成熟度**: 現時点では、vla.cppのような先行研究や、llama.cppのような汎用推論ランタイムと比較して、Embodied.cppのエコシステム（ドキュメント、コミュニティサポート、サードパーティ製プラグインなど）はまだ発展途上である可能性があり、これが採用の障壁となることも考えられる。
+
+## 5. 技術詳細：提案手法の技術的な詳細について、できるだけ詳しく。数式やアルゴリズム、モデル構造なども可能な限り詳しく
+Embodied.cppは、Embodied AIモデルを多様なハードウェアに効率的かつポータブルにデプロイするためのC++ベースの推論ランタイムです。その設計は、Embodied AIモデルのアーキテクチャ分析と、既存の推論ランタイムが抱える課題に基づいています。
+
+### 1. Embodied AIモデルのアーキテクチャ分析
+著者らは、Embodied AIモデルを大きく以下の2つのファミリーに分類し、その内部構造を分析しました。
+
+*   **Vision-Language-Action (VLA) モデル**:
+    *   **AR-Token VLA**: RT-2, OpenVLAのように、単一の共有バックボーンがアクショントークンを自己回帰的に生成する。
+    *   **VLM-Backboned VLA**: Octo, pi0, pi0.5, MuseVLAのように、強力な視覚言語バックボーンと明示的な連続アクションヘッドを組み合わせる。
+    *   **Hierarchical VLA**: Hi Robot, GeneralVLA, RT-H, Gemini Robotics 1.5のように、セマンティックプランニングと低レベル制御を分割し、プランナーがサブゴールを生成する。
+    *   **Asynchronous VLA**: GR00T N1, Fast-in-Slow, DAM-VLAのように、異なる時間スケールでモジュールを実行し、バッファリングされた状態を通じて調整する。
+    *   **共通の推論上の課題**: 単一の同期フォワードパスだけでなく、異なるレートで実行されるコンポーネント（例: 知覚エンコーダ、Transformerバックボーン、予測ブランチ、アクションヘッド）の実行が必要。
+
+*   **World-Action Models (WAMs)**:
+    *   **Predict-then-Act**: UniPiのように、ワールドモデルが将来の状態を予測し、ダウンストリームのアクションエキスパートがそれを利用する。
+    *   **Unified AR-Modeling**: WorldVLA, LingBot-VAのように、未来モデリングとアクション生成を単一の自己回帰トークン空間に統合する。
+    *   **Shared-Backbone WAMs**: DreamZero, Fast-WAM, Cosmos Policy, UWMのように、ワールドモデリングとアクション生成で単一のバックボーンを再利用しつつ、独立してスケジューリング・拡張可能な補助ブロックを提供する。
+    *   **Latent-space WAMs**: LaWAM, Being-H0.7のように、コンパクトな潜在的な未来またはサブゴールを生成し、ダウンストリームのアクションエキスパートがそれを消費する。
+    *   **共通の推論上の課題**: 直接的なアクションデコーディングから、予測計算と制御計算の協調管理へとランタイム契約が広がる。
+
+これらの分析から、多くのEmbodiedモデルが、プラグ可能なヘッドや予測モジュールに限定された少数の分岐を持つ、共有の実行パスを持っていることが示唆されました。
+
+### 2. ランタイムのギャップ
+既存の推論ランタイム（llama.cpp, ONNX Runtime, SGLang, vLLM-Omniなど）は、主にリクエスト・レスポンス型のワークロードや、比較的均一なインターフェースをターゲットとしています。しかし、Embodiedデプロイメントは、以下の点で異なる要件を持ちます。
+
+*   **クローズドループ制御**: ロボットやシミュレーターとの継続的なインタラクション。
+*   **多様な入力と出力**: 画像、言語、プロプリオセプション、力覚、触覚、シミュレーター状態など、多様な入力と、アクションチャンク、予測された未来、制御表現など多様な出力。
+*   **永続的な状態**: 過去の観測や状態を保持する必要性。
+*   **バッチ1のレイテンシー感度**: 一度に1つのロボットまたはシミュレーターからの継続的なアクション出力が必要。
+*   **直接的なロボット/シミュレーター統合**: センサーラッパー、制御ロジック、シミュレーターAPIとの直接的な連携。
+
+vla.cppのようなVLAモデルに特化したランタイムは進歩しましたが、WAMsをサポートし、モジュラーモデルの最適化や、エッジデバイス、異種ハードウェア、ロボット、シミュレーターへの直接的なデプロイメントインターフェースを統合するには至っていません。
+
+### 3. Embodied.cppの設計原則とアーキテクチャ
+これらの課題に対処するため、Embodied.cppは以下の3つの設計原則を採用しています。
+
+1.  **モジュラーマルチレート実行**:
+    *   **概念**: 異なるコンポーネント（例: 知覚エンコーダ、Transformerバックボーン、アクションヘッド）が、それぞれ異なるリフレッシュレートで実行できるようにする。
+    *   **実装**: 5つのレイヤー構造において、`Input Adapters`、`Sequence Builders`、`Backbone Execution`、`Head Plugins`、`Deployment Adapters` が、それぞれ独立した実行ポリシーを持つことができる。例えば、知覚モジュールは低頻度、アクションヘッドは高頻度で実行され、`Sequence Builders` がこれらの間の状態やデータの調整を行う。
+    *   **例**: Python風疑似コード（概念的）
+        ```python
+        # Conceptual multi-rate scheduler
+        def scheduler(model_components, sensor_inputs):
+            while running:
+                if current_time % perception_rate == 0:
+                    perception_output = components[&#39;perception&#39;](sensor_inputs[&#39;camera&#39;])
+                if current_time % planning_rate == 0:
+                    planning_output = components[&#39;planner&#39;](perception_output, history)
+                if current_time % action_rate == 0:
+                    action = components[&#39;action_head&#39;](planning_output)
+                    robot.execute_action(action)
+                # State updates and synchronization
+                update_state(perception_output, planning_output, action)
+                sleep(min_cycle_time)
+        ```
+
+2.  **レイテンシー優先のフューズド実行**:
+    *   **概念**: リアルタイム制御に必要な低レイテンシー、低ジッター、予測可能なバッチサイズ1実行を、異種ハードウェア上で実現する。
+    *   **実装**:
+        *   **フューズド推論 (Fused Inference)**: 複数のオペレーション（例: 行列乗算、活性化関数）を単一のカーネルに融合し、メモリ帯域幅のボトルネックを削減する。
+        *   **バックエンド最適化**: CPU, GPU (CUDA, ROCm), NPUなどのハードウェアアクセラレータに最適化された実行プロバイダーを利用する（ONNX RuntimeのExecution Providerに類似）。
+        *   **オペレータ融合**: モデルグラフ内の連続するオペレータを、性能向上のために融合する。
+        *   **バッファ管理**: テンソルデータのコピーを最小限に抑え、メモリ帯域幅を節約する。
+        *   **ハードウェア固有ディスパッチ**: 特定のハードウェアアーキテクチャに最適化されたカーネルを選択する。
+    *   **例**: Python風疑似コード（概念的）
+        ```python
+        # Conceptual fused execution with device dispatch
+        def execute_fused_op(graph_segment, input_tensors, device_backend):
+            if device_backend == &#39;GPU&#39;:
+                optimized_gpu_kernel = compile_fused_kernel(graph_segment, &#39;cuda&#39;)
+                output_tensors = optimized_gpu_kernel(input_tensors)
+            elif device_backend == &#39;CPU&#39;:
+                optimized_cpu_kernel = compile_fused_kernel(graph_segment, &#39;x86&#39;)
+                output_tensors = optimized_cpu_kernel(input_tensors)
+            return output_tensors
+
+        # Latency-first batch-1 inference loop
+        def latency_first_inference(model, input_data, hardware_target):
+            # Pre-processing and potentially fusing initial ops
+            prepared_input = preprocess(input_data)
+            # Execute graph segments, prioritizing low latency
+            for segment in model.graph_segments:
+                prepared_input = execute_fused_op(segment, prepared_input, hardware_target.backend)
+            # Post-processing
+            return postprocess(prepared_input)
+        ```
+
+3.  **拡張可能なオペレータとEmbodied I/Oサポート**:
+    *   **概念**: 固定されたトークンI/Oを超え、カスタムオペレータ、多様なEmbodiedマルチモーダル入力、異種出力（アクションチャンク、予測された未来など）をサポートする。
+    *   **実装**:
+        *   **Typed Embodied Interfaces**: 画像、言語、プロプリオセプション、力覚、触覚信号などの入力データ型を型安全に扱う。
+        *   **Pluggable Heads**: モデル固有のヘッド（例: アクションヘッド、予測ヘッド）を、ランタイムのコアから分離し、プラグインとしてロード可能にする。
+        *   **Deployment Adapters**: ロボットOS（ROSなど）やシミュレーター（Isaac Simなど）とのインターフェースを、アダプターとして提供し、出力をロボット制御やシミュレーションに容易に接続できるようにする。
+        *   **Embodied AI Kernel Warehouse**: 各モデルファミリーや特定のハードウェアに必要な、再利用可能なオペレータやモデル固有カーネルを収集・管理する。
+    *   **5つのレイヤー構造**:
+        *   **Input Adapters**: 様々なセンサー（カメラ、IMU、力覚、触覚）やオフラインデータセットからの入力を受け入れ、標準化された内部表現に変換する。
+        *   **Sequence Builders**: 入力データを、モデルのバックボーンが処理できるシーケンスやテンソルに構築する。マルチレート実行における同期やデータ補完も担当しうる。
+        *   **Backbone Execution**: VLAモデル、WAMs、および将来のEmbodiedモデルに共通する、ニューラルネットワークの主要部分（例: Transformerバックボーン）を実行する。
+        *   **Head Plugins**: モデル固有の、バックボーンの出力を受け取って最終的なアクションや予測を生成する部分（例: 連続値アクションヘッド、離散トークン予測モジュール、プランナーモジュール）をロード・実行する。
+        *   **Deployment Adapters**: モデルの最終出力を、ロボットの制御コマンド、シミュレーターへの入力、あるいは他のシステムへのメッセージとして変換し、出力する。
+
+**全体的なアーキテクチャ図 (概念)**
+```
++-----------------+      +-----------------+      +-----------------+      +---------------+      +-------------------+
+| Input Adapters  | ---&gt; | Sequence Builders | ---&gt; | Backbone Exec.  | ---&gt; | Head Plugins  | ---&gt; | Deployment Adapters |
++-----------------+      +-----------------+      +-----------------+      +---------------+      +-------------------+
+       ^                                                      ^
+       |                                                      |
+       +---------------------- Runtime Core ---------------------+
+       |                                                      |
+       +-------------------- Embodied AI Kernel Warehouse ------+
+       |                                                      |
+       +-------------------- Modular Multi-rate Execution ------+
+       |                                                      |
+       +------------- Latency-First Batch-1 Execution ----------+
+```
+
+**例**: LingBot-VA Transformerブロックのメモリ削減
+LingBot-VA Transformerブロックの例では、Python/BF16版が312.2 MiBの重みメモリを消費するのに対し、Embodied.cppによるGGUF Q4_K量子化版は88.1 MiBで済んでいます。これは、Embodied.cppが、モデルの重みを低精度（例: 4ビット整数）に量子化し、さらにオペレータを融合することで、メモリ使用量を削減しつつ、MAE（Mean Absolute Error）を非常に小さく（著者は具体的な数値を省略しているが、「very limited output drift」と表現）抑える能力を示しています。
+
+```python
+# Conceptual comparison of memory footprint and accuracy
+def compare_implementation(model_block, precision, runtime):
+    if runtime == &#39;Python_BF16&#39;:
+        memory_usage = measure_memory(model_block, precision=&#39;BF16&#39;) # e.g., 312.2 MiB
+        accuracy = evaluate_accuracy(model_block, precision=&#39;BF16&#39;) # e.g., high accuracy
+    elif runtime == &#39;Embodied_cpp_Q4_K&#39;:
+        memory_usage = measure_memory(model_block, precision=&#39;Q4_K&#39;) # e.g., 88.1 MiB
+        accuracy = evaluate_accuracy(model_block, precision=&#39;Q4_K&#39;) # e.g., MAE &lt; threshold, Cosine Sim high
+    return memory_usage, accuracy
+
+# Example usage (hypothetical values)
+mem_python, acc_python = compare_implementation(&#39;LingBot_VA_Transformer&#39;, &#39;BF16&#39;, &#39;Python_BF16&#39;)
+mem_cpp, acc_cpp = compare_implementation(&#39;LingBot_VA_Transformer&#39;, &#39;Q4_K&#39;, &#39;Embodied_cpp_Q4_K&#39;)
+
+print(f&#34;Python (BF16): Memory = {mem_python}, Accuracy = {acc_python}&#34;)
+print(f&#34;Embodied.cpp (Q4_K): Memory = {mem_cpp}, Accuracy = {acc_cpp}&#34;)
+```
+
+## 6. この論文を140字以内のツイートで要約すると？
+Embodied AIモデルを多様なロボットやエッジデバイスへ効率的にデプロイするC++推論ランタイム「Embodied.cpp」を提案。マルチレート実行、レイテンシー優先推論、拡張I/Oで、VLA/WAMモデルの成功率向上とメモリ削減を達成。ロボットAIの普及を加速。 #EmbodiedAI #ロボット #推論ランタイム</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

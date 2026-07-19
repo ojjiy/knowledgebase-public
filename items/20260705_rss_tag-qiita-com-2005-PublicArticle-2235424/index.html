@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>1Passwordは、あなたのマスターパスワードを一度も受信していません</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>1Passwordは、あなたのマスターパスワードを一度も受信していません</h1>
+<p><strong>Date:</strong> 2026-07-05</p>
+<p><strong>Source:</strong> rss / Qiita Trend</p>
+
+<p><a href="https://qiita.com/kenimo49/items/d1151389d17e50ad5564?utm_campaign=popular_items&amp;utm_medium=feed&amp;utm_source=popular_items">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">1Passwordは、マスターパスワードをサーバーに一度も送信せずに、ユーザーの認証と金庫の保護を実現しています。この仕組みは、主に「2つの秘密の鍵（2SKD）」と「見せずに証明する認証（SRP）」の2つの技術に基づいています。
+
+**1. 2つの秘密の鍵 (2SKD)**
+
+*   **Secret Key:** ユーザーが初回サインアップ時に1Passwordクライアントが生成する128ビットのランダムな値です。このSecret Keyはサーバーとは共有されません。
+*   **マスターパスワード:** ユーザーが設定するパスワードです。
+*   **Account Unlock Key (AUK):** 金庫内の秘密鍵やデータを復号するための起点となる鍵です。このAUKは、ユーザーのマスターパスワードとSecret Keyの2つの秘密から導出されます。
+*   **仕組み:** マスターパスワードはPBKDF2という関数で、Secret KeyはHKDFという関数でそれぞれ処理され、その結果をXOR演算することでAUKが生成されます。サーバーはこのSecret Keyを知らないため、たとえ金庫データが盗まれたとしても、オフラインでの総当たり攻撃によってマスターパスワードやAUKを特定することが現実的に不可能です。これは、マスターパスワードのエントロピー（強度）にSecret Keyの強固なエントロピーが加わることで、合計エントロピーが実質200ビットを超えるためです。
+
+**2. 見せずに証明する認証 (SRP-6a)**
+
+*   **Secure Remote Password protocol (SRP):** サーバーにパスワードそのものを送信することなく、「自分が正しいパスワードを知っていること」を証明するためのプロトコルです。
+*   **仕組み:**
+    *   **初回サインアップ時:** クライアントは2SKDで生成された値から「verifier」という値を計算し、サーバーに送信します。このverifierは一方向関数の出力であり、元のマスターパスワードやSecret Keyを復元することはできません。サーバーはこのverifierと認証用のsaltを保存します。
+    *   **ログイン時:** クライアントとサーバーは乱数を交換しながら、互いに正しい値を持っていることを証明します。この一連のやり取りでは、マスターパスワードやSecret Key、AUKに相当する値はネットワーク上に一切流れません。
+*   **利点:**
+    *   **サーバー盗難耐性:** verifierだけが盗まれても、マスターパスワードを逆算できません。
+    *   **中間者攻撃耐性:** 通信を傍受しても、パスワード相当の値は流れていません。
+    *   **オフライン攻撃耐性:** 認証ラウンドの記録からパスワード試行が事実上不可能です。
+
+**使いやすさとセキュリティの両立:**
+
+1Passwordの使いやすさは、これらの高度なセキュリティ設計がユーザーから「見えない」ように実装されていることに起因します。
+
+*   **新しい端末でのログイン:** メールアドレス、マスターパスワードに加え、Secret Keyが必要です。Secret Keyは通常、端末に保存されており、新しい端末への移行は、既存端末で表示されるQRコードを新しい端末で読み取るだけで完了します。これにより、Secret Keyを手入力する手間がなく、かつ安全に移行できます。
+*   **認証の速さ:** SRPプロトコルにより、サーバーに秘密情報を送らずに迅速な認証が可能です。
+
+**まとめ:**
+
+1Passwordは、Secret Keyをサーバーと共有しない2SKDと、パスワードをサーバーに送信しないSRP-6aという2つの強力な仕組みを組み合わせることで、ユーザーがマスターパスワードを一度もサーバーに送信することなく、安全で使いやすいパスワード管理を実現しています。サーバーはユーザーの金庫の中身、鍵、そしてそれらを開けるための秘密を一切知らないまま、ユーザーのログインを検証しています。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

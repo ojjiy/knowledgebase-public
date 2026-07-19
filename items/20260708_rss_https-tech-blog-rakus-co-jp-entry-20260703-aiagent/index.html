@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>「楽楽精算」AIエージェント実装で立ちはだかった3つの壁と突破の裏側 - RAKUS Developers Blog | ラクス エンジニアブログ</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>「楽楽精算」AIエージェント実装で立ちはだかった3つの壁と突破の裏側 - RAKUS Developers Blog | ラクス エンジニアブログ</h1>
+<p><strong>Date:</strong> 2026-07-08</p>
+<p><strong>Source:</strong> rss / Hatena Bookmark LLM</p>
+
+<p><a href="https://tech-blog.rakus.co.jp/entry/20260703/aiagent">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">ラクスは、主力プロダクト「楽楽精算」にAIエージェント機能を実装するにあたり、「コスト」「精度」「応答速度」の3つの壁に直面しました。AIエージェント開発課は、この課題を克服するため、最新モデルをただ利用するのではなく、顧客志向に基づいたアーキテクチャの変更と設計原則の再定義を行いました。
+
+**3つの壁と克服策:**
+
+1.  **コストの壁:** 大量のコンテキストをLLMに渡すことで発生する高額な推論コストに対して、AIに複雑なルールを解釈させるのではなく、過去の確定伝票を「お手本」としてベクトルDBで検索し、それをプロンプトに補強するRAGアーキテクチャを採用。これにより、LLMの推論プロセスを簡略化し、LLM費用を大幅に削減しました。
+2.  **精度の壁:** 個社ごとに異なる複雑な社内ルールに対応するため、AIに完璧な精度を求めず、AIには「高速なドラフト作成」を担わせ、出力されたデータの正当性担保は既存のルールベース機能に委ねるハイブリッド構成を採用。AIの利便性と業務システムとしての確実性を両立させました。
+3.  **応答速度の壁:** LLM呼び出しを同期的に行うことによる長い待ち時間を解消するため、当初から非同期処理を前提としていましたが、ベータ版での「定期起動」方式では待ち時間のボトルネックが生じていました。これを、キューの未処理リクエスト数に応じてKubernetes jobをスケーリングする「イベント駆動」方式へ進化させ、ユーザー体験を大幅に向上させました。
+
+**共通LLM基盤の構築:**
+
+「楽楽精算」での経験を活かし、ラクス開発本部全体の「AIネイティブな開発組織への変革」を推進するため、共通LLM基盤の構築にも注力しています。
+
+*   **LLMゲートウェイ:** アプリケーションコードから外部LLMプロバイダーへの直接アクセスを避け、リトライ制御やモデルバージョン管理などを一元管理するプロキシ層を構築。これにより、外部APIへの依存性を分離し、保守性を向上させました。
+*   **オブザーバビリティ（監視基盤）:** AIエージェントの推論プロセスやエラー原因を追跡するためのログ・メトリクス・トレース収集基盤を構築。これにより、リアルタイムでのLLM利用状況の可視化を実現し、プロダクト運用を支援します。
+
+これらの取り組みは、ラクス開発本部全体に展開され、開発体験のAIネイティブ化を推進しています。ラクスは、最先端技術を社会実装する「実装主義」を掲げ、数万社のお客様の働き方を変革することを目指しています。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

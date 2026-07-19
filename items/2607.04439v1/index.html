@@ -1,0 +1,339 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ResearchStudio-Idea: An Evidence-Grounded Research-Ideation Skill Suite from ML Conference Outcomes</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>ResearchStudio-Idea: An Evidence-Grounded Research-Ideation Skill Suite from ML Conference Outcomes</h1>
+<p><strong>Date:</strong> 2026-07-05</p>
+<p><strong>Source:</strong> paper / paperswithcode-trending</p>
+
+<p><a href="http://arxiv.org/abs/2607.04439v1">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body"># タイトル
+[ResearchStudio-Idea: An Evidence-Grounded Research-Ideation Skill Suite from ML Conference Outcomes](http://arxiv.org/abs/2607.04439v1)
+
+## 1. 問題意識：解決したい問題はなにか
+大規模言語モデル（LLM）の進化により、研究アイデアの発想は以前より容易になりました。しかし、単に候補となる方向性を生成するだけでは効果的なアイデア開発には不十分です。研究者は、現在の研究文献に基づいた問題の根拠付け、意味のあるボトルネックの特定、既存の解決策との差別化、そして実装に着手する前のリスク評価を行う必要があります。現在のLLMベースの研究アイデア生成システムは、この「最初の1マイル」すなわち、アイデアの初期段階における構造化された、証拠に基づいた発想プロセスを十分に支援できていません。特に、表面的な新規性（novelty）のみを追求し、アイデアの質や実現可能性が伴わない「空虚な新規性（novelty-but-empty）」という失敗モードが観察されています。
+
+## 2. 提案手法のアプローチ：どのようなアイデア・アプローチで問題を解決しようとしたか
+本研究では、この「最初の1マイル」の問題に対処するため、ResearchStudio-Ideaという再利用可能なスキルスイートを提案しています。このスイートは、以下の3つの独立したスキルで構成されています。
+
+*   **Paper-Search**: 複数の情報源（arXiv, DBLP, OpenAlex, OpenReview, Semantic Scholar, Crossref）から文献を検索するスタンドアロンのスキルです。
+*   **Scoop-Check**: 新規性を主張する際の先行研究との衝突をチェックするスタンドアロンのスキルです。提案された新規性を「問題設定」「コアメカニズム」「主要な洞察」「応用ドメイン」の軸に分解し、先行研究と比較します。
+*   **IdeaSpark**: 上記2つのスキルを統合し、証拠の根拠付け、パターンに基づいた生成、衝突検出、監査、アイデアカードのレンダリングを1つのワークフローにまとめたエンドツーエンドのスキルです。
+
+IdeaSparkは、ICLR、ICML、NeurIPSといった主要な機械学習会議の1,947件の論文（採択された論文、引用数の多い論文、不採択となった論文を含む）から構築されたコーパスを分析し、31のアイデア創出サブパターンを15の再利用可能なアイデア創出パターンに統合しました。これらのパターンは、「研究コンテキスト」「ボトルネックの種類」「差別化戦略」「支持する先行事例」「一般的な失敗モード」を含む構造化されたカードとしてオペレーション化されています。
+
+IdeaSparkのワークフローは、研究問題と証拠のバンドルを入力とし、証拠の準備状況を評価し、周囲の研究コンテキストを再構築し、未解決のボトルネックを特定し、関連するパターンを選択し、候補となる方向性をインスタンス化し、潜在的に競合する先行研究を検索し、結果に基づいた監査を実行します。これにより、再利用可能なアイデアパターンを追跡可能な研究提案へと変換します。
+
+## 3. 成果：提案手法により、何が達成できたのか
+*   **アイデアの質と新規性の向上**: ブラインド自動評価において、IdeaSparkは、スキルなし（no-skill）および汎用スキル（generic-skill）のベースラインと比較して、一貫してより質の高い研究提案を生成し、同時に競争力のある新規性を維持することが示されました。特に、GPT-5.5のような汎用モデルでは、見かけ上の新規性が高いものの、アイデアの質が低い「空虚な新規性」という失敗モードが観察されましたが、IdeaSparkは高品質かつ競争力のある新規性を両立させています。
+*   **再利用可能なアイデアパターンの抽出**: 1,947件の会議論文の分析から、31のアイデア創出サブパターンと15の再利用可能なアイデア創出パターンが抽出・構造化されました。これらのパターンは、成功条件と失敗モードの両方を含み、研究アイデアの形成、差別化、評価に関する実用的なガイダンスを提供します。
+*   **証拠に基づいた研究アイデア生成**: IdeaSparkは、文献検索、ボトルネック診断、パターンに基づいた候補生成、先行研究との衝突チェック、監査といった一連のプロセスを通じて、アイデア生成を証拠に根ざしたものにします。
+*   **モデル非依存のスキルスイート**: ResearchStudio-Ideaのスキルは、モデルに依存しない（model-agnostic）ように設計されており、様々なLLMと組み合わせて使用することが可能です。
+*   **透明性と追跡可能性**: 生成されたアイデアは、その根拠となるパターン、先行事例、監査結果とともに提示されるため、追跡可能性と説明責任が向上します。
+
+## 4. 課題：本手法の限界・課題にはなにか。本文中で著者が言及しているものと、あなたが想定するもの
+**本文中で著者が言及している課題:**
+
+*   **人間による評価の必要性**: 自動評価では高い質と新規性が示されましたが、最終的なアイデアの有効性や受容性は、人間の専門家による評価（ピアレビュー、採択判定など）によって検証される必要があります。
+*   **カバレッジの限界**: 提案手法は、ICLR, ICML, NeurIPSという3つの主要なML会議の成果に限定されているため、他の分野や会議では、誘導されるパターンやドメインの分布が異なる可能性があります。生成されるアイデアも、これらの分野のバイアスを継承する可能性があります。
+*   **評価軸のバイアス**: 自動評価の評価軸（質、新規性）には、ベンチマークやシステム寄りの貢献が過小評価される可能性や、新規性がアイデアの曖昧さによって過大評価される（空虚な新規性）というバイアスが内在しています。
+*   **LLMの進化とモデル依存性**: 使用されるLLM（Claude, OpenAI GPTなど）は進化し続けており、異なるモデルファミリー間での性能比較や、将来的なモデルの変更への対応が課題となります。
+*   **研究の「最初の1マイル」に限定**: 本手法は、アイデア生成の初期段階に焦点を当てており、実験計画、実装、論文執筆といった、その後の研究ライフサイクル全体を自動化するものではありません。
+
+**あなたが想定する課題:**
+
+*   **過度な構造化による創造性の阻害**: パターン化されたアプローチが、真に斬新で型破りなアイデアの発想を制約する可能性があります。
+*   **「パターン」の解釈の曖昧さ**: パターンカードは詳細に記述されていますが、実際の研究問題への適用において、解釈の余地が残り、ユーザーのスキルや経験に依存する部分があるかもしれません。
+*   **計算リソースとコスト**: 大規模な文献検索、LLMによる処理、埋め込み、クラスタリングなど、計算リソースとコストが相当程度かかる可能性があります。
+*   **最新の研究動向への追従**: コーパスは2021年から2025年の論文に基づいています。将来の最新の研究動向をリアルタイムに捉え、アイデア生成に反映させるための継続的なコーパスの更新やモデルの再学習が必要になる可能性があります。
+*   **誤った「証拠」の利用**: 文献検索が不完全であったり、誤った論文を拾ってきたりした場合、その後のアイデア生成プロセス全体が誤った方向に進むリスクがあります。
+
+## 5. 技術詳細：提案手法の技術的な詳細について、できるだけ詳しく。数式やアルゴリズム、モデル構造なども可能な限り詳しく
+ResearchStudio-Ideaは、以下の技術的要素で構成されています。
+
+**1. コーパス構築とアイデアパターンの抽出:**
+*   **データ収集**: ICLR, ICML, NeurIPSの2021年から2025年までの論文を、OpenReview APIとSemantic Scholarの引用メタデータを用いて収集しました（計1,947件）。論文は、Oral、High-Cited (HC)、Rejectといったラベルで分類されました。
+*   **イノベーションシグネチャ抽出**: 各論文から、タイトル、要約、導入部、レビュー、メタレビューなどの情報を用いて、以下の12フィールドからなる「イノベーションシグネチャ」を抽出しました。
+    *   8つの基本フィールド（タイトル、要約、導入部、レビュー、メタレビュー、貢献、主要な推論ステップ、認知上の障壁、ドメイン非依存の状況、Oral/cited/rejectedの理由、分野）
+    *   4つのメカニズムフィールド（推論戦略、主要な推論ステップ、認知上の障壁、ドメイン非依存の状況）
+*   **ドメイン非依存化**: 上記4つのメカニズムフィールドは、Claude Sonnet 4.6を用いて、トピック語彙から切り離し、ドメイン非依存な形（例：「When X, apply Y to achieve Z.」）に書き換えました。これにより、トピックではなく研究戦略によるクラスタリングを可能にしました。
+*   **埋め込みとクラスタリング**: 書き換えられた4つのフィールドを連結し、OpenAI `text-embedding-ada-002` モデルで3,072次元のベクトルに埋め込み、UMAP（Uniform Manifold Approximation and Projection）を用いて10次元に次元削減しました。その後、HDBSCAN（Hierarchical Density-Based Spatial Clustering of Applications with Noise）を用いてクラスタリングを行い、31の「アイデア創出サブパターン」を特定しました。HDBSCANのパラメータは、クラスタリングの質（シルエットスコア）と未クラスタリング点の割合を考慮して選択されました（`min_samples=10`, `min_cluster_size=20`）。
+*   **アイデアパターン誘導**: 31のサブパターンを元に、Claude Opus 4.7を用いて、6〜18個のエントリを持つ15の「アイデア創出パターン」の階層構造を誘導しました。各パターンは、定義、オペレーショナルシグネチャ、適用条件を持ちます。
+*   **パターンカード生成**: 各アイデアパターンについて、対応するOral（採択、高引用）論文とReject（不採択）論文の分析から、7つのパネルを持つ構造化された「カード」を生成しました。これには、成功条件、失敗モード、Oral vs. Rejectの比較、先行研究との差別化、代表的な事例などが含まれます。
+
+**2. ResearchStudio-Idea スイートの構成:**
+*   **Paper-Search**: arXiv, DBLP, OpenAlex, OpenReview, Semantic Scholar, Crossref を検索対象とする、文献検索スキル。
+*   **Scoop-Check**: 提案された新規性を「問題設定」「コアメカニズム」「主要な洞察」「応用ドメイン」に分解し、先行研究との衝突をチェックするスキル。
+*   **IdeaSpark**: 文献検索、パターンに基づく候補生成、先行研究との衝突チェック、監査、アイデアカードレンダリングを統合したエンドツーエンドのスキル。
+
+**3. IdeaSpark のワークフロー:**
+IdeaSparkは、以下のフェーズで実行されます。
+
+*   **Phase 0: 文献グラウンディング (Literature Grounding)**
+    *   ユーザーの入力（研究方向、制約など）に基づき、複数の検索クエリを生成します。
+    *   arXiv, OpenReview, OpenAlex, Semantic Scholar の4つのソースから、関連文献を検索します。
+    *   検索結果を重複排除し、Ideation Patternで軽タグ付けします。
+    *   最も関連性の高い文献のフルテキストキャッシュを取得します。
+    *   `Python`
+        ```python
+        def phase_0(user_input):
+            queries = generate_queries(user_input)
+            sources = [&#34;arxiv&#34;, &#34;openreview&#34;, &#34;openalex&#34;, &#34;semantic_scholar&#34;]
+            retrieved_papers = []
+            for source in sources:
+                papers = search_source(source, queries)
+                retrieved_papers.extend(papers)
+            
+            deduplicated_papers = deduplicate(retrieved_papers)
+            papers_with_patterns = tag_with_ideation_patterns(deduplicated_papers)
+            
+            full_text_cache = fetch_full_text(papers_with_patterns)
+            
+            return {
+                &#34;retrieved_papers&#34;: papers_with_patterns,
+                &#34;full_text_cache&#34;: full_text_cache
+            }
+        ```
+
+*   **Phase 1: ボトルネック特定 (Bottleneck Identification)**
+    *   Phase 0 の結果とユーザー入力を元に、構造化されたギャップ（ボトルネック）を特定します。
+    *   関連文献の「方法線」ツリー（過去の手法とその改良・置換関係）を構築し、未解決のギャップを特定します。
+    *   `Python`
+        ```python
+        def phase_1(user_input, phase_0_output):
+            # ... (literature grounding bundle and full-text cache validation)
+            
+            method_lineage_tree = build_method_lineage_tree(phase_0_output[&#34;retrieved_papers&#34;])
+            
+            # Identify gaps at the leaves of the tree that are not closed by current methods
+            bottleneck = identify_unresolved_gap(method_lineage_tree, user_input)
+            
+            # ... (summarize pattern usage in retrieved literature)
+            
+            return {
+                &#34;bottleneck&#34;: bottleneck,
+                &#34;adjacent_papers&#34;: method_lineage_tree.leaves(),
+                &#34;pattern_usage_summary&#34;: pattern_usage_summary
+            }
+        ```
+
+*   **Phase 2: パターン選択と候補生成 (Pattern Selection and Candidate Generation)**
+    *   特定されたボトルネックを埋めるのに適したアイデアパターンを選択します。
+    *   選択されたパターン（1〜3個）とそのサブパターンに基づき、具体的な研究メカニズム、計算予算、偽証予測を含む候補を生成します。
+    *   生成された候補は、デターミニスティックな引用ゲート（サブパターンが親パターンに紐づいているか確認）を通過します。
+    *   `Python`
+        ```python
+        def phase_2(phase_1_output, ideation_patterns, sub_pattern_cards):
+            selected_gaps = select_relevant_gaps(phase_1_output[&#34;bottleneck&#34;])
+            
+            candidate_ideas = []
+            for gap in selected_gaps:
+                # Select one or more ideation patterns that structurally close the gap
+                selected_patterns = select_ideation_patterns(gap, ideation_patterns, phase_1_output[&#34;pattern_usage_summary&#34;])
+                
+                for pattern in selected_patterns:
+                    # Select a sub-pattern for tactical guidance
+                    selected_sub_pattern = select_sub_pattern(pattern, sub_pattern_cards)
+                    
+                    # Instantiate a concrete mechanism based on the gap and sub-pattern
+                    candidate = instantiate_candidate(gap, selected_sub_pattern, pattern)
+                    
+                    # ... (assign compute budget, falsification prediction)
+                    
+                    # Deterministic citation gate
+                    if not citation_gate_passes(candidate.cited_sub_patterns, ideation_patterns):
+                        continue # Skip if citations are invalid
+                    
+                    candidate_ideas.append(candidate)
+            
+            return candidate_ideas
+        ```
+
+*   **Phase 3: 監査 (Audit)**
+    *   生成された候補を、先行研究との衝突、失敗モード、パターンの誤用などについて監査します。
+    *   **Check 1: Gap-closure-scoped reject scan**: 選択されたパターンに特有の失敗モードをチェックします。
+    *   **Check 2: Recipe application**: 候補が選択されたサブパターンの特徴的な動きを実行しているかチェックします。
+    *   **Check 3: Anti-pattern substantive verification**: 拒否されやすい2つのパターンの組み合わせ（reject-enriched combinations）の場合、緩和策が実質的に満たされているか検証します。
+    *   **Check 4: Paper-pointed threat**: 最新の先行研究で候補の主張がすでに subsume（包含）されているか、または競合しているかをチェックします。
+    *   監査結果に基づき、「advance」（続行）、「revise」（修正）、「abandon」（中止）の verdict を出力します。
+    *   `Python`
+        ```python
+        def phase_3(candidate, phase_1_output, sub_pattern_cards, phase_0_output, collision_hits):
+            # ... (focused literature search for collision)
+            
+            verdict = &#34;advance&#34;
+            revision_targets = []
+            
+            # Check 1: Reject lessons
+            if check_reject_lessons(candidate, sub_pattern_cards, phase_0_output):
+                verdict = &#34;revise&#34; # or abandon, depending on severity
+                revision_targets.append(&#34;address specific reject lesson&#34;)
+            
+            # Check 2: Recipe application
+            if not check_recipe_application(candidate, sub_pattern_cards):
+                verdict = &#34;revise&#34;
+                revision_targets.append(&#34;swap to sibling sub-pattern or rework mechanism&#34;)
+            
+            # Check 3: Anti-pattern verification
+            if check_anti_pattern(candidate, reject_enriched_patterns):
+                verdict = &#34;abandon&#34;
+                revision_targets.append(&#34;substantively deliver mitigation&#34;)
+            
+            # Check 4: Paper-pointed threat
+            threat_paper = check_prior_art_collision(candidate, collision_hits)
+            if threat_paper:
+                verdict = &#34;abandon&#34;
+                revision_targets.append(&#34;pivot to unoccupied gap&#34;)
+            
+            # ... (deterministic validators)
+            
+            return {
+                &#34;verdict&#34;: verdict,
+                &#34;revision_targets&#34;: revision_targets,
+                &#34;threat_paper&#34;: threat_paper # if found
+            }
+        ```
+
+*   **Phase 4: 拡張、実装可能性監査、レンダリング、検証 (Expansion, Implementability Audit, Rendering, and Validation)**
+    *   「advance」または「revise」の verdict に基づき、アイデアカードを生成します。
+    *   実装可能性監査（LLMによる、各ステップの構築方法の確認）を行います。
+    *   Markdown および LaTeX フォーマットの成果物をレンダリングします。
+    *   デターミニスティックなバリデーター（セクション存在、リスト長、引用整合性など）を実行し、初期の契約（偽証予測、計算予算など）が維持されているか確認します。
+
+**LLMモデル**:
+*   Claude Sonnet 4.6 (シグネチャ抽出、パターンタグ付け)
+*   Claude Opus 4.7 (タクソノミ・ドメイン誘導、パターンカード生成)
+*   OpenAI `text-embedding-ada-002` + UMAP + HDBSCAN (クラスタリング)
+*   Claude Opus 4.8 high (スキルランタイム、評価)
+*   GPT-5.5 (ベースライン比較用)
+
+## 6. この論文を140字以内のツイートで要約すると？
+LLMで研究アイデア発想を支援。会議論文分析から15の「アイデアパターン」を抽出。「証拠に基づく」網羅的な文献検索・ボトルネック特定・パターン活用・先行研究監査のスキル「ResearchStudio-Idea」を開発。自動評価で質・新規性向上を実現。
+
+# タイトル
+[ResearchStudio-Idea: An Evidence-Grounded Research-Ideation Skill Suite from ML Conference Outcomes](http://arxiv.org/abs/2607.04439v1)
+
+## 1. 問題意識：解決したい問題はなにか
+LLMによる研究アイデア発想は容易になったが、効果的な開発には文献根拠付け、ボトルネック特定、差別化、リスク評価が必要。既存LLMは、この「最初の1マイル」を構造化・証拠基盤で支援できておらず、「空虚な新規性」の問題も抱える。
+
+## 2. 提案手法のアプローチ：どのようなアイデア・アプローチで問題を解決しようとしたか
+「ResearchStudio-Idea」というスキルスイートを提案。Paper-Search(文献検索)、Scoop-Check(先行研究衝突チェック)、IdeaSpark(統合型アイデア生成・監査) の3スキルで構成。ICLR/ICML/NeurIPS論文1947件を分析し、31のサブパターンを15の「アイデアパターン」に集約。これらを構造化カード化し、問題根拠付け、パターン活用、衝突チェック、監査を統合したワークフローでアイデアを生成。
+
+## 3. 成果：提案手法により、何が達成できたのか
+自動評価で、IdeaSparkはベースラインより質・新規性ともに向上。15のアイデアパターンと31のサブパターンを抽出・構造化。文献、ボトルネック、パターン、候補を証拠に根ざし、追跡可能なアイデアを生成。
+
+## 4. 課題：本手法の限界・課題にはなにか。本文中で著者が言及しているものと、あなたが想定するもの
+**本文言及:**
+*   人間による最終評価の必要性
+*   ML会議に限定されたカバレッジ
+*   評価軸のバイアス（質、新規性）
+*   LLM進化によるモデル依存性
+*   アイデア段階に限定
+
+**想定:**
+*   過度な構造化による創造性阻害
+*   パターンの解釈の曖昧さ
+*   計算リソースとコスト
+*   最新動向への追従の難しさ
+*   誤った「証拠」利用リスク
+
+## 5. 技術詳細：提案手法の技術的な詳細について、できるだけ詳しく。数式やアルゴリズム、モデル構造なども可能な限り詳しく
+**1. コーパス構築とアイデアパターンの抽出:**
+*   **データ収集**: ICLR, ICML, NeurIPS (2021-2025) 計1,947件を収集。Oral, HC, Rejectラベル付与。
+*   **イノベーションシグネチャ抽出**: 論文から12フィールド（基本8+メカニズム4）を抽出。
+*   **ドメイン非依存化**: メカニズム4フィールドをClaude Sonnet 4.6で書き換え、トピック語彙を削除。
+*   **埋め込みとクラスタリング**: 連結したフィールドをOpenAI `text-embedding-ada-002`で埋め込み、UMAP (10D) で次元削減後、HDBSCANでクラスタリングし31サブパターンを特定。
+*   **アイデアパターン誘導**: 31サブパターンからClaude Opus 4.7で15のアイデアパターンを誘導。
+*   **パターンカード生成**: 各パターンに対し、成功・失敗条件、比較、事例等を含む7パネルのカードを生成。
+
+**2. ResearchStudio-Idea スイート:**
+*   **Paper-Search**: 多様な文献ソース（arXiv, DBLP, OpenAlex, OpenReview, Semantic Scholar, Crossref）を検索。
+*   **Scoop-Check**: 提案新規性を4軸（問題設定, コアメカニズム, 主要洞察, 応用ドメイン）に分解し、先行研究と衝突チェック。
+*   **IdeaSpark**: 上記2スキルとパターンカードを統合し、文献根拠付け→ボトルネック特定→パターン選択→候補生成→監査→カードレンダリングをエンドツーエンドで実行。
+
+**3. IdeaSpark のワークフロー:**
+*   **Phase 0: 文献グラウンディング**: ユーザー入力に基づき、複数ソースから関連文献を検索・キャッシュ。
+    ```python
+    def phase_0(user_input):
+        queries = generate_queries(user_input)
+        sources = [&#34;arxiv&#34;, &#34;openreview&#34;, &#34;openalex&#34;, &#34;semantic_scholar&#34;]
+        retrieved_papers = []
+        for source in sources:
+            papers = search_source(source, queries)
+            retrieved_papers.extend(papers)
+        deduplicated_papers = deduplicate(retrieved_papers)
+        papers_with_patterns = tag_with_ideation_patterns(deduplicated_papers)
+        full_text_cache = fetch_full_text(papers_with_patterns)
+        return {&#34;retrieved_papers&#34;: papers_with_patterns, &#34;full_text_cache&#34;: full_text_cache}
+    ```
+*   **Phase 1: ボトルネック特定**: 文献ツリーから未解決のギャップ（ボトルネック）を特定。
+    ```python
+    def phase_1(user_input, phase_0_output):
+        method_lineage_tree = build_method_lineage_tree(phase_0_output[&#34;retrieved_papers&#34;])
+        bottleneck = identify_unresolved_gap(method_lineage_tree, user_input)
+        return {&#34;bottleneck&#34;: bottleneck, &#34;adjacent_papers&#34;: method_lineage_tree.leaves()}
+    ```
+*   **Phase 2: パターン選択と候補生成**: ボトルネックに合うパターンを選択し、メカニズム、予算、偽証予測を含む候補を生成。引用ゲート通過必須。
+    ```python
+    def phase_2(phase_1_output, ideation_patterns, sub_pattern_cards):
+        selected_gaps = select_relevant_gaps(phase_1_output[&#34;bottleneck&#34;])
+        candidate_ideas = []
+        for gap in selected_gaps:
+            selected_patterns = select_ideation_patterns(gap, ideation_patterns, phase_1_output[&#34;pattern_usage_summary&#34;])
+            for pattern in selected_patterns:
+                selected_sub_pattern = select_sub_pattern(pattern, sub_pattern_cards)
+                candidate = instantiate_candidate(gap, selected_sub_pattern, pattern)
+                if not citation_gate_passes(candidate.cited_sub_patterns, ideation_patterns): continue
+                candidate_ideas.append(candidate)
+        return candidate_ideas
+    ```
+*   **Phase 3: 監査**: 先行研究衝突、失敗モード、パターンの誤用をチェック。Verdict: advance/revise/abandon。
+    ```python
+    def phase_3(candidate, phase_1_output, sub_pattern_cards, phase_0_output, collision_hits):
+        verdict = &#34;advance&#34;
+        revision_targets = []
+        if check_reject_lessons(candidate, sub_pattern_cards, phase_0_output): verdict = &#34;revise&#34;
+        if not check_recipe_application(candidate, sub_pattern_cards): verdict = &#34;revise&#34;
+        if check_anti_pattern(candidate, reject_enriched_patterns): verdict = &#34;abandon&#34;
+        threat_paper = check_prior_art_collision(candidate, collision_hits)
+        if threat_paper: verdict = &#34;abandon&#34;
+        return {&#34;verdict&#34;: verdict, &#34;revision_targets&#34;: revision_targets, &#34;threat_paper&#34;: threat_paper}
+    ```
+*   **Phase 4: 拡張、実装可能性監査、レンダリング、検証**: アイデアカード生成。実装可能性監査、バリデーター実行。
+
+**LLMモデル**: Claude Sonnet 4.6, Claude Opus 4.7, OpenAI `text-embedding-ada-002`, Claude Opus 4.8 high, GPT-5.5。
+
+## 6. この論文を140字以内のツイートで要約すると？
+LLMで研究アイデア発想を支援。会議論文分析から15の「アイデアパターン」を抽出。文献検索・ボトルネック特定・パターン活用・監査を統合した「ResearchStudio-Idea」で、質・新規性向上に成功。アイデア段階の構造化・証拠基盤化を目指す。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>【AgentCore】Runtime をパブリックにデプロイしたけど、勝手にアクセスされない？</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>【AgentCore】Runtime をパブリックにデプロイしたけど、勝手にアクセスされない？</h1>
+<p><strong>Date:</strong> 2026-07-07</p>
+<p><strong>Source:</strong> rss / Qiita Trend</p>
+
+<p><a href="https://qiita.com/ryu-ki/items/2cd37256824b54022bdb?utm_campaign=popular_items&amp;utm_medium=feed&amp;utm_source=popular_items">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">Amazon Bedrock AgentCore Runtime をパブリックにデプロイしても、不正アクセスや不正利用はされないことが確認されました。
+
+AgentCore Runtime のエンドポイント URL はインターネットからアクセス可能ですが、URL を知っているだけではエージェントを呼び出すことはできません。これは、以下の3層のセキュリティ機構によって保護されているためです。
+
+1.  **第1層：認証（IAM SigV4 署名 or JWT Bearer Token）**
+    リクエストには、有効な AWS アクセスキーIDとシークレットアクセスキーから計算された暗号学的な署名（IAM SigV4）が含まれている必要があります。署名が正しくないリクエストは、エンドポイントに到達する前に拒否されます。
+
+2.  **第2層：認可（IDベース - IAM ポリシー）**
+    呼び出し元には、`bedrock-agentcore:InvokeAgentRuntime` 権限が付与された IAM ポリシーが必要です。この権限がない場合、アクセスは拒否されます。
+
+3.  **第3層：認可（リソースベース - Runtime 側のポリシー、任意）**
+    さらに、Runtime にリソースベースポリシーをアタッチすることで、特定の IAM ロールなど、呼び出し元をより厳密に限定することができます。このポリシーにより、許可されたプリンシパル以外からのアクセスを明示的に拒否することが可能です。
+
+**実測による検証結果:**
+
+*   **認証ヘッダーなしでのアクセス:** 「Missing Authentication Token」として 403 Forbidden で拒否されました。
+*   **偽の認証情報でのアクセス:** 「Authorization method mismatch」として 403 Forbidden で拒否されました。これは、Runtime が SigV4 認証で構成されているため、Bearer トークン形式のリクエストが認証方式の不一致として処理されたためです。
+*   **正規の AWS 認証情報と IAM 権限でのアクセス:** 正常にレスポンスが返却され、エージェントが実行されました。
+
+このように、AgentCore Runtime はデフォルトで強力な認証・認可メカニズムを備えており、パブリックエンドポイントであっても安全に利用できます。より厳密なアクセス制御を行いたい場合は、リソースベースポリシーの活用が推奨されます。また、AgentCore Runtime は JWT Bearer Token 認証もサポートしており、ユースケースに応じて選択可能です。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

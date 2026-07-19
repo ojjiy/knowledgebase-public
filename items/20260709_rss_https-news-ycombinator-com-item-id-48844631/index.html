@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Show HN: A control-theory approach to detecting LLM agent instability</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>Show HN: A control-theory approach to detecting LLM agent instability</h1>
+<p><strong>Date:</strong> 2026-07-09</p>
+<p><strong>Source:</strong> rss / Hacker News LLM</p>
+
+<p><a href="https://github.com/vishal-dehurdle/state-harness">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">「state-harness」は、LLM（大規模言語モデル）エージェントのマルチターンの対話における不安定性を検出し、その原因を特定するための制御理論に基づいたツールです。具体的には、トークン使用量の急増（「トークン・スパイラル」）を監視し、失敗パターン（コンテキスト蓄積スパイラル、リトライ・ストーム、ポリシー・ドリフトなど）を分類します。
+
+このツールは、Lyapunov安定性監視の概念を応用し、エージェントのトークン消費量をベースラインと比較して「エネルギー」としてモデル化します。エネルギーの増加率が一定期間閾値を超えると、不安定と判断して監視をトリップさせます。トリップした際には、追加のLLM呼び出しなしに、失敗の原因、発生したパターン、それに伴うコスト増加の見積もり、そして具体的な改善策（例：履歴圧縮、閾値調整、スライディングウィンドウ戦略の導入）を提示します。
+
+「state-harness」は、特にMCTS（モンテカルロ木探索）やビームサーチなどの探索ツリー型エージェントや、大規模なプラットフォームチームでのエージェントの異常検知、ベンチマークの信頼性向上に役立ちます。
+
+**主な機能と特徴:**
+
+*   **不安定性の検出:** トークン使用量の成長率を監視し、異常な増加を検出します。
+*   **失敗パターンの分類:** コンテキスト・スパイラル、リトライ・ストーム、ポリシー・ドリフトなど、一般的な失敗パターンを特定します。
+*   **原因究明:** 追加のLLM呼び出しなしに、失敗の原因を分析し、人間が理解しやすいレポートを生成します。
+*   **改善策の提案:** 特定された失敗パターンに基づいて、具体的な改善策を提案します。
+*   **低オーバーヘッド:** 既存のエージェントループに容易に統合でき、LLM呼び出しの追加がないため、計算コストを抑えられます。
+*   **フレームワーク統合:** LangGraph、CrewAIなど、主要なLLMエージェントフレームワークとの連携が可能です。
+*   **ベンチマークによる検証:** 複数のベンチマークで、その有効性と非侵襲性が検証されています。
+
+「state-harness」は、マルチターンLLMエージェントが抱える、原因不明の失敗やコストの増大といった課題に対処するための強力なソリューションを提供します。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

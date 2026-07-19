@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>個人タスク管理を「判断は人間、更新はエージェント、計算はスクリプト」で設計する</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>個人タスク管理を「判断は人間、更新はエージェント、計算はスクリプト」で設計する</h1>
+<p><strong>Date:</strong> 2026-07-08</p>
+<p><strong>Source:</strong> rss / Hatena Bookmark LLM</p>
+
+<p><a href="https://zenn.dev/layerx/articles/797bb5b8935bf6">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">この記事は、個人のタスク管理において、過去の運用経験から得られた教訓に基づき、「判断は人間、更新はエージェント、計算はスクリプト」という役割分担による新たなタスク管理システムを設計・実装した事例を紹介しています。
+
+筆者は、5年間のMarkdownベースのタスク管理では、期限のないタスクの後回しや、チェックリストの二重管理といった問題が発生し、実態との乖離が生じていました。その後、LLMにタスク管理を任せたところ、文脈の不足からエージェントが「分かっている風」でも実質的な判断ができず、人間も全体を把握できなくなるという失敗を経験しました。
+
+これらの失敗から、構造化の維持コストとLLMへの丸投げによる判断・把握の放棄という2つの課題を認識しました。そこで、保守コストを機械側に分担させ、人間に判断だけを残すという「判断は人間、更新はエージェント、計算はスクリプト」という分担設計を採用しました。
+
+このシステムの実体は、ObsidianのローカルMarkdownファイルを中心に構成されています。タスクは「1タスク=1ファイル」とし、属性（ステータス、期間、優先度、依存関係など）はFrontmatterに記述し、これが唯一の真実（Source of Truth: SSoT）となります。ガントチャートや依存関係図などのビューは、スクリプトによってタスクファイルから自動生成される派生ビューであり、手動での編集は行われません。
+
+ローカルMarkdownを採用する理由は、エージェントが扱いやすいことに加え、スクリプトによる計算やファイルへの書き込みに対するフック（自動実行）が容易に実現できるためです。SaaSツールではAPI連携の複雑さから、この軽快さを実現するのは難しいと述べています。また、Gitによる履歴管理や、知識ノートと同じVaultに置くことによるタスクと設計メモの連携も利点として挙げています。
+
+「分担の設計」では、以下の3つの要素が中心となります。
+
+*   **更新はエージェント（task-managerサブエージェント）:** タスクファイルの書き換えは、定義された仕様（不変条件、命名規約、操作手順など）を厳密に守る「task-manager」という専用サブエージェントのみが行います。ただし、タスクの優先度や完了の是非といった「判断」は行わず、曖昧な指示は人間に差し戻されます。これは、LLMが判断に必要な文脈（案件の温度感や口頭で決まったことなど）を完全に把握することが難しいため、判断は文脈が揃っている人間に委ねるという考えに基づいています。
+*   **計算はスクリプト:** 親タスクの期日更新や見積もりの集計、ビューの生成など、計算可能な処理は決定論的なPythonスクリプトに委任されます。これにより、LLMよりも高い精度と低いコストで処理を実行できます。
+*   **実行のタイミングもエージェントから外す:** スクリプトの実行は、タスクファイルへの書き込みに反応するPostToolUse hook（Claude Code）によって自動化されています。これにより、ビューの再生成をエージェントの善意に頼らず、またプロンプトから実行手順の記述を削除することができます。
+
+この分担設計は、Anthropicが推奨するClaude Codeのベストプラクティスとも一致しており、決定論的な処理はコードに任せるという考え方に基づいています。筆者は、モデルの能力不足を補う仕組みはモデルの進化とともに不要になる可能性がある一方、精度とコスト保証のための決定論的な仕組みは、モデルが進化してもその価値が変わらないため、安心して作り込めるとしています。
+
+チームへの見せ方としては、個人のタスク管理システムと同期し、Notionにはプロジェクト単位でオプトインしたマイルストーン相当の粗いタスクのみを表示します。詳細な分解は同期対象から除外する仕組みを設けることで、「個人の作業分解がチームのボードを埋め尽くす」問題を回避しています。また、書き戻しには「自分がオーナーのタスクのみローカルSSoTとしてNotionへ書き戻す」という安全規則を設けています。
+
+日々の運用は、「バックログ操作」「計画（週次・朝）」「タスク消化のループ」「日次メンテ」の4つのモードで構成され、いずれも「task-manager」サブエージェントを経由してタスクの状態を更新します。日中のタスク消化は、「次のタスクやって」という指示で、依存関係と優先度を考慮した次の一手が提示されるループで進められます。ここでも、提示されたタスクを実行するかどうかの「判断」は人間に残されます。
+
+3週間の運用を経て、過去の方式で発生していた整合性の問題や文脈不足による判断ミスは、書き換え経路の一本化、hookによる自動生成、そして判断を人間に残すことで、仕組み上発生し得なくなりました。これにより、継続できる見込みに根拠があると感じています。
+
+結論として、筆者は個人のタスク管理を「判断は人間、更新はエージェント、計算はスクリプト」という責務分担で設計することで、持続可能なシステムを構築しました。この考え方は、AIエージェントの基盤設計にも通じるものであり、ツールではなく責務分担から設計することの重要性を説いています。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

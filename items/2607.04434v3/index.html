@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>RoboDojo: A Unified Sim-and-Real Benchmark for Comprehensive Evaluation of Generalist Robot Manipulation Policies</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>RoboDojo: A Unified Sim-and-Real Benchmark for Comprehensive Evaluation of Generalist Robot Manipulation Policies</h1>
+<p><strong>Date:</strong> 2026-07-05</p>
+<p><strong>Source:</strong> paper / paperswithcode-trending</p>
+
+<p><a href="http://arxiv.org/abs/2607.04434v3">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body"># タイトル
+[RoboDojo: A Unified Sim-and-Real Benchmark for Comprehensive Evaluation of Generalist Robot Manipulation Policies](http://arxiv.org/abs/2607.04434v3)
+
+## 1. 問題意識：解決したい問題はなにか
+汎用的なロボット操作ポリシーの能力を体系的に評価するための既存のベンチマークが、タスクの単純さ、短いホライズン、限られた能力範囲、シミュレーションまたは実世界のみでの評価といった点で不十分である。シミュレーションはスケーラブルなフィードバックを提供するが物理的な展開の課題を捉えきれず、実世界評価はコストと再現性の問題がある。
+
+## 2. 提案手法のアプローチ：どのようなアイデア・アプローチで問題を解決しようとしたか
+「RoboDojo」という、シミュレーションと実世界を統合した統一ベンチマークを提案する。42のシミュレーションタスクと18の実世界タスクを用意し、一般化、記憶、精度、長期実行、オープンボキャブラリー指示追従といった5つの能力次元を評価する。シミュレーションでは、NVIDIA Isaac Simを用いた異種並列シミュレーションによりスケーラブルな評価を可能にする。実世界評価には、標準化されたハードウェア、リセット手順、評価プロトコル、デプロイメントインターフェースを備えた「RoboDojo-RealEval」を導入し、リモートクラウドアクセスで再現性を確保する。さらに、「XPolicyLab」という統一インフラストラクチャにより、ポリシーを一度統合すればシミュレーションと実世界で最小限の適応で評価できるようにする。
+
+## 3. 成果：提案手法により、何が達成できたのか
+- 42のシミュレーションタスクと18の実世界タスクからなる、一般化ロボット操作ポリシーのための包括的なシム・アンド・リアルベンチマーク「RoboDojo」を構築した。
+- 異種並列シミュレーションとRoboDojo-RealEvalによる再現可能な実世界評価システムを実装し、スケーラブルかつ信頼性の高い評価を可能にした。
+- XPolicyLabを通じて、30の既存ロボット操作ポリシーを統合し、RoboDojo上で評価して公開リーダーボードを確立した。
+- 現在のポリシーの性能に関する系統的な分析を提供し、その能力と限界を明らかにした。
+- RoboDojoは、既存のベンチマークと比較して、より広範な能力範囲、シミュレーションと実世界の統合、再現性の向上、リモート評価のサポートといった点で優位性を持つ。
+
+## 4. 課題：本手法の限界・課題にはなにか。本文中で著者が言及しているものと、あなたが想定するもの
+**著者が言及している課題:**
+- 現在のポリシーは、シミュレーションであっても、特に精度、記憶、オープンボキャブラリー指示追従の次元において、人間レベルのパフォーマンスには遠く及ばない。
+- シミュレーションのパフォーマンスと実世界での実行可能性の間には、完全な一致は見られない。シミュレーションで良好な結果を示したポリシーでも、物理的な展開の課題に直面すると失敗する可能性がある。
+- 現状のポリシーは、物理的な展開における操作の不安定さ（アクションジッターなど）や、安全性に関わる振る舞いにおいて課題がある。
+- RoboDojo-RealEvalにおいても、タスクによっては、特に接触が多い、あるいは多段階の実行を伴うタスクでは、物理的な trial 間でばらつきが生じる可能性がある。
+
+**想定される課題:**
+- RoboDojo-RealEvalのハードウェアセットアップやシーンリセット手順は標準化されているが、物理世界固有の未知の要因（環境の微細な変化、センサーノイズの非決定性など）を完全に排除することは原理的に困難である。
+- 評価対象のポリシーが増加し、タスクも複雑化すると、評価に要する時間と計算リソースがさらに増大する可能性がある。
+- 特定のハードウェアプラットフォーム（ARX X5, Piper, Piper X）に特化した評価となっているため、他のロボットプラットフォームへの一般化能力については、さらなる検討が必要となる可能性がある。
+- 公開リーダーボードと隠し検証レイアウトの組み合わせは、ゲーミング対策として有効だが、隠しレイアウトの設計や更新が継続的に必要となる。
+
+## 5. 技術詳細：提案手法の技術的な詳細について、できるだけ詳しく。数式やアルゴリズム、モデル構造なども可能な限り詳しく
+**RoboDojoの構成要素:**
+1.  **シミュレーション評価プラットフォーム:** NVIDIA Isaac Simを基盤とし、以下の機能を持つ。
+    *   **設定駆動型シミュレーションスタック:** YAMLファイルでタスク（アセット、シーンレイアウト、初期化分布、ランダム化範囲、成功条件など）を定義。
+        ```python
+        # Example Task Configuration (YAML)
+        task_name: &#34;stack_blocks&#34;
+        assets:
+          blocks: [&#34;red_block.usd&#34;, &#34;green_block.usd&#34;, &#34;blue_block.usd&#34;]
+          boards: [&#34;wooden_board.usd&#34;]
+        initial_distributions:
+          block_poses:
+            red_block: [x_range, y_range, z_range, rot_range]
+            green_block: [x_range, y_range, z_range, rot_range]
+            blue_block: [x_range, y_range, z_range, rot_range]
+          board_pose: [x_center, y_center, z_center, rot_center]
+        success_conditions:
+          - condition: &#34;all_blocks_stacked&#34;
+            target_stack_height: 3
+            target_order: [&#34;red&#34;, &#34;green&#34;, &#34;blue&#34;]
+        evaluation_seeds: [0, 1, 2]
+        ```
+    *   **物理的に接地されたデジタルアセットライブラリ:** 剛体、関節、変形可能なオブジェクトをUSD形式で管理。アセットには、カテゴリ、言語説明、配置領域、操作アフォーダンスなどのメタデータが付与される。
+    *   **異種並列実行メカニズム:** 複数のGPUで異なるシーン構成を持つ環境を同時に実行し、評価スループットを向上させる。各環境は独立したシーン設定を持つが、共有のベクトル化インターフェースを通じてステップされる。
+        ```python
+        # Heterogeneous Parallelism Concept
+        num_gpus = 8
+        environments_per_gpu = 10
+        total_environments = num_gpus * environments_per_gpu
+
+        for gpu_id in range(num_gpus):
+            for env_id in range(environments_per_gpu):
+                # Each environment can have a different scene configuration
+                scene_config = sample_scene_configuration(task_id)
+                launch_environment(gpu_id, env_id, scene_config)
+        ```
+    *   **データ収集モード:** 自動軌道合成（低レベルスキルを組み合わせて生成）とVRベースのテレオペレーション。
+2.  **実世界評価プラットフォーム (RoboDojo-RealEval):**
+    *   **標準化されたハードウェア:** 固定されたロボットアーム、カメラ、照明、作業スペースの相対位置。
+    *   **再現可能なシーンリセット:** 事前収集されたレイアウトをリプレイし、一貫した初期条件を確保。
+    *   **リモートクラウドベース評価:** ユーザーはポリシーサーバーを接続し、クラウド経由で評価を実行。
+    *   **3つの協働型バイマニュアルロボットエンボディメント:** ARX X5, Piper, Piper Xに対応。
+3.  **XPolicyLab (統一ポリシー開発・デプロイメントインフラストラクチャ):**
+    *   **統一ポリシーインターフェース:**
+        ```python
+        class PolicyInterface:
+            def reset(self, episode_data):
+                pass
+
+            def predict_action(self, observation):
+                # Returns an action chunk
+                pass
+
+            def predict_batched_actions(self, batched_observations):
+                # Returns batched action chunks
+                pass
+        ```
+        `reset(episode_data)`: エピソード開始時にポリシーの状態をリセット。
+        `predict_action(observation)`: 単一環境の観測からアクションを予測。
+        `predict_batched_actions(batched_observations)`: 複数の環境からの観測をまとめてアクションを予測。
+    *   **標準化されたデプロイメントプロトコル:** WebSocketとMessagePackを用いたクライアント・サーバー通信。
+    *   **ポリシーパッケージ構造:** `install.sh`, `preprocess_data.py`, `train.py`, `serve_policy.py`, `evaluate.py` などの標準化されたスクリプト構成。
+
+**評価次元:**
+*   **Generalization:** 背景、照明、クラッター、オブジェクトのバリエーションに対するロバスト性。
+*   **Memory:** 長期コンテキストモデリング、キーフレームメモリ、非マルコフ決定。
+*   **Long-Horizon:** 依存関係のあるステップの連続実行、タスク構造の推論。
+*   **Precision:** 微細な位置決め、軌道滑らかさ、接触リッチ制御。
+*   **Open:** オープンボキャブラリー指示追従、スキル再構成、言語条件付き転移。
+
+**学習データ:**
+*   **シミュレーション:** 35タスク、3,500軌道、約20.66時間。
+*   **実世界:** 18タスク、1,800軌道、約17.91時間。
+
+**評価:**
+*   **シミュレーション:** 各タスク50エピソード。Generalization次元は標準/ランダム設定に分割。
+*   **実世界:** 各タスク10トライアル。3人の評価者によるダブルブラインドプロトコルで採点。
+
+## 6. この論文を140字以内のツイートで要約すると？
+ロボット操作ポリシーの包括的評価へ！シミュレーションと実世界を統合した「RoboDojo」登場。42のSIM/18のREALタスクで、一般化・記憶・精度等を測る。XPolicyLabでポリシー統合も容易に。リーダーボードで進捗を追跡！#ロボット工学 #AI #ベンチマーク</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

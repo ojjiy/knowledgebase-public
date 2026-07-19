@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AgenticSTS: A Bounded-Memory Testbed for Long-Horizon LLM Agents</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>AgenticSTS: A Bounded-Memory Testbed for Long-Horizon LLM Agents</h1>
+<p><strong>Date:</strong> 2026-07-02</p>
+<p><strong>Source:</strong> paper / hf-papers</p>
+
+<p><a href="http://arxiv.org/abs/2607.02255v1">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body"># タイトル
+AgenticSTS: A Bounded-Memory Testbed for Long-Horizon LLM Agents
+[View Paper](http://arxiv.org/abs/2607.02255v1)
+
+## 1. 問題意識：解決したい問題はなにか
+長期にわたるタスクを実行する大規模言語モデル（LLM）エージェントにおいて、過去の情報をどのように記憶し、それを意思決定に活用していくかという「記憶」のメカニズムは、エージェントの性能を向上させる上で重要な課題です。従来の「過去の観測、ツール呼び出し、省察などを全てプロンプトに単純に追加する」という単純な記憶管理方法は、過去の情報を容易に参照できる一方で、情報が混在しすぎてしまい、個々の記憶要素が意思決定に与える影響を分析・分離することが困難であるという問題があります。このため、LLMエージェントの長期的な意思決定において、記憶のどの部分が、どのように影響を与えているのかを詳細に理解・評価するための、より体系的で制御可能なテスト環境が求められています。
+
+## 2. 提案手法のアプローチ：どのようなアイデア・アプローチで問題を解決しようとしたか
+本研究では、LLMエージェントの記憶管理における「契約（contract）」という概念を提唱し、従来の単純なコンテキスト追加ではなく、「境界付き（bounded）」な記憶契約を提案しています。この境界付き契約では、各意思決定は、生きた過去のトランスクリプトをそのまま追加するのではなく、「型付き検索（typed retrieval）」によって組み立てられた新鮮なユーザーメッセージから行われます。これにより、プロンプトのサイズは実行の長さに関わらず一定（bounded）に保たれ、さらに、記憶の各層（layer）を独立に無効化（ablate）して、その影響を単独で評価することが可能になります。このアプローチを通じて、記憶の各要素がLLMエージェントの長期的な意思決定に与える影響を、より細かく、かつ定量的に分析できるテストベッドを構築することを目指しています。
+
+## 3. 成果：提案手法により、何が達成できたのか
+提案手法を「Slay the Spire 2」という複雑なカードゲームのプレイに適用した結果、記憶の「スキル層（skill layer）」を有効にすることが、エージェントの勝率に顕著な影響を与えることを示しました。具体的には、スキル層を無効にしたベースラインでは10ゲーム中3勝でしたが、スキル層を追加すると6勝となり、これは統計的に有意ではないものの、記憶の特定の要素（ここでは「トリガーされる戦略的スキル」）が意思決定にプラスの影響を与えることを方向性として示唆しました。さらに、本研究は、298個の完了した軌跡、条件タグ、記憶/スキルスナップショット、プロンプト記録、分析スクリプトを含む、再現可能なテストベッドを公開しました。これにより、LLMエージェントの設計と、明示的な記憶層が長期的な意思決定をどのように形成するかを研究するための、検証済みの再利用可能な方法論を提供しました。
+
+## 4. 課題：本手法の限界・課題にはなにか。本文中で著者が言及しているものと、あなたが想定するもの
+**本文中で著者が言及している課題:**
+*   **統計的有意性の欠如:** スキル層の有効性を示す実験結果において、sample sizeが小さいために統計的に決定的な結論には至らなかった（Fisher exact p≈0.37）。これは、より多くの実験や、より統計的に強力な評価方法が必要であることを示唆しています。
+*   **比較対象の限定性:** クロスバックボーンプローブや公開されている累積コンテキストベースラインは、記憶契約変数を制御したテストではなく、運用上の比較として報告されている。これは、提案手法の「境界付き契約」と「単純なコンテキスト追加」という比較が主であり、他の記憶管理手法との直接的な比較が十分でない可能性を示唆しています。
+
+**あなたが想定する課題:**
+*   **「型付き検索」の複雑性:** 「型付き検索」によって新鮮なユーザーメッセージを組み立てるプロセスが、それ自体で複雑な設計や実装を必要とする可能性があります。この検索メカニズムの効率性や、検索されるべき「型」の設計が、エージェントの性能に影響を与える可能性があります。
+*   **タスクへの汎化性:** 本研究で採用された「Slay the Spire 2」は、長期的な戦略的意思決定が求められる特定のタスクです。提案された記憶管理フレームワークが、他の多様なドメイン（例：自然言語での対話、ロボット制御、ソフトウェア開発など）にどの程度汎化できるか、また、その際にどのような調整が必要になるかは、今後の研究課題となる可能性があります。
+*   **「境界」の定義の柔軟性:** 「境界付き」とは言っても、具体的にどの程度の情報量を、どのような形式で記憶に含めるかの「境界」の定義は、タスクやエージェントの設計によって最適解が異なると考えられます。その「境界」をどのように設定・調整するかについてのガイダンスが、現時点では明確ではない可能性があります。
+
+## 5. 技術詳細：提案手法の技術的な詳細について、できるだけ詳しく。数式やアルゴリズム、モデル構造なども可能な限り詳しく
+提案手法の核心は、LLMエージェントの意思決定における「記憶契約」の定義にあります。
+
+**1. 従来の記憶契約（単純なコンテキスト追加）:**
+これは、過去の観測 (observations)、ツール呼び出し (tool calls)、省察 (reflections) の履歴を、そのまま最新のプロンプトに追記していく形式です。
+Python風疑似コードで表現すると以下のようになります。
+
+```python
+def simple_context_memory_contract(history, current_observation):
+    # history: List of past (observation, tool_call, reflection) tuples
+    # current_observation: The latest observation
+    
+    prompt = &#34;History:\n&#34;
+    for obs, tc, refl in history:
+        prompt += f&#34;  Observation: {obs}\n&#34;
+        prompt += f&#34;  Tool Call: {tc}\n&#34;
+        prompt += f&#34;  Reflection: {refl}\n&#34;
+    
+    prompt += f&#34;Current Observation: {current_observation}\n&#34;
+    prompt += &#34;Decision: &#34;
+    return prompt
+
+# Example usage:
+# prompt = simple_context_memory_contract(previous_steps, new_observation)
+# agent_decision = llm_model.predict(prompt)
+# history.append((new_observation, tool_call_result, reflection)) 
+```
+
+この方法の課題は、`history`が長くなるにつれて`prompt`が巨大化し、`history`内の個々の要素の影響を特定することが困難になる点です。
+
+**2. 提案手法の記憶契約（境界付き、型付き検索）:**
+このアプローチでは、各意思決定ステップ（decision step）において、過去の履歴全体をそのままプロンプトに含めるのではなく、**「型付き検索（typed retrieval）」**というメカニズムを用いて、必要な情報のみを抽出・再構成し、**「新鮮なユーザーメッセージ」**としてプロンプトを構築します。
+この「型付き検索」は、以下のような要素から構成されると考えられます。
+
+*   **記憶モジュール（Memory Modules）:** LLMエージェントは、観測、ツール呼び出し、戦略、目標、過去の成功/失敗パターンなど、異なる種類の情報を格納するための独立した記憶モジュールを持つことができます。
+*   **検索クエリ（Retrieval Query）:** 現在の意思決定コンテキスト（例：現在のゲーム状態、直前の観測）に基づいて、どの記憶モジュールから、どのような情報を取得すべきかを決定するクエリが生成されます。これはLLM自身が生成する場合もあれば、事前に定義されたテンプレートに基づく場合もあります。
+*   **検索・抽出（Search and Extraction）:** 生成されたクエリは、対応する記憶モジュールに対して実行され、関連性の高い情報が抽出されます。
+*   **メッセージ生成（Message Assembly）:** 抽出された情報は、事前に定義された「型」に従って、新しいプロンプト（ユーザーメッセージ）として再構成されます。例えば、「過去の成功した戦略」という型であれば、過去に成功した戦略のリストやその理由などが提示される形式になります。
+*   **「境界付き」:** このメッセージ生成プロセスにより、プロンプトのサイズは、過去の履歴の長さに依存せず、一定の範囲内（bounded）に保たれます。
+
+Python風疑似コードで概念を表現すると以下のようになります。
+
+```python
+class BoundedMemoryContract:
+    def __init__(self):
+        self.memory_modules = {
+            &#34;observations&#34;: [],      # Stores past observations
+            &#34;tool_calls&#34;: [],        # Stores past tool calls and their results
+            &#34;reflections&#34;: [],       # Stores agent&#39;s reflections
+            &#34;strategic_skills&#34;: []   # Stores learned strategic skills
+        }
+        self.prompt_template = &#34;&#34;&#34;
+        You are playing Slay the Spire 2.
+        Current State: {current_state}
+        
+        Retrieved Memories:
+        {retrieved_memories}
+        
+        Make your next move:
+        &#34;&#34;&#34;
+
+    def add_memory(self, memory_type, data):
+        if memory_type in self.memory_modules:
+            self.memory_modules[memory_type].append(data)
+        else:
+            print(f&#34;Unknown memory type: {memory_type}&#34;)
+
+    def retrieve_and_assemble_prompt(self, current_state, retrieval_strategy):
+        retrieved_memories_str = &#34;&#34;
+        
+        # Example retrieval_strategy: &#34;retrieve_relevant_skills_and_observations&#34;
+        if &#34;skills&#34; in retrieval_strategy:
+            # Example: retrieve top N strategic skills
+            retrieved_skills = self.get_relevant_skills(current_state, num_skills=3)
+            for skill in retrieved_skills:
+                retrieved_memories_str += f&#34;- Strategic Skill: {skill[&#39;description&#39;]} (Trigger Condition: {skill[&#39;condition&#39;]})\n&#34;
+        
+        if &#34;observations&#34; in retrieval_strategy:
+            # Example: retrieve last N observations
+            retrieved_obs = self.get_recent_observations(num_obs=5)
+            for obs in retrieved_obs:
+                retrieved_memories_str += f&#34;- Past Observation: {obs}\n&#34;
+        
+        # More sophisticated retrieval logic would go here, potentially involving LLM for query generation
+        
+        return self.prompt_template.format(
+            current_state=current_state,
+            retrieved_memories=retrieved_memories_str
+        )
+
+    def get_relevant_skills(self, current_state, num_skills):
+        # Placeholder for a complex retrieval logic (e.g., based on LLM or rule-based filtering)
+        # In the paper, &#39;triggered strategic skills&#39; suggests a conditional retrieval.
+        # This would involve checking if the current_state meets a skill&#39;s trigger condition.
+        triggered_skills = []
+        for skill in self.memory_modules[&#34;strategic_skills&#34;]:
+            if self._skill_is_triggered(skill, current_state): # _skill_is_triggered is a hypothetical function
+                triggered_skills.append(skill)
+        
+        # Sort or select top skills if needed
+        return triggered_skills[:num_skills]
+
+    def get_recent_observations(self, num_obs):
+        return self.memory_modules[&#34;observations&#34;][-num_obs:]
+    
+    def _skill_is_triggered(self, skill, current_state):
+        # This is a crucial part for &#39;triggered strategic skills&#39;.
+        # It would likely involve parsing the skill&#39;s condition and matching it against current_state.
+        # For example, if skill[&#39;condition&#39;] is &#34;player_health &lt; 20%&#34; and current_state[&#39;player_health_percentage&#39;] &lt; 20, return True.
+        return True # Placeholder
+
+# Example usage in a simulation loop:
+# contract = BoundedMemoryContract()
+# ... simulation steps ...
+# current_game_state = get_current_game_state()
+# prompt = contract.retrieve_and_assemble_prompt(current_game_state, &#34;retrieve_relevant_skills_and_observations&#34;)
+# decision = llm_model.predict(prompt)
+# ... update game state and memories ...
+# contract.add_memory(&#34;observations&#34;, new_observation)
+# contract.add_memory(&#34;strategic_skills&#34;, new_learned_skill) 
+```
+
+**3. アブレーション（Ablation）:**
+この「境界付き契約」の重要な利点は、特定の記憶モジュールを容易に無効化（ablate）できることです。例えば、`strategic_skills`モジュールを無効にするには、`retrieve_and_assemble_prompt`メソッド内で`strategic_skills`に関連する検索・抽出処理をスキップすればよいです。これにより、各記憶要素がエージェントのパフォーマンスに与える影響を、他の要素を固定したまま（fixed-A0 ablation）評価できます。
+
+**4. テストベッドの構成:**
+本研究で公開されたテストベッドは、以下の要素を含みます。
+*   **298個の完了した軌跡（trajectories）:** エージェントの実行履歴。
+*   **条件タグ（condition tags）:** 各軌跡がどのような条件下で実行されたかを示すタグ。
+*   **凍結された記憶/スキルスナップショット（frozen memory/skill snapshots）:** 特定の実験設定における記憶やスキルの状態。
+*   **プロンプト記録（prompt records）:** エージェントに与えられたプロンプトの履歴。
+*   **分析スクリプト（analysis scripts）:** 収集されたデータを解析するためのコード。
+
+このテストベッドにより、提案された「境界付き記憶契約」の有効性を検証し、LLMエージェントの長期的な意思決定における記憶の役割を体系的に研究することが可能になります。
+
+## 6. この論文を140字以内のツイートで要約すると？
+LLMエージェントの長期記憶問題に挑む！過去情報をごちゃ混ぜにしない「境界付き記憶契約」を提案。型付き検索で必要な情報だけを厳選し、記憶要素の効果を個別検証可能に。ゲームAIで性能向上を実証し、再現可能なテストベッドを公開！ #LLM #AIエージェント #記憶</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

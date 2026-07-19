@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>I built a deterministic proxy to drop stale context (Cuts token burn by ~50%). Stress-testing it this week. [P]</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>I built a deterministic proxy to drop stale context (Cuts token burn by ~50%). Stress-testing it this week. [P]</h1>
+<p><strong>Date:</strong> 2026-07-07</p>
+<p><strong>Source:</strong> reddit / MachineLearning</p>
+
+<p><a href="https://www.reddit.com/r/MachineLearning/comments/1upv0b0/i_built_a_deterministic_proxy_to_drop_stale/">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">## 1. このポストの内容を説明してください。
+
+このRedditのポストは、**「コンテキストの陳腐化（Context Rot）」**という、エンタープライズ向けのRAG（Retrieval-Augmented Generation）パイプラインが本番環境で失敗する原因となる問題に対する、開発者による解決策の紹介です。
+
+**問題点:**
+*   RAGパイプラインでは、検索された情報（コンテキスト）が、たとえ意味的に合っていても、実際には古くなっている（最新の情報に置き換わっている、古いAPI仕様など）「コンテキストの陳腐化」が発生しやすい。
+*   これが、RAGパイプラインの失敗の静かな原因となっている。
+
+**開発者の解決策:**
+*   開発者は、この問題に対処するために**「KU-Gateway」**というオープンソースのプロキシを開発しました。
+*   このプロキシは、ベクトルデータベースとLLM（大規模言語モデル）の間に配置されます。
+*   「KU-Gateway」は、コンテキストチャンク（情報のかたまり）を数学的に評価し、時間経過による劣化（陳腐化）をスコアリングします。
+*   そして、陳腐化したコンテキストをLLMに渡す前に物理的に削除します。
+
+**成果と提案:**
+*   ある大手テクノロジー企業のマネージドエージェントチームとのEAP（早期アクセスプログラム）でテストした結果、「KU-Gateway」は**トークン消費量を約50%削減**し、かつ**陳腐なデータによる誤った生成（hallucination）を決定論的に停止**できたとのことです。
+*   開発者は、この「KU-Gateway」のマネージドAPIレイヤーを、コミュニティが14日間の**「Zero to Revenue」チャレンジ**というストレス・テストやハッカソンで試す機会を提供しています。
+*   目的は、コミュニティがルーティングロジックを壊したり、時間制約のあるコンテキストを利用する自律エージェントを構築できるかを見ることです。
+
+**関連リンク:**
+*   **数学的根拠のリポジトリ:** [https://github.com/VLSiddarth/KU-Gateway.git](https://github.com/VLSiddarth/KU-Gateway.git)
+*   **ストレス・テスト/ハッカソン参加リンク:** [https://api.knowledgeuniverse.tech/](https://api.knowledgeuniverse.tech/)
+
+## 2. このポストに対するコメントのうち、特に興味深いものを教えてください。
+
+提供された情報には、ポストに対するコメントが記載されていません。そのため、現時点ではコメントについてお答えすることはできません。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

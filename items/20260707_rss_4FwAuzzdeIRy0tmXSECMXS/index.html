@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>【セッションレポート】 Amazon ECS Managed Instances と AWS Fargate の仕組みと違いを知る[CNS341]</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>【セッションレポート】 Amazon ECS Managed Instances と AWS Fargate の仕組みと違いを知る[CNS341]</h1>
+<p><strong>Date:</strong> 2026-07-07</p>
+<p><strong>Source:</strong> rss / DevelopersIO</p>
+
+<p><a href="https://dev.classmethod.jp/articles/aws-summit-japan-2026-ecs-managed-instance-fargate/">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">Amazon ECS Managed Instances と AWS Fargate の仕組みと違いについて解説したセッションレポートです。2025年9月に一般提供開始された ECS Managed Instances と Fargate の両者の仕組みと違いをまとめ、利用シーンに応じた選択基準も示しています。
+
+**結論として、ECS Managed Instances は Fargate のマネージドな体験と EC2 の柔軟性を両立させる選択肢です。**
+
+**選択基準のまとめ:**
+
+*   **Fargate:** サーバーレスでインスタンスタイプの指定が不要なため、運用コストの最小化を優先する場合。
+*   **ECS Managed Instances:** GPU や高スループットが必要で、インスタンス管理はしたくない場合。
+*   **ECS on EC2:** カスタム AMI、SSH、ホストレベルの制御が必須な場合。
+
+**セッション内容:**
+
+**ECS Managed Instances と Fargate の共通点:**
+両者とも、EC2インスタンス以下の主要なインフラストラクチャをAWSが管理し、開発者はロードバランサーやセキュリティグループなどの上位リソースに責任を持つ「AWSとの責任共有モデル」が共通しています。
+
+**両者の主な違い:**
+ECS Managed Instances では、ワークロードの特性に合わせてインスタンスタイプを指定できるため、AI用途でのGPU利用など、開発者のニーズに合わせたインフラストラクチャ構築が可能です。また、EC2をデータプレーンとして利用するため、Savings Plansの対象となる点も違いとして挙げられます。
+
+**ECS Managed Instances で特に注目すべき点:**
+*   **イメージキャッシュを利用したタスク起動の高速化:** Fargateはタスクごとにインスタンスが起動・終了するためイメージをキャッシュできませんが、ECS Managed InstancesではEC2内にイメージをキャッシュできるため、タスク起動が高速化されます。これは、ECS_IMAGE_PULL_BEHAVIOR パラメータで設定可能です。
+*   **Seekable OCI:** この技術も、ECS Managed Instances におけるイメージキャッシュの実現に貢献しています。
+
+本セッションは、AWS Summit Japan 2026 で行われたもので、セッション動画はオンデマンド配信で視聴可能です。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

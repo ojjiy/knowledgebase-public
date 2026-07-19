@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Program-as-Weights: A Programming Paradigm for Fuzzy Functions</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>Program-as-Weights: A Programming Paradigm for Fuzzy Functions</h1>
+<p><strong>Date:</strong> 2026-07-02</p>
+<p><strong>Source:</strong> paper / hf-papers</p>
+
+<p><a href="http://arxiv.org/abs/2607.02512v1">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body"># タイトル
+Program-as-Weights: A Programming Paradigm for Fuzzy Functions
+[View Paper](http://arxiv.org/abs/2607.02512v1)
+
+## 1. 問題意識：解決したい問題はなにか
+現代の多くの日常的なプログラミングタスクは、自然言語での仕様記述が適しているものの、既存のルールベースの実装では対応が難しく、LLM (大規模言語モデル) のAPIに依存せざるを得ない状況にある。しかし、LLM APIへの依存は、ローカル実行の不可、再現性の低下、コストの増加といった問題を引き起こす。例えば、重要なログ行へのアラート、不正なJSONの修復、検索結果の意図に基づくランキングなどがこれに該当する。これらのタスクは、人間には直感的で容易だが、厳密なシンボリックなルールで完全に記述することは困難であり、入力データのノイズにも弱い。
+
+## 2. 提案手法のアプローチ：どのようなアイデア・アプローチで問題を解決しようとしたか
+本論文では、この問題を解決するために「ファジー関数プログラミング」という新しいパラダイムを提案する。これは、自然言語で記述された関数の仕様から、コンパクトでローカル実行可能なニューラルアーティファクト（プログラム）をコンパイルするアプローチである。具体的には、「Program-as-Weights (PAW)」というインスタンスでこれを実現する。PAWでは、自然言語の仕様を、訓練されたニューラルコンパイラが、軽量なインタプリタ用のパラメータ効率の良いアダプタ（LoRAなど）に変換する。このコンパイルされたニューラルプログラムは、関数定義ごとに一度だけ生成され、その後は軽量なインタプリタによって低コストかつオフラインで実行できる。これにより、LLMを「入力ごとの問題解決者」から「ツールビルダー」へと再定義する。
+
+## 3. 成果：提案手法により、何が達成できたのか
+PAWを実装した結果、以下の成果が達成された。
+*   **性能向上と効率化:** 0.6BパラメータのQwen3インタプリタがPAWプログラムを実行することで、32BパラメータのQwen3モデルを直接プロンプトするのと同等以上の性能（FuzzyBenchで73.78% vs 68.70%の正確一致率）を達成した。
+*   **リソース削減:** 推論メモリ使用量を約1/50に削減し、MacBook M3上で30トークン/秒という実用的な速度で動作させた。
+*   **ローカル実行とオフライン利用:** コンパイルされたプログラムは、キャッシュ、バージョン管理、ローカル実行が可能な単一のファイルとして扱える。これにより、API依存をなくし、オフラインでの利用を可能にした。
+*   **汎用性:** テキストベースのタスクだけでなく、コンパイラをビジョン言語モデルに置き換えることで、画像条件付きのファジー関数タスクにも拡張できた。
+*   **開発者体験の向上:** 自然言語での仕様記述、ローカルでのインタラクティブなテスト、Python/JavaScript APIによる簡単な呼び出しを可能にする開発インターフェースを提供した。
+
+## 4. 課題：本手法の限界・課題にはなにか。本文中で著者が言及しているものと、あなたが想定するもの
+### 本文中で著者が言及している課題
+*   **ニューラルバイナリの解釈可能性:** コンパイルされたプログラムの連続的なPEFTコンポーネント（LoRAなど）は、人間にとって不透明であり、ソースコードとコンパイル済みバイナリ間の検査可能性のギャップと同様である。ニューラルバイナリの検査・デバッグツールの開発は今後の課題である。
+*   **PEFTの選択:** 最適なPEFT（LoRA、prefix-tuningなど）はタスクに依存する可能性があり、新しいタスククラスに対してどのPEFTをデプロイするかを予測する原則的なルールはまだ確立されていない。
+*   **マルチステップ推論:** 現在の評価はシングルステップに限定されており、マルチステップまたは長期ホライゾンの推論はまだ検証されていない。PAW関数をコードで組み合わせることは可能だが、マルチステップ推論を生成するコンパイラを学習することは今後の課題である。
+*   **コンパイラのスケーリングと凍結:** コンパイラのスケーリング（サイズ、凍結有無）に関する実験は、非単調なパターンを示し、その原因を特定できていない。
+
+### あなたが想定する課題
+*   **コンパイラ自体の学習コスト:** 巨大なデータセット（FuzzyBench-10M）と大規模なコンパイラモデル（4Bパラメータ）が必要であり、PAWプログラムを生成するための初期学習コストは依然として高い。
+*   **ドメイン特化:** FuzzyBenchは多様なタスクをカバーしているものの、非常にニッチな専門分野や、学習データに存在しない特殊な形式のタスクに対しては、コンパイラの性能が低下する可能性がある。
+*   **インタプリタの制約:** 提案手法は軽量なインタプリタを利用するが、インタプリタ自体の性能限界（例: 複雑な算術計算、厳密な論理推論）は、コンパイルされるファジー関数の能力を制約する。
+*   **ファジー関数定義の曖昧さ:** 自然言語での仕様記述は本質的に曖昧さを内包する。コンパイラが仕様を正確に解釈できない場合、生成されるプログラムの意図しない動作や、期待される性能が出ない可能性がある。
+*   **コンパイラとインタプリタのペアリング:** 特定のコンパイラは特定のインタプリタファミリーとペアリングされる。インタプリタを変更するとコンパイラの再学習が必要になるため、インタプリタの変更や更新の柔軟性に限界がある。
+
+## 5. 技術詳細：提案手法の技術的な詳細について、できるだけ詳しく。数式やアルゴリズム、モデル構造なども可能な限り詳しく
+PAW (Program-as-Weights) は、以下の3つの主要コンポーネントから構成される。
+
+1.  **ファジー関数 (Fuzzy Function):**
+    自然言語、例、あるいは制約によってその振る舞いが仕様記述される関数。厳密なシンボリックコードで定義するのが難しい。
+
+2.  **ニューラルコンパイラ (Neural Compiler):**
+    ファジー関数の自然言語仕様 `s` を受け取り、ニューラルプログラム `p` を生成する。PAWでは、4BパラメータのQwen3モデルをファインチューニングして使用する。コンパイラは、次の2段階のパイプラインで構成される。
+
+    *   **疑似プログラム生成 (Pseudo-program Generation):**
+        オフザシェルフのQwen3-4B-Instructモデルに、タスク書き換えテンプレートと共に入力仕様 `s` を与える。これにより、仕様の言い換えと数個の入出力例からなる「疑似プログラム」 `p_discrete` が生成される。この疑似プログラムは、後続のニューラルインタプリタへの入力の一部として機能する。
+        ```python
+        # pseudo_program = PseudoProgramGenerator(off_the_shelf_compiler).generate(s)
+        ```
+
+    *   **PEFTアダプタ生成 (PEFT Adapter Generation):**
+        訓練されたQwen3-4Bモデル（LoRAコンパイラ）が、仕様 `s`、生成された疑似プログラム `p_discrete`、および固定の学習済み「プレフィックス」トークン列 `τ` を入力として受け取る。
+        ```python
+        # combined_input = s + EOS + p_discrete + EOS + tau
+        # compiler_hidden_states = trained_lora_compiler(combined_input)
+        ```
+        コンパイラは、その中間層の隠れ状態 `H` を抽出し、これをニューラルインタプリタに注入するためのパラメータ効率の良いモジュール（PEFT）であるLoRAアダプタ `p_continuous` に変換する。LoRAアダプタは、インタプリタの各層の特定のモジュール（例: attention層のQ, K, Vプロジェクション）に適用される。
+
+        LoRAアダプタの生成プロセスは以下の通り。
+        *   コンパイラから抽出された隠れ状態 `H ∈ ℝ^(L × T × d_teacher)` (L:層数, T:トークン数, d_teacher:隠れ状態次元) は、平均プーリングされ、MLPを通過して、混合係数 `α^(A) ∈ ℝ^(L × N × r)` および `α^(B) ∈ ℝ^(L × N × r)` を生成する。
+        *   これらの混合係数は、共有基底 `A^(m) ∈ ℝ^(N × r × d_in^(m))` および `B^(m) ∈ ℝ^(N × d_out^(m) × r)` と組み合わされ、各層 `l` およびモジュールタイプ `m` ごとのLoRA行列 `A^(ex)_(l,m)` および `B^(ex)_(l,m)` を生成する。
+        ```python
+        # For each layer l and module type m:
+        #   alpha_A = mlp(mean_pool(compiler_hidden_states))
+        #   alpha_B = mlp(mean_pool(compiler_hidden_states))
+        #   A_shared_bases = ... # N x r x d_in
+        #   B_shared_bases = ... # N x d_out x r
+        #   A_ex_l_m = sum_n(alpha_A[l, n] * A_shared_bases[n])
+        #   B_ex_l_m = sum_n(alpha_B[l, n] * B_shared_bases[n])
+        ```
+        この `p_continuous`（LoRAアダプタ）と `p_discrete`（疑似プログラム）が合わせてニューラルプログラム `p` となる。
+
+3.  **ニューラルインタプリタ (Neural Interpreter):**
+    凍結された軽量な言語モデル（例: 0.6BパラメータのQwen3）。コンパイルされたニューラルプログラム `p` をロードし、ユーザーの入力 `x` を処理して出力 `ŷ` を生成する。
+    ```python
+    # def interpreter(program, input_x):
+    #   p_discrete, p_continuous = program
+    #   # Inject p_continuous (LoRA adapters) into the interpreter&#39;s modules
+    #   for module_type in interpreter.modules:
+    #     if module_type in p_continuous:
+    #       inject_lora(interpreter.modules[module_type], p_continuous[module_type])
+    #
+    #   # Process input_x with p_discrete as part of the input
+    #   full_input = p_discrete + EOS + input_x
+    #   output_y = interpreter.generate(full_input)
+    #   return output_y
+    ```
+    インタプリタは、`p_discrete` を前置した入力 `x` を自己回帰的に生成する。`p_continuous`（LoRAアダプタ）は、インタプリタの各層の適切なモジュールにホットアタッチされる。これにより、インタプリタ自体は変更されずに、様々なファジー関数を実行できる。
+
+**学習プロセス:**
+*   コンパイラ（LoRA生成器）は、FuzzyBench-10Mデータセットを用いて、擬似プログラム `p_discrete` とLoRAアダプタ `p_continuous` のペアを生成するように訓練される。
+*   学習目標は、生成された `p_discrete` と `p_continuous` を用いてインタプリタがターゲット出力 `y` を生成する確率を最大化すること。
+    ```python
+    # Loss function:
+    # L(theta) = E[(s, x, y)] [ -log P_interpreter(y | p_discrete, p_continuous(theta; s, p_discrete), x) ]
+    # theta: parameters of the trained LoRA compiler
+    # P_interpreter: probability distribution of the frozen interpreter
+    ```
+    勾配は、凍結されたインタプリタを逆伝播し、LoRAコンパイラに流れる。
+
+**データセット:**
+*   FuzzyBench-10M: 1000万例の (仕様, 入力, ターゲット出力) のトリプルからなるデータセット。29のバージョンで段階的に構築され、800以上のカテゴリをカバーする。
+
+**量子化:**
+*   実行時のメモリフットプリントを削減するため、インタプリタベースとLoRAアダプタの両方にGGUF形式の4ビット量子化が適用され、精度低下は最小限に抑えられた。
+
+## 6. この論文を140字以内のツイートで要約すると？
+自然言語で「ファジー関数」を定義し、それを軽量なニューラルプログラムにコンパイルするPAWを提案。LLM API依存をなくし、ローカル・オフラインで高速・省メモリ実行可能に。開発と実行の効率を劇的に向上。 #AI #プログラミング</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>A field guide to Claude Fable 5: Finding your unknowns</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>A field guide to Claude Fable 5: Finding your unknowns</h1>
+<p><strong>Date:</strong> 2026-07-06</p>
+<p><strong>Source:</strong> rss / Claude</p>
+
+<p><a href="https://claude.com/blog/a-field-guide-to-claude-fable-finding-your-unknowns">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">この記事は、Claude Fable 5 を使用した開発プロセスにおいて、「未知の要素（unknowns）」を特定し、それに対応することの重要性について論じています。
+
+「マップ（プロンプト、スキル、コンテキスト）」と「テリトリー（実際のコードベース、制約）」の間のギャップが「未知の要素」であり、Claude はこれに遭遇すると最善の推測に基づいて意思決定を行う必要があります。Claude Fable は、この未知の要素を明確にする能力が開発のボトルネックとなる最初のモデルです。
+
+未知の要素は、実装の深層で発見されたり、問題の解決方法自体を変更する必要性を示唆したりするため、単に事前に計画するだけでは不十分です。Fable との作業は、実装の前、最中、後の各段階で未知の要素を発見するという反復的なプロセスになります。
+
+未知の要素は以下の4つに分類されます。
+
+*   **Known Knowns（既知の既知）**: プロンプトに明示的に記述されていること。
+*   **Known Unknowns（既知の未知）**: まだ解決していないが、未解決であることを認識していること。
+*   **Unknown Knowns（未知の既知）**: あまりにも明白で記述されないが、見れば認識できること。
+*   **Unknown Unknowns（未知の未知）**: 全く考慮しておらず、存在すら知らない知識。
+
+優れたエージェント開発者は未知の要素が少ないですが、これは Claude との作業を通じて向上させることができるスキルです。
+
+Claude を効果的に支援させるには、指示の具体性と曖昧さのバランスが重要です。具体性が高すぎると、より適切な方向転換の機会を逃す可能性があり、曖昧すぎると、タスクに合わない業界のベストプラクティスに基づいた選択や仮定を Claude が行う可能性があります。
+
+Claude は、コードベースやインターネットを高速に検索し、広範な知識に基づいて未知の要素をより早く発見するのに役立ちます。さらに、失敗からの反復も迅速に行えます。このプロセスで最も重要なのは、Claude に開始点（思考プロセス、問題やコードベースに関する経験など）に関するコンテキストを提供し、思考パートナーとして協力させることです。
+
+著者は、未知の要素を発見するための具体的なパターンをいくつか紹介しています。
+
+**実装前**:
+
+*   **ブラインドスポットパス**: 新しいコード部分や不慣れな作業に取り組む際に、自分自身の盲点（unknown unknowns）を特定するために Claude に協力を依頼します。「blind spot pass」や「unknown unknowns」といった言葉で具体的に指示することが有効です。
+*   **ブレインストーミングとプロトタイプ**: 基準が曖昧な「unknown knowns」が多い場合に、Claude と共にブレインストーミングやプロトタイピングを行います。これにより、実装段階でのコストのかかる発見を防ぎます。UI デザインや機能の初期検討に特に有効です。
+*   **インタビュー**: ブレインストーミング後も不明瞭な点がある場合、Claude に自分自身に質問させ、未知の要素や曖昧さを明らかにします。
+*   **参照**: 言語化が難しい要件や複雑な要件については、ソースコードなどの参照を提供することで、Claude がより詳細な理解を得られるようにします。
+*   **実装計画**: 実装の準備ができた段階で、Claude に実装計画を作成させ、特に変更が頻繁に起こりそうな部分（データモデル、インターフェース、UXフローなど）に焦点を当ててレビューします。
+
+**実装中**:
+
+*   **実装ノート**: 計画に満足したら、新しいセッションを開始し、以前の成果物をプロンプトに含めます。Claude には、計画から逸脱するようなエッジケースを発見した場合に、その決定を記録する「implementation-notes.md」ファイルを作成させます。
+
+**実装後**:
+
+*   **ピッチと解説**: プロジェクトの承認を得るために、レビュー担当者の理解を早め、専門家が予期する未知の要素や一般的な失敗点を考慮していることを示すために、ピッチや解説資料を作成します。
+*   **クイズ**: 長い作業セッションの後、Claude が行った変更を完全に理解するために、Claude に変更点に関するクイズを出してもらいます。クイズに完璧に合格してからコードをマージします。
+
+記事の最後に、Fable のローンチビデオ制作における Claude Code の活用事例が紹介されており、著者が未知の要素をどのように特定し、Claude と協力して目標を達成したかが示されています。
+
+全体として、Claude Fable 5 のような高度なモデルを活用する際には、開発者が「未知の要素」を積極的に特定し、Claude の協力を得てそれらを管理することが、成功の鍵となることを強調しています。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

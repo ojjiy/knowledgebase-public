@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Teaching LLMs to Recommend and Defer in Underrepresented Epilepsy Care</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>Teaching LLMs to Recommend and Defer in Underrepresented Epilepsy Care</h1>
+<p><strong>Date:</strong> 2026-06-30</p>
+<p><strong>Source:</strong> paper / hf-papers</p>
+
+<p><a href="http://arxiv.org/abs/2606.31036v1">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body"># タイトル
+Teaching LLMs to Recommend and Defer in Underrepresented Epilepsy Care
+[View Paper](http://arxiv.org/abs/2606.31036v1)
+
+## 1. 問題意識：解決したい問題はなにか
+専門的なてんかん治療の専門家が不足している資源の限られた地域において、最前線の臨床医が長期的な治療管理を行うためのLLM（大規模言語モデル）ベースの意思決定支援が有望視されています。しかし、このようなシステムは、現地の処方慣習に適応し、いつ専門医に相談すべきかを判断する必要があります。特にウガンダの小児てんかん治療という文脈で、長期にわたる非構造化された診療記録から抗てんかん薬のレジメン（治療計画）を予測する際に、既存のLLMは現地の医療実態に合わない処方パターンを学習してしまうという問題があります。このため、現地に適応し、かつ不確実な場合に専門家への委譲を適切に行う意思決定支援システムが求められています。
+
+## 2. 提案手法のアプローチ：どのようなアイデア・アプローチで問題を解決しようとしたか
+提案手法であるMANANAは、少量の患者データから現地の処方ガイドラインを学習する非パラメトリックなプロンプト学習フレームワークです。具体的には、以下の2つの主要なアプローチを取ります。
+
+1.  **プロンプト学習によるローカル適応:**
+    *   患者の記録と医師の処方箋を照合し、処方エラーを「監査可能なプロンプトメモリ」に変換します。
+    *   このメモリは、単一エージェント（Single）または複数エージェント（Multi）のバリアントとして実装され、過去の処方パターンやエラーから学習します。
+    *   LLMのパラメータを更新することなく、明示的なメモリ状態を学習・更新することで、ローカルな処方習慣に適応します。
+    *   この学習プロセスは、Predictor（処方レジメンを提案）、Inspector（処方エラーを分析）、Architect（学習をメモリに統合）の3つのエージェントからなるマルチエージェントシステムによって行われます。
+
+2.  **ベイズ推定による不確実性推定と委譲:**
+    *   学習されたプロンプトメモリの軌跡（複数の状態）をアンサンブルとして扱い、ベイズモデル平均（BPA: Bayesian Prompt Averaging）を用いて、処方確率と不確実性に基づいた委譲シグナルを生成します。
+    *   これにより、システムは自信のあるケースは自動処理し、自信の低いケースは専門医のレビューに委譲することが可能になります。
+
+## 3. 成果：提案手法により、何が達成できたのか
+提案手法MANANAは、以下の点で顕著な成果を達成しました。
+
+*   **処方予測精度の向上:**
+    *   2つの独立して収集されたウガンダの小児てんかんコホートにおいて、古典的な機械学習モデル、直接的なLLMプロンプティング、および既存のプロンプト最適化手法と比較して、処方レジメンの予測精度が向上しました。
+    *   特に、不確実性推定と委譲を可能にするBPAを導入することで、評価対象となったホールドアウトコホートにおいて、訪問ごとのトップ3処方精度がプロンプト最適化ベースラインと比較して4〜8パーセンテージポイント改善しました。
+
+*   **選択的予測（Selective Prediction）による専門家リソースの効率的活用:**
+    *   システムは、予測の信頼度に基づいてケースを自動処理するか、専門医に委譲するかを選択できます。
+    *   最も自信のある半分のケースを95%の精度で自動処理したり、最も自信のある4分の1のケースを99%の精度で自動処理したりすることが可能になりました。
+    *   これにより、限られた専門医の注意を、最も不確実性の高いケースに集中させることができます。
+
+*   **ローカル適応と解釈可能性:**
+    *   小規模な患者レベルのトレーニングセットから、ローカルな処方ガイドラインを学習することができます。
+    *   MANANAの学習プロセスで生成されるプロンプトメモリは監査可能であり、臨床医がレビューできるテキスト表現を保持しています。これにより、システムがどのように意思決定を行っているかを理解しやすくなります。
+
+## 4. 課題：本手法の限界・課題にはなにか。本文中で著者が言及しているものと、あなたが想定するもの
+### 著者による言及
+*   **レトロスペクティブな信頼度スコア:** BPAは過去のデータに基づいて信頼度スコアを生成しますが、これはそのままではデプロイメント（実運用）可能な委譲ルールではありません。実運用では、委譲の閾値は使用前に決定され、患者層の変化に合わせて経時的にチェックされ、委譲されたケースのための明確なレビューワークフローと連携する必要があります。
+*   **医師の処方との一致が最適性の保証ではない:** 提案手法の評価指標は、医師が選択したレジメンとの一致度ですが、これが必ずしも臨床的に最適であるとは限りません。現地の処方には、処方制限、入手可能性、費用、フォローアップの制約などが反映されるため、ローカルな実践に一致するモデルが、ローカルなリソース制約も学習してしまう可能性があります。
+*   **長期的な臨床的有効性の評価:** 現在の評価は医師の処方との一致度に基づいていますが、将来的な研究では、長期的な治療結果（例：発作の制御、副作用）との関連を直接予測することが重要です。
+
+### 想定される課題
+*   **データ不足:** MANANAは「少量の患者レベルのトレーニングセット」から学習できますが、その「少量」の定義が曖昧であり、極端にデータが少ない状況では学習が困難になる可能性があります。
+*   **ドメインシフトへの頑健性:** 臨床現場の状況（薬剤の入手可能性、患者層、治療ガイドラインの変更など）が変化した場合、モデルの適応能力と更新プロセスについて、さらなる検討が必要です。
+*   **LLMの基礎モデルへの依存:** MANANAはLLMを「プロンプト学習」のフレームワークとして使用するため、基盤となるLLMの性能やバイアスに影響を受けます。
+*   **解釈可能性と監査可能性のバランス:** プロンプトメモリは解釈可能ですが、複雑な薬剤の組み合わせ（ポリセラピー）の予測においては、その解釈可能性が低下する可能性があります。
+
+## 5. 技術詳細：提案手法の技術的な詳細について、できるだけ詳しく。数式やアルゴリズム、モデル構造なども可能な限り詳しく
+### MANANAの全体像
+MANANAは、LLMを「プロンプト学習」のフレームワークとして利用し、ローカルな処方パターンを学習するためのシステムです。パラメータ更新ではなく、明示的な「プロンプトメモリ」を構築・更新することで適応します。このシステムは、以下の3つの主要コンポーネントからなるマルチエージェント構造を採用しています。
+
+1.  **Predictor (予測器):**
+    *   与えられた患者の履歴 ($x_i$) と現在のメモリ状態 ($m_{t-1}$) を基に、3つの候補となる処方レジメン ($\hat{y}_{i,1:3}$) を生成します。
+    *   これはLLMの呼び出しであり、特定の役割（Predictor）を与えられたプロンプトテンプレートを使用します。
+
+2.  **Inspector (検査器):**
+    *   Predictorが生成した候補レジメン ($\hat{y}_{i,1:3}$) と、実際の医師による処方箋 ($y_i$) を比較します。
+    *   処方エラーがあれば、それに基づいて構造化されたレポート ($\rho_i$) と、学習に利用できる「候補学習 (candidate learning)」($c_i$) を生成します。
+    *   報告書は、エラーのタイプや根本原因など、監査可能な形式です。
+
+3.  **Architect (建築家):**
+    *   Inspectorが生成した候補学習 ($\Delta \mathcal{C}_t$) と、過去の学習履歴 ($\mathcal{C}_{t-1}$) を基に、メモリ状態 ($m_t$) を更新します。
+    *   この更新プロセスは、バッチごとに行われ、学習の目標は、特定の薬局アクション空間（例：10種類の薬剤）において、ローカルに特異的な処方修正を捉えるメモリ状態のシーケンス ($m_0, m_1, \ldots, m_T$) を学習することです。
+    *   メモリ状態の更新ルールは、以下の2つのバリアントに依存します。
+
+#### メモリバリアント
+*   **MANANA-Single (単一エージェント):**
+    *   単一の共有された学習ルールのリストをメモリとして保持します。
+    *   Architectは、候補学習のバッファ ($\mathcal{C}_t$) から、反復的なクロスケースシグナルを合成し、新しいルール ($r_{\mathrm{new}}$) を生成します。
+    *   更新ルール: $m_t \in \{m_{t-1}, m_{t-1} \| r_{\mathrm{new}}\}$、ただし、新しいルールは少なくともk個の異なるクリニック訪問から派生した学習に裏付けられている必要があります。 $|m_t| - |m_{t-1}| \leq 1$ という制約があります。
+
+*   **MANANA-Multi (複数エージェント):**
+    *   メモリ状態は、アクティブな「専門家エージェント」のセット ($m_t = \{s_{\ell,t} : \ell \in \mathcal{A}_t\}$) です。
+    *   各専門家エージェントは、患者の履歴から特定の臨床的シグナルを抽出する責任を持ちます。
+    *   Architectは、新規エージェントの生成（Spawn）、既存エージェントの書き換え（Edit）、エージェントの削除（Prune）のいずれかのアクションを選択します。
+    *   これらのアクションは、候補学習と現在のバッチレポートに基づいて決定されます。
+    *   エージェントの数には、ターゲット予算 $\mathcal{B}$ により制約が設けられます。
+
+#### 学習プロセス（擬似コード）
+```python
+# 初始化
+m_0 = [] # 空のメモリ状態
+C_0 = [] # 空の候補学習バッファ
+
+for t in range(1, T+1): # Tは学習ラウンド数
+    # バッチB_tからの患者記録(x_i, y_i)を処理
+    # Predictor (Pred) による候補レジメン生成
+    hat_y_i_1_3 = Pred(x_i, m_{t-1})
+
+    # Inspector (Insp) によるエラー分析と候補学習生成
+    rho_i, c_i = Insp(x_i, hat_y_i_1_3, y_i)
+
+    # 候補学習の蓄積 (Append-only Buffer)
+    Delta_C_t = [(i, c_i) for (x_i, y_i) in B_t]
+    C_t = C_{t-1} || Delta_C_t # ||は連結演算子
+
+    # Architect (Arch) によるメモリ更新
+    m_t = Arch(m_{t-1}, C_t, R_t) # R_tは現在のバッチのレポート群
+
+# m_T が最終的な学習済みメモリ状態
+```
+
+#### Bayesian Prompt Averaging (BPA)
+学習されたメモリ状態の軌跡 ($m_1, \ldots, m_T$) は、アンサンブルとして扱われます。BPAは、このアンサンブルの予測を平均化することで、処方確率と不確実性推定を行います。
+
+1.  **メモリ状態の重み付け:**
+    *   学習データ $\mathcal{D}$ を学習セットと検証セットに分割 ($\mathcal{D}_{\mathrm{train}}, \mathcal{D}_{\mathrm{val}}$)。
+    *   検証セット $\mathcal{D}_{\mathrm{val}}$ を使用して、各メモリ状態 $m_k$ の事後確率 $p(m_k | \mathcal{D}_{\mathrm{val}})$ を推定します。
+    *   これは、各メモリ状態 $m_k$ が検証セット $\mathcal{D}_{\mathrm{val}}$ をどれだけうまく説明できるか（尤度 $p(\mathcal{D}_{\mathrm{val}} | m_k)$）に基づいて計算されます。
+    *   重み $w_k$ は、検証セットの尤度から温度 $\tau$ で平滑化された正規化された事後確率として計算されます。
+    ```python
+    # 例: Beta-Binomial BPA
+    # c_k,1: 位置1でのヒット数, c_k,&gt;1: 位置2-3でのヒット数, h_k: 全ヒット数, u_k: 全ミス数
+    pi_1 = ... # 位置1の先験確率
+    pi_&gt;1 = ... # 位置2-3の先験確率
+
+    # 各メモリ状態 m_k について
+    likelihood_k = pi_1**c_k,1 * pi_&gt;1**c_k,&gt;1 * BetaBinomialPdf(h_k, u_k) # Beta-BinomialPdf はベータ分布のPDF
+    
+    # 重みの正規化
+    w_k = exp(likelihood_k / tau) / sum(exp(likelihood_q) / tau for q in range(K))
+    ```
+    *   最終的なBPA予測確率は、各メモリ状態の予測確率を重み付け平均したものです。
+    ```python
+    # 最終的な処方 y に対する確率
+    p_BPA(y | x) = sum(w_k * p(y | x, m_k) for k in range(K))
+    ```
+    ここで、$p(y | x, m_k)$ は、メモリ状態 $m_k$ による予測確率です。
+
+2.  **不確実性推定と委譲:**
+    *   BPAによって得られた処方確率 $p_{\mathrm{BPA}}(y | x)$ は、各処方レジメンに対する信頼度（自信）を表します。
+    *   この信頼度スコアを用いて、システムは「自動処理（auto-handle）」するか「専門医に委譲（defer）」するかを決定します。
+    *   例えば、予測確率が閾値を超えている場合は自動処理し、そうでなければ専門医に委譲します。
+
+#### モデル構造
+*   **LLMバックボーン:** OpenAI gpt-oss-120bなどの大規模言語モデルが使用されます。
+*   **プロンプト:** 各エージェント（Predictor, Inspector, Architect）には、その役割に応じた具体的な指示を与えるシステムプロンプトが設計されています。
+*   **メモリ:** MANANA-Singleではルールリスト、MANANA-Multiでは専門家エージェントのセットとして表現されます。これらはテキスト形式で、LLMのコンテキストウィンドウに埋め込まれます。
+
+## 6. この論文を140字以内のツイートで要約すると？
+ウガンダのてんかん診療でLLMが現地適応・意思決定支援！MANANAは少量データから処方学習＆BPAで不確実性検知、高精度な自動処理と専門医への的確な委譲を実現。資源不足地域での医療格差是正に貢献。 #LLM #医療AI</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

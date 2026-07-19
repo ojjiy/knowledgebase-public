@@ -1,0 +1,336 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SkillOpt-Lite: Better and Faster Agent Self-evolution via One Line of Vibe</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>SkillOpt-Lite: Better and Faster Agent Self-evolution via One Line of Vibe</h1>
+<p><strong>Date:</strong> 2026-07-03</p>
+<p><strong>Source:</strong> paper / hf-papers</p>
+
+<p><a href="http://arxiv.org/abs/2607.03451v1">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body"># タイトル
+[SkillOpt-Lite: Better and Faster Agent Self-evolution via One Line of Vibe](http://arxiv.org/abs/2607.03451v1)
+
+## 1. 問題意識：解決したい問題はなにか
+自律エージェントのスキル最適化は重要だが、既存の手法は複雑なパイプラインに依存している。この複雑さが、根本的な問い、「理論的または経験的に必要とされる全てのコンポーネントが正当化される、スキル最適化のための最小限の実行可能なパイプラインとは何か？」に答えることを妨げている。この複雑さは、エージェントのスキル進化を遅らせ、その適用を困難にしている。
+
+## 2. 提案手法のアプローチ：どのようなアイデア・アプローチで問題を解決しようとしたか
+提案手法は、スキル最適化をZeroth-Order (ZO)最適化として形式化し、古典的な手法（中心差分、信頼領域）と関連付けた。従来のZO最適化が「盲目的な数値摂動」に頼るのに対し、エージェントのスキル軌跡（実行トレース）は解釈可能なデバッグフィードバックとして機能することを指摘した。この洞察に基づき、Claude Codeの哲学とPAC学習理論から、「ファイルシステムベースの軌跡探索」「コンセンサス属性マイニング」「独立した検証ゲーティング」という3つの原則を導き出した。これらの原則を適用し、冗長なコンポーネントを排除することで、最小限の実行可能なパイプラインである「SkillOpt-Lite」を提案した。これは、エージェントのスキルを単なる編集可能なコードとして扱い、ファイルシステム操作を通じて直接最適化を行う。さらに、このアプローチを拡張し、エージェントの実行環境（ハーネス）自体を最適化する「HarnessOpt」も提案している。
+
+## 3. 成果：提案手法により、何が達成できたのか
+SkillOpt-Liteは、既存の複雑なスキル最適化パイプライン（SkillOpt）と比較して、収束速度の加速と性能向上を達成した。具体的には、LiveMathタスクにおいて、GPT-5.5で+8.8ポイント、GPT-5.4-nanoで+25.4ポイントの改善を示した。特に、nanoモデルはSkillOptで最適化された標準GPT-5.4を上回る性能を発揮した。また、VS Code Copilotのようなプロダクションコーディングエージェントに統合され、開発者が「一行のVibe」でエージェントのスキルを進化させることが可能になった。HarnessOptは、SpreadsheetBenchにおいて、GPT-5.4-nanoが0.7758の精度を達成し、より大きなGPT-5.5（標準パイプライン実行時0.7620）を上回ることを可能にした。
+
+## 4. 課題：本手法の限界・課題にはなにか。本文中で著者が言及しているものと、あなたが想定するもの
+### 本文中で著者が言及している課題：
+*   **独立した検証セットの重要性:** PAC学習の観点から、一般化誤差を保証するためには、訓練セットから統計的に独立した検証セットが不可欠であるが、既存研究ではこの原則がしばしば侵害されている。
+*   **タスクの性質による効果の差異:** AlfWorldやSearchQAのような意味論重視のタスクでは、SkillOpt-LiteとSkillOptの性能差は小さい。これは、これらのドメインではモデルが最適化マージンを急速に飽和させるためであり、複雑な最適化インフラストラクチャが冗長になる可能性がある。
+*   **Harness最適化における初期状態の重要性:** Harness最適化では、初期のベースラインフレームワーク（Round-0ハーネス）の構造的整合性が重要であり、安定した初期インターフェースなしに制御ロジックを無闇に変更すると、構文エラーやツール依存関係の破損を引き起こす可能性がある。
+*   **Harness進化の継続学習における構造的整合性:** Harness最適化を長期にわたって継続学習させる場合、独立して進化したHarnessの系統間の構造的整合性と融合が課題となる。
+
+### あなたが想定する課題：
+*   **ファイルシステム操作のオーバーヘッド:** 提案手法はファイルシステム操作を多用するが、大規模なデータセットや複雑なエージェント構造の場合、ファイルI/Oのオーバーヘッドが収束速度に影響を与える可能性がある。
+*   **「一行のVibe」の難しさ:** 開発者が「一行のVibe」でスキルを進化させられるとのことだが、実際には、どのような「Vibe」が効果的か、また、その「Vibe」を適切に記述するための知識や経験が必要になる可能性がある。
+*   **デバッグの複雑化:** コードベースが大きくなるにつれて、ファイルシステムベースのデバッグは、特定のバグの原因特定をより困難にする可能性がある。
+*   **セキュリティリスク:** Harness最適化において、ファイルシステムへの広範なアクセス権限やコードの自動実行は、悪意のあるコードの挿入や予期せぬ副作用のリスクを伴う可能性がある。サンドボックス化による対策は講じられているものの、完全な防御は難しい。
+*   **計算資源:** 提案手法は冗長性を排除しているものの、複雑なタスクや大規模モデルにおいては、依然として相当な計算資源を必要とする可能性がある。
+
+## 5. 技術詳細：提案手法の技術的な詳細について、できるだけ詳しく。数式やアルゴリズム、モデル構造なども可能な限り詳しく
+### 1. SkillOpt-Lite の基本原理
+
+*   **Zeroth-Order (ZO) 最適化としての形式化:**
+    スキル最適化問題 $f(s)=\mathbb{E}_{z\sim\mathcal{D}}[R(H(M,z,s))]$ を、目的関数 $f$ を最大化するスキル $s$ を見つける問題として捉える。ここで、$z$ はタスクインスタンス、$\mathcal{D}$ はタスク分布、$R(\cdot)$ は報酬関数、$H$ は実行ハーネス、$M$ はベースLLM。勾配 $\nabla_s f(s)$ は離散性や非微分可能性から解析的に扱えないため、ZO Oracle（エージェント実行結果から報酬を得る）としてモデル化する。
+
+*   **古典的ZOとスキル最適化の類推:**
+    -   中心差分 (Central difference): 1点差分推定 $\frac{f(s+\mu u_i)-f(s)}{\mu}$。
+    -   信頼領域 (Trust regions): 変更履歴のバッファリング。
+    -   ZO-SGD: Map-Reduce によるパッチのマージ。
+    -   **差異:** 古典的ZOは数値空間で「盲目的な摂動」を行うが、スキル最適化は実行トレース（ログ）という「意味論的にリッチで解釈可能なフィードバック」を利用する。これは、LLMがコンパイラとして機能し、トレースがプログラム実行トレースとなる「プログラム・コンパイラ・パラダイム」と捉えられる。
+
+*   **3つの基本原則:**
+    1.  **ファイルシステムベースの軌跡探索 (File-system-based trajectory exploration):**
+        -   **背景:** PAC学習理論より、汎化誤差は$\epsilon(\mathcal{S})\leq\hat{\epsilon}_{D}(\mathcal{S})+\mathcal{O}\left(\beta_{\exp}+\sqrt{\frac{\ln(1/\delta)}{N}}\right)$ でバウンドされる。ここで、$\beta_{\exp}$ は経験的安定性係数（single-trial anomaliesへの過学習）。
+        -   **アプローチ:** 単一軌跡の異常に過学習せず、タスク間の不変属性を抽出する必要がある。Claude Codeの「すべてはファイル」哲学に基づき、各実行軌跡を独立したフラットファイルとして保存する。
+        -   **動機:** 単一バッチのファイルシステム探索が、複数エポックのフルSkillOptパイプラインを上回る性能を示した（Figure 3）。
+        -   **要件:** $\beta_{\exp}$ を最小化するため、最適化アルゴリズムは単サンプル特異性を捨て、異種軌跡間の共通属性を抽出する「安定化圧縮」を行うべき。
+    2.  **コンセンサス属性マイニング (Consensus attribute mining):**
+        -   **背景:** 汎化誤差のモデル選択バウンドは $\epsilon(\mathcal{S}_{\text{val}})\leq\hat{\epsilon}_{\text{val}}(\mathcal{S}_{\text{val}})+\mathcal{O}\left(\sqrt{\frac{\ln(1/\delta)}{m}}\right)$。ここで、$m$ は検証セットサイズ。
+        -   **アプローチ:** 複数の軌跡ファイルから共通の失敗パターンや属性をマイニングする。LLMはファイルシステムユーティリティ（`ls`、`grep`など）を使い、ディレクトリをナビゲートし、タスク失敗のクラスタリングや、検査対象とする高レバレッジなファイルを選択する。
+        -   **目標:** 辞書的なスキルライブラリを、単純なテキスト編集ではなく、コード diff やパッチとして生成し、エラーを修正する。
+    3.  **独立した検証ゲーティング (Independent validation gating):**
+        -   **背景:** 汎化誤差のバウンドから、検証セットは訓練セットから統計的に独立している必要がある。ReflexionやSkillCatのような手法は、この原則を侵害している。
+        -   **アプローチ:** 生成された候補スキル（`s_candidate`）は、訓練セットとは厳密に独立した検証セットで評価される。
+        -   **プロセス:** 候補スキル `s_candidate` を独立検証セットで評価し、既存のベースライン `s_current` よりスコアが向上すれば受け入れられる。さらに、過去最高スコア `s_best` を超えれば、ディスク上のプロダクションスキルファイル `s_production` を上書きする。
+        -   **要件:** 検証セットは、訓練データから統計的に独立しており、十分なサンプルサイズを持つ必要がある。
+
+*   **SkillOpt-Lite のワークフロー:**
+    1.  **軌跡ダンプ:** エージェントハーネスの各バッチ実行後、生軌跡（計画、状態、スコア）を独立したテキストファイル（ログファイル）としてディスクに保存する。
+    2.  **ファイルシステムナビゲーション:** 最適化モデルは、シェルコマンドを用いてファイルシステムをナビゲートし、ディレクトリをリスト、タスク失敗をクラスタリングし、詳細検査のためのファイルを選択する。
+    3.  **パターンマイニングとパッチ生成:** 軌跡ファイルを読み込み、タスク間の不変属性や共通失敗パターンを特定する。最小更新原則に基づき、コンパクトなコードdiffまたはパッチを生成する。
+    4.  **検証と適用:** 生成されたパッチを適用し、候補スキルライブラリ `s_candidate` を構築する。これを独立検証セットで即座に評価する。
+    5.  **更新:** 候補スキルがベースラインスコアを改善すれば受け入れ (`s_current`)。過去最高スコアを超えればプロダクションスキル (`s_production`) を上書き。却下された更新は履歴ログにアーカイブされる。
+
+### 2. HarnessOpt の基本原理
+
+*   **SkillOpt-Lite の一般化:** SkillOpt-Lite の「すべてはファイル」という哲学は、エージェントのスキルだけでなく、実行ハーネス（コードベース、スクリプト）にも適用できる。HarnessOpt は、この最小パイプラインをハーネス最適化に拡張する。
+*   **アプローチ:**
+    1.  **ラウンド0ブートストラップと人間介入ゲート (Round-0 Bootstrapping and Human-in-the-Loop Gate):**
+        -   初期ハーネス (`Round-0 harness`) の構造的整合性が重要。
+        -   まず、シードハーネスで全訓練インスタンスを実行し、システム実行トレースと例外ログを収集する。
+        -   特殊な診断サブエージェントがログをスキャンし、タスク固有のコード編集ではなく、クロス・タスクなアーキテクチャ上の欠陥（例：欠落ツール、API解析ミス）を特定する。
+        -   診断結果は、ツールインベントリ、プロンプトコンテキスト、ループポリシー、コード生成形状、状態メモリなどの観点から評価され、メモリ統合、ツール拡張、制御フロー形状に関する3つの決定が下される。
+        -   これらの決定はVS Code環境でインタラクティブなプロンプトとして提示され、ユーザーの明示的な承認後にコードベースへの構造変更がコミットされる。
+    2.  **自動継続進化とサンドボックス化ゲーティング (Automated Continuous Evolution and Sandboxed Gating):**
+        -   ユーザー介入なしの自動化されたクローズドループ進化フェーズ。
+        -   ファイルパーミッションを緩和し、標準シェルツールを使用して実行状態を検査し、ハーネススクリプトにコードパッチを適用する。
+        -   **ループ不変性（Loop Invariants）による安全ガードレール:**
+            -   **スクリプト分離 (Script Isolation):** 変更はフレームワークのスクリプトに限定。タスク固有スキルや内部設定は読み取り専用リスト。
+            -   **サンドボックス化ゲーティング (Sandboxed Gating):** 候補ハーネスは、コンパイルチェックと初期スモークテスト (`smoke_test`) をパスした後、検証セットで性能を測定する。
+            -   **ロールバックと特徴トグル (Rollbacks and Feature Toggles):** 全てのコード編集はロールバック可能。大幅な変更は、環境変数機能トグル（モジュールインポート時に初期化）でラップされ、明確な二分法と将来のアブレーションハンドルを保証。
+        -   **検証ゲート:** 最終精度スコアを過去最高構成と比較。統計的デッドバンド（サンプル数に依存）を設けて確率的変動をフィルタリング。デッドバンド内の改善は、二次ソフトメトリクスで非自明な進行を示さない限り受け入れられない。
+
+*   **VS Code 統合:**
+    -   `/skillopt-loop rounds=10 batchsize=40 target=gpt5.4-nano [custom_requirements]`
+    -   `/harnessopt-loop rounds=2 batchsize=40 target=gpt5.4-nano skill=best_skill_nano.md [custom_requirements]`
+    これらのコマンドにより、開発者はIDE内で直接、スキルまたはハーネスの最適化ループを開始できる。
+
+*   **数式/アルゴリズムのPython風疑似コード:**
+
+    ```python
+    # SkillOpt-Lite の擬似コード
+
+    def skill_optimization_loop(agent, training_data, validation_data):
+        current_skills = load_initial_skills()
+        production_skills = current_skills
+        best_skills = current_skills
+
+        for round in range(num_rounds):
+            # 1. 軌跡ダンプ
+            trajectories = agent.run(training_data, skills=current_skills)
+            log_files = save_trajectories_as_files(trajectories)
+
+            # 2. ファイルシステムナビゲーション &amp; 3. パターンマイニング
+            optimizer_model = get_optimizer_model()
+            potential_patches = optimizer_model.find_patterns_and_generate_patches(log_files, current_skills)
+
+            for patch in potential_patches:
+                # 4. 検証と適用
+                candidate_skills = apply_patch(current_skills, patch)
+                candidate_score = evaluate(candidate_skills, validation_data)
+
+                # 5. 更新
+                if candidate_score &gt; evaluate(current_skills, validation_data):
+                    current_skills = candidate_skills # 一時的に受け入れ
+                    if candidate_score &gt; evaluate(best_skills, validation_data):
+                        best_skills = candidate_skills # 過去最高更新
+                        save_skills(best_skills, &#34;production_skills.md&#34;) # プロダクション更新
+
+    # HarnessOpt の擬似コード (一部)
+
+    def harness_optimization_loop(agent, training_data, validation_data, base_skill_file):
+        # ラウンド0ブートストラップ &amp; 人間介入ゲート
+        initial_harness_config = bootstrap_and_get_user_approval(agent, training_data, base_skill_file)
+        current_harness = load_harness(initial_harness_config)
+        production_harness = current_harness
+
+        for round in range(num_rounds):
+            # 自動継続進化 &amp; サンドボックス化ゲーティング
+            trajectories = agent.run(training_data, harness=current_harness, skills=load_skills(base_skill_file))
+            harness_log_files = save_harness_logs(trajectories)
+
+            optimizer_model = get_optimizer_model()
+            potential_harness_patches = optimizer_model.find_harness_patterns(harness_log_files)
+
+            for patch in potential_harness_patches:
+                candidate_harness = apply_harness_patch(current_harness, patch)
+                # サンドボックス化検証
+                if is_harness_valid_and_passes_smoke_test(candidate_harness):
+                    candidate_score = evaluate(agent, training_data, validation_data, harness=candidate_harness)
+                    # 検証ゲート &amp; デッドバンド
+                    if passes_validation_gate(candidate_score, evaluate(current_harness, validation_data)):
+                        current_harness = candidate_harness
+                        # バックアップとロールバック機構
+                        save_harness_state(current_harness)
+                        # 必要に応じて production_harness を更新
+    ```
+
+## 6. この論文を140字以内のツイートで要約すると？
+複雑な自律エージェントのスキル進化を、ファイル操作とコード生成で劇的に効率化。SkillOpt-Liteは、冗長な最適化プロセスを省き、「一行のVibe」でエージェントを高速・高性能化。ハーネス最適化HarnessOptも統合し、小型モデルが大型モデルを凌駕する可能性も。
+
+# SkillOpt-Lite: Better and Faster Agent Self-evolution via One Line of Vibe
+[View Paper](http://arxiv.org/abs/2607.03451v1)
+
+## 1. 問題意識：解決したい問題はなにか
+自律エージェントのスキル最適化は重要だが、既存の手法は複雑なパイプラインに依存している。この複雑さが、根本的な問い、「理論的または経験的に必要とされる全てのコンポーネントが正当化される、スキル最適化のための最小限の実行可能なパイプラインとは何か？」に答えることを妨げている。この複雑さは、エージェントのスキル進化を遅らせ、その適用を困難にしている。
+
+## 2. 提案手法のアプローチ：どのようなアイデア・アプローチで問題を解決しようとしたか
+提案手法は、スキル最適化をZeroth-Order (ZO)最適化として形式化し、古典的な手法（中心差分、信頼領域）と関連付けた。従来のZO最適化が「盲目的な数値摂動」に頼るのに対し、エージェントのスキル軌跡（実行トレース）は解釈可能なデバッグフィードバックとして機能することを指摘した。この洞察に基づき、Claude Codeの哲学とPAC学習理論から、「ファイルシステムベースの軌跡探索」「コンセンサス属性マイニング」「独立した検証ゲーティング」という3つの原則を導き出した。これらの原則を適用し、冗長なコンポーネントを排除することで、最小限の実行可能なパイプラインである「SkillOpt-Lite」を提案した。これは、エージェントのスキルを単なる編集可能なコードとして扱い、ファイルシステム操作を通じて直接最適化を行う。さらに、このアプローチを拡張し、エージェントの実行環境（ハーネス）自体を最適化する「HarnessOpt」も提案している。
+
+## 3. 成果：提案手法により、何が達成できたのか
+SkillOpt-Liteは、既存の複雑なスキル最適化パイプライン（SkillOpt）と比較して、収束速度の加速と性能向上を達成した。具体的には、LiveMathタスクにおいて、GPT-5.5で+8.8ポイント、GPT-5.4-nanoで+25.4ポイントの改善を示した。特に、nanoモデルはSkillOptで最適化された標準GPT-5.4を上回る性能を発揮した。また、VS Code Copilotのようなプロダクションコーディングエージェントに統合され、開発者が「一行のVibe」でエージェントのスキルを進化させることが可能になった。HarnessOptは、SpreadsheetBenchにおいて、GPT-5.4-nanoが0.7758の精度を達成し、より大きなGPT-5.5（標準パイプライン実行時0.7620）を上回ることを可能にした。
+
+## 4. 課題：本手法の限界・課題にはなにか。本文中で著者が言及しているものと、あなたが想定するもの
+### 本文中で著者が言及している課題：
+*   **独立した検証セットの重要性:** PAC学習の観点から、一般化誤差を保証するためには、訓練セットから統計的に独立した検証セットが不可欠であるが、既存研究ではこの原則がしばしば侵害されている。
+*   **タスクの性質による効果の差異:** AlfWorldやSearchQAのような意味論重視のタスクでは、SkillOpt-LiteとSkillOptの性能差は小さい。これは、これらのドメインではモデルが最適化マージンを急速に飽和させるためであり、複雑な最適化インフラストラクチャが冗長になる可能性がある。
+*   **Harness最適化における初期状態の重要性:** Harness最適化では、初期のベースラインフレームワーク（Round-0ハーネス）の構造的整合性が重要であり、安定した初期インターフェースなしに制御ロジックを無闇に変更すると、構文エラーやツール依存関係の破損を引き起こす可能性がある。
+*   **Harness進化の継続学習における構造的整合性:** Harness最適化を長期にわたって継続学習させる場合、独立して進化したHarnessの系統間の構造的整合性と融合が課題となる。
+
+### あなたが想定する課題：
+*   **ファイルシステム操作のオーバーヘッド:** 提案手法はファイルシステム操作を多用するが、大規模なデータセットや複雑なエージェント構造の場合、ファイルI/Oのオーバーヘッドが収束速度に影響を与える可能性がある。
+*   **「一行のVibe」の難しさ:** 開発者が「一行のVibe」でスキルを進化させられるとのことだが、実際には、どのような「Vibe」が効果的か、また、その「Vibe」を適切に記述するための知識や経験が必要になる可能性がある。
+*   **デバッグの複雑化:** コードベースが大きくなるにつれて、ファイルシステムベースのデバッグは、特定のバグの原因特定をより困難にする可能性がある。
+*   **セキュリティリスク:** Harness最適化において、ファイルシステムへの広範なアクセス権限やコードの自動実行は、悪意のあるコードの挿入や予期せぬ副作用のリスクを伴う可能性がある。サンドボックス化による対策は講じられているものの、完全な防御は難しい。
+*   **計算資源:** 提案手法は冗長性を排除しているものの、複雑なタスクや大規模モデルにおいては、依然として相当な計算資源を必要とする可能性がある。
+
+## 5. 技術詳細：提案手法の技術的な詳細について、できるだけ詳しく。数式やアルゴリズム、モデル構造なども可能な限り詳しく
+### 1. SkillOpt-Lite の基本原理
+
+*   **Zeroth-Order (ZO) 最適化としての形式化:**
+    スキル最適化問題 $f(s)=\mathbb{E}_{z\sim\mathcal{D}}[R(H(M,z,s))]$ を、目的関数 $f$ を最大化するスキル $s$ を見つける問題として捉える。ここで、$z$ はタスクインスタンス、$\mathcal{D}$ はタスク分布、$R(\cdot)$ は報酬関数、$H$ は実行ハーネス、$M$ はベースLLM。勾配 $\nabla_s f(s)$ は離散性や非微分可能性から解析的に扱えないため、ZO Oracle（エージェント実行結果から報酬を得る）としてモデル化する。
+
+*   **古典的ZOとスキル最適化の類推:**
+    -   中心差分 (Central difference): 1点差分推定 $\frac{f(s+\mu u_i)-f(s)}{\mu}$。
+    -   信頼領域 (Trust regions): 変更履歴のバッファリング。
+    -   ZO-SGD: Map-Reduce によるパッチのマージ。
+    -   **差異:** 古典的ZOは数値空間で「盲目的な摂動」を行うが、スキル最適化は実行トレース（ログ）という「意味論的にリッチで解釈可能なフィードバック」を利用する。これは、LLMがコンパイラとして機能し、トレースがプログラム実行トレースとなる「プログラム・コンパイラ・パラダイム」と捉えられる。
+
+*   **3つの基本原則:**
+    1.  **ファイルシステムベースの軌跡探索 (File-system-based trajectory exploration):**
+        -   **背景:** PAC学習理論より、汎化誤差は$\epsilon(\mathcal{S})\leq\hat{\epsilon}_{D}(\mathcal{S})+\mathcal{O}\left(\beta_{\exp}+\sqrt{\frac{\ln(1/\delta)}{N}}\right)$ でバウンドされる。ここで、$\beta_{\exp}$ は経験的安定性係数（single-trial anomaliesへの過学習）。
+        -   **アプローチ:** 単一軌跡の異常に過学習せず、タスク間の不変属性を抽出する必要がある。Claude Codeの「すべてはファイル」哲学に基づき、各実行軌跡を独立したフラットファイルとして保存する。
+        -   **動機:** 単一バッチのファイルシステム探索が、複数エポックのフルSkillOptパイプラインを上回る性能を示した（Figure 3）。
+        -   **要件:** $\beta_{\exp}$ を最小化するため、最適化アルゴリズムは単サンプル特異性を捨て、異種軌跡間の共通属性を抽出する「安定化圧縮」を行うべき。
+    2.  **コンセンサス属性マイニング (Consensus attribute mining):**
+        -   **背景:** 汎化誤差のモデル選択バウンドは $\epsilon(\mathcal{S}_{\text{val}})\leq\hat{\epsilon}_{\text{val}}(\mathcal{S}_{\text{val}})+\mathcal{O}\left(\sqrt{\frac{\ln(1/\delta)}{m}}\right)$。ここで、$m$ は検証セットサイズ。
+        -   **アプローチ:** 複数の軌跡ファイルから共通の失敗パターンや属性をマイニングする。LLMはファイルシステムユーティリティ（`ls`、`grep`など）を使い、ディレクトリをナビゲートし、タスク失敗のクラスタリングや、検査対象とする高レバレッジなファイルを選択する。
+        -   **目標:** 辞書的なスキルライブラリを、単純なテキスト編集ではなく、コード diff やパッチとして生成し、エラーを修正する。
+    3.  **独立した検証ゲーティング (Independent validation gating):**
+        -   **背景:** 汎化誤差のバウンドから、検証セットは訓練セットから統計的に独立している必要がある。ReflexionやSkillCatのような手法は、この原則を侵害している。
+        -   **アプローチ:** 生成された候補スキル（`s_candidate`）は、訓練セットとは厳密に独立した検証セットで評価される。
+        -   **プロセス:** 候補スキル `s_candidate` を独立検証セットで評価し、既存のベースライン `s_current` よりスコアが向上すれば受け入れられる。さらに、過去最高スコア `s_best` を超えれば、ディスク上のプロダクションスキルファイル `s_production` を上書きする。
+        -   **要件:** 検証セットは、訓練データから統計的に独立しており、十分なサンプルサイズを持つ必要がある。
+
+*   **SkillOpt-Lite のワークフロー:**
+    1.  **軌跡ダンプ:** エージェントハーネスの各バッチ実行後、生軌跡（計画、状態、スコア）を独立したテキストファイル（ログファイル）としてディスクに保存する。
+    2.  **ファイルシステムナビゲーション:** 最適化モデルは、シェルコマンドを用いてファイルシステムをナビゲートし、ディレクトリをリスト、タスク失敗をクラスタリングし、詳細検査のためのファイルを選択する。
+    3.  **パターンマイニングとパッチ生成:** 軌跡ファイルを読み込み、タスク間の不変属性や共通失敗パターンを特定する。最小更新原則に基づき、コンパクトなコードdiffまたはパッチを生成する。
+    4.  **検証と適用:** 生成されたパッチを適用し、候補スキルライブラリ `s_candidate` を構築する。これを独立検証セットで即座に評価する。
+    5.  **更新:** 候補スキルがベースラインスコアを改善すれば受け入れ (`s_current`)。過去最高スコアを超えればプロダクションスキル (`s_production`) を上書き。却下された更新は履歴ログにアーカイブされる。
+
+### 2. HarnessOpt の基本原理
+
+*   **SkillOpt-Lite の一般化:** SkillOpt-Lite の「すべてはファイル」という哲学は、エージェントのスキルだけでなく、実行ハーネス（コードベース、スクリプト）にも適用できる。HarnessOpt は、この最小パイプラインをハーネス最適化に拡張する。
+*   **アプローチ:**
+    1.  **ラウンド0ブートストラップと人間介入ゲート (Round-0 Bootstrapping and Human-in-the-Loop Gate):**
+        -   初期ハーネス (`Round-0 harness`) の構造的整合性が重要。
+        -   まず、シードハーネスで全訓練インスタンスを実行し、システム実行トレースと例外ログを収集する。
+        -   特殊な診断サブエージェントがログをスキャンし、タスク固有のコード編集ではなく、クロス・タスクなアーキテクチャ上の欠陥（例：欠落ツール、API解析ミス）を特定する。
+        -   診断結果は、ツールインベントリ、プロンプトコンテキスト、ループポリシー、コード生成形状、状態メモリなどの観点から評価され、メモリ統合、ツール拡張、制御フロー形状に関する3つの決定が下される。
+        -   これらの決定はVS Code環境でインタラクティブなプロンプトとして提示され、ユーザーの明示的な承認後にコードベースへの構造変更がコミットされる。
+    2.  **自動継続進化とサンドボックス化ゲーティング (Automated Continuous Evolution and Sandboxed Gating):**
+        -   ユーザー介入なしの自動化されたクローズドループ進化フェーズ。
+        -   ファイルパーミッションを緩和し、標準シェルツールを使用して実行状態を検査し、ハーネススクリプトにコードパッチを適用する。
+        -   **ループ不変性（Loop Invariants）による安全ガードレール:**
+            -   **スクリプト分離 (Script Isolation):** 変更はフレームワークのスクリプトに限定。タスク固有スキルや内部設定は読み取り専用リスト。
+            -   **サンドボックス化ゲーティング (Sandboxed Gating):** 候補ハーネスは、コンパイルチェックと初期スモークテスト (`smoke_test`) をパスした後、検証セットで性能を測定する。
+            -   **ロールバックと特徴トグル (Rollbacks and Feature Toggles):** 全てのコード編集はロールバック可能。大幅な変更は、環境変数機能トグル（モジュールインポート時に初期化）でラップされ、明確な二分法と将来のアブレーションハンドルを保証。
+        -   **検証ゲート:** 最終精度スコアを過去最高構成と比較。統計的デッドバンド（サンプル数に依存）を設けて確率的変動をフィルタリング。デッドバンド内の改善は、二次ソフトメトリクスで非自明な進行を示さない限り受け入れられない。
+
+*   **VS Code 統合:**
+    -   `/skillopt-loop rounds=10 batchsize=40 target=gpt5.4-nano [custom_requirements]`
+    -   `/harnessopt-loop rounds=2 batchsize=40 target=gpt5.4-nano skill=best_skill_nano.md [custom_requirements]`
+    これらのコマンドにより、開発者はIDE内で直接、スキルまたはハーネスの最適化ループを開始できる。
+
+*   **数式/アルゴリズムのPython風疑似コード:**
+
+    ```python
+    # SkillOpt-Lite の擬似コード
+
+    def skill_optimization_loop(agent, training_data, validation_data):
+        current_skills = load_initial_skills()
+        production_skills = current_skills
+        best_skills = current_skills
+
+        for round in range(num_rounds):
+            # 1. 軌跡ダンプ
+            trajectories = agent.run(training_data, skills=current_skills)
+            log_files = save_trajectories_as_files(trajectories)
+
+            # 2. ファイルシステムナビゲーション &amp; 3. パターンマイニング
+            optimizer_model = get_optimizer_model()
+            potential_patches = optimizer_model.find_patterns_and_generate_patches(log_files, current_skills)
+
+            for patch in potential_patches:
+                # 4. 検証と適用
+                candidate_skills = apply_patch(current_skills, patch)
+                candidate_score = evaluate(candidate_skills, validation_data)
+
+                # 5. 更新
+                if candidate_score &gt; evaluate(current_skills, validation_data):
+                    current_skills = candidate_skills # 一時的に受け入れ
+                    if candidate_score &gt; evaluate(best_skills, validation_data):
+                        best_skills = candidate_skills # 過去最高更新
+                        save_skills(best_skills, &#34;production_skills.md&#34;) # プロダクション更新
+
+    # HarnessOpt の擬似コード (一部)
+
+    def harness_optimization_loop(agent, training_data, validation_data, base_skill_file):
+        # ラウンド0ブートストラップ &amp; 人間介入ゲート
+        initial_harness_config = bootstrap_and_get_user_approval(agent, training_data, base_skill_file)
+        current_harness = load_harness(initial_harness_config)
+        production_harness = current_harness
+
+        for round in range(num_rounds):
+            # 自動継続進化 &amp; サンドボックス化ゲーティング
+            trajectories = agent.run(training_data, harness=current_harness, skills=load_skills(base_skill_file))
+            harness_log_files = save_harness_logs(trajectories)
+
+            optimizer_model = get_optimizer_model()
+            potential_harness_patches = optimizer_model.find_harness_patterns(harness_log_files)
+
+            for patch in potential_harness_patches:
+                candidate_harness = apply_harness_patch(current_harness, patch)
+                # サンドボックス化検証
+                if is_harness_valid_and_passes_smoke_test(candidate_harness):
+                    candidate_score = evaluate(agent, training_data, validation_data, harness=candidate_harness)
+                    # 検証ゲート &amp; デッドバンド
+                    if passes_validation_gate(candidate_score, evaluate(current_harness, validation_data)):
+                        current_harness = candidate_harness
+                        # バックアップとロールバック機構
+                        save_harness_state(current_harness)
+                        # 必要に応じて production_harness を更新
+    ```
+
+## 6. この論文を140字以内のツイートで要約すると？
+複雑な自律エージェントのスキル進化を、ファイル操作とコード生成で劇的に効率化。SkillOpt-Liteは、冗長な最適化プロセスを省き、「一行のVibe」でエージェントを高速・高性能化。ハーネス最適化HarnessOptも統合し、小型モデルが大型モデルを凌駕する可能性も。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

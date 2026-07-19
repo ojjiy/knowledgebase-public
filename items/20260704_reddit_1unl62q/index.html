@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>If your GPU can run inference, it should be able to fine-tune too. [P]</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>If your GPU can run inference, it should be able to fine-tune too. [P]</h1>
+<p><strong>Date:</strong> 2026-07-04</p>
+<p><strong>Source:</strong> reddit / MachineLearning</p>
+
+<p><a href="https://github.com/tsuyu122/usaf">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">1. **このポストの内容を説明してください。**
+
+  このRedditのポストは、&#34;USAF&#34;という新しい、オープンソースのモデルファインチューニング手法について紹介しています。この手法は、特にMoE（Mixture of Experts）モデルに特化しており、**GPUで推論（モデルを使って結果を出すこと）ができるのであれば、ファインチューニング（モデルを特定のタスクに合わせて調整すること）もできる**という目標を掲げています。
+
+  投稿者は、AMD RX 6750 XT（12GB VRAM）という比較的コンシューマー向けのGPUで、Qwen3-30B-A3Bという大規模なMoEモデルのファインチューニングを、アダプターではなく、スパースエキスパートの重みとルーターを直接トレーニングすることで実現できたと述べています。
+
+  このプロジェクトはApache 2.0ライセンスで公開されており、営利目的ではなく、純粋に興味深いと思ったものを共有したいという意図で開発されたとのことです。MoEモデルを扱っている人々からのフィードバックを求めています。
+
+2. **このポストに対するコメントのうち、特に興味深いものを教えてください。**
+
+  このポストに対するコメントの中で、特に興味深いのは、**他のMoEモデルへの適用可能性に関する質問とその回答**です。
+
+  *   **Qwen3.5/3.6やGemma4 MoEへの対応:** コメントでは、Qwen3.5/3.6やGemma4といった、より新しい、あるいは異なるアーキテクチャのMoEモデルにUSAFが適用できるかどうかが質問されています。
+  *   **Gemma MoEの難しさ:** 特にGemma MoEについては、独自のテンソル形式（エキスパートが3Dテンソルにパックされている）のため、従来のLoRA（Low-Rank Adaptation）のような手法がコンシューマーGPUでは難しいという点が指摘されています。
+  *   **投稿者の回答:** 投稿者は、Qwen3.5/3.6については、HuggingFaceのコンフィグを直接読み取るため、アーキテクチャやパラメータ名が似ていれば「そのまま動作する」と回答しています。必要なのは、新しいモデルの重みに対する量子化ファイル（`experts_q4.pt`）だけで、それを生成する機能も提供されています。
+  *   **Gemma4 MoEへの対応の具体性:** Gemma4 MoEについては、Google独自の命名規則やエキスパートの構造の違いから、より複雑になるものの、対応可能であると説明しています。具体的には、`model_factory.py`の`_detect_param_names`関数にGemma4のパラメータ名パターンを追加することで対応できると、コードの変更箇所まで具体的に示唆しています。
+  *   **モデル非依存のコア機能:** USAFのコアとなるトレーニングループ（重要度計算、スパーストレーニング、RigL、ルーターの共同トレーニング）は、モデルのアーキテクチャに依存せず、エキスパートの重みがどれであるかを知るだけで動作するため、Gemma4のようなモデルでもHuggingFaceのsafetensors形式で提供されていれば、USAFでトレーニングできるという、技術的な実現可能性の根拠を示しています。
+
+  このやり取りは、USAFという手法が単なる理論的なものではなく、実際の他のモデルへの適用を考慮した、実用的な設計になっていることを示しており、非常に興味深いです。特に、特定のモデルアーキテクチャへの対応の難易度とその解決策について、具体的な技術的説明がなされている点が注目に値します。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

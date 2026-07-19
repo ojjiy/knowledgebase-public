@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>GigaWorld-1: A Roadmap to Build World Models for Robot Policy Evaluation</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>GigaWorld-1: A Roadmap to Build World Models for Robot Policy Evaluation</h1>
+<p><strong>Date:</strong> 2026-07-02</p>
+<p><strong>Source:</strong> paper / paperswithcode-trending</p>
+
+<p><a href="http://arxiv.org/abs/2607.02642v1">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body"># タイトル
+[GigaWorld-1: A Roadmap to Build World Models for Robot Policy Evaluation](http://arxiv.org/abs/2607.02642v1)
+
+## 1. 問題意識：解決したい問題はなにか
+ロボットの基盤モデル（foundation models）の評価は、大規模言語モデル（LLM）に比べて大きなボトルネックとなっています。LLMはデジタルベンチマークで効率的に評価できるのに対し、ロボットのポリシー評価は、ハードウェアや人間の監督に制約される、遅くてコストのかかる実世界での実行（rollouts）を必要とします。このため、ポリシー評価の代替手段として「ワールドモデル」が注目されていますが、ワールドモデルがポリシー評価に信頼できるための重要な特性は、まだ十分に理解されていません。本研究は、この「ロボットポリシー評価のためのワールドモデル構築」という課題に取り組んでいます。
+
+## 2. 提案手法のアプローチ：どのようなアイデア・アプローチで問題を解決しようとしたか
+本研究では、ロボットポリシー評価のためのワールドモデル構築に関する体系的な研究を行い、以下の3つの主要なアプローチを提案しています。
+
+1.  **WMBenchの構築**: 実ロボットのテレオペレーションデータと、それに対応するポリシー実行データを用いて、多様な操作タスクをカバーするベンチマーク「WMBench」を構築しました。これにより、モデルファミリー、アクションエンコーディング、実行ホライズン、評価指標などを制御した比較が可能になります。
+2.  **大規模実験と分析**: WMBenchを用いて、7つのビデオワールドモデル、4つのアクション表現スキーム、324,000件以上のシミュレーションポリシー実行データと実ロボット実行データを分析しました。さらに、CVPR 2026 GigaBrain Challengeからのコミュニティ提出データ、合成軌道、12,000時間以上のトレーニングビデオも分析に含めました。
+3.  **実践的なロードマップとGigaWorld-1の設計**: 実験結果から得られた3つのコアインサイト（長期ホライズンでの実行整合性の重要性、事前学習のデータスケールだけでなく一般世界知識とロボット固有の制御可能性のバランス、アーキテクチャ選択の重要性）に基づき、実践的な設計ロードマップを導き出し、ポリシー評価に特化して最適化されたワールドモデル「GigaWorld-1」を実装しました。
+
+## 3. 成果：提案手法により、何が達成できたのか
+本研究は、以下の重要な成果を達成しました。
+
+1.  **ワールドモデルによるロボットポリシー評価の信頼性向上**:
+    *   「評価者の品質は、短期的な視覚的リアリズムよりも、長期ホライズンでのアクションに忠実な実行の一貫性によって支配される」ことを明らかにしました。
+    *   「事前学習の利点は、データスケールだけでなく、一般世界知識とロボット固有の制御可能性のバランスにある」ことを示しました。
+    *   「アクションエンコーディング、メモリ設計、評価者中心の後処理を含むアーキテクチャの選択が、実世界のロボット動作との整合性を強く決定する」ことを発見しました。
+2.  **WMBenchベンチマークの提供**: ロボットポリシー評価のためのワールドモデルを体系的に比較・評価できる「WMBench」を開発し、公開しました。これにより、今後の研究における標準的な評価基盤が提供されます。
+3.  **GigaWorld-1モデルの開発**: 上記の知見に基づき、ロボットポリシー評価に特化して最適化されたワールドモデル「GigaWorld-1」を開発し、その性能が既存の最先端ベースラインと比較して、評価整合性指標で14.9%向上することを示しました。
+4.  **研究コミュニティへの貢献**: コード、モデル、データセット、ツールキットを完全に公開し、埋め込み型基盤モデルのスケーラブルな評価研究の推進に貢献しました。
+5.  **VLM（Vision-Language Model）を用いた評価の自動化**: 人間によるアノテーションのボトルネックを克服するため、VLM支援型の成果アノテーションパイプラインを導入し、人間による評価とほぼ完璧な一致率を達成しました。
+
+## 4. 課題：本手法の限界・課題にはなにか。本文中で著者が言及しているものと、あなたが想定するもの
+### 著者が言及している限界・課題：
+*   **タスク空間の限定性**: WMBenchは8つのタスクファミリーをカバーしていますが、モバイル操作、器用な手内操作、安全性クリティカルな自律性といった、ロボット操作の全領域を網羅しているわけではありません。
+*   **ビデオ中心のワールドモデルへの焦点**: 本研究は主にビデオ中心のワールドモデルに焦点を当てており、構造化された状態空間やハイブリッド3Dアプローチとは異なるトレードオフを示す可能性があります。
+*   **アノテーションコスト**: VLM支援によるアノテーションコストは大幅に削減されましたが、不確実なケースでは最終的な評価者評価には依然として人間の検証が有益です。
+*   **楽観的なバイアスの削減**: ビデオ生成モデルが接触に敏感な失敗に対して楽観的なバイアスを示す傾向があり、これを低減することが今後の重要な研究方向であると指摘しています。
+
+### 想定される限界・課題：
+*   **計算リソース**: 大規模な実験とモデルのトレーニングには、膨大な計算リソースとGPU時間を必要とします。
+*   **データ収集の多様性**: WMBenchに採用されたデータソースは多様ですが、現実世界にはさらに多様な環境、タスク、ロボットプラットフォームが存在するため、過学習のリスクがないとは言えません。
+*   **評価指標の網羅性**: WMBenchで定義された評価指標は包括的ですが、ワールドモデルの「知性」や「汎用性」を完全に捉えきれない可能性はあります。特に、意図の理解や計画能力の評価は未だ難しい課題です。
+*   **VLMの解釈可能性とバイアス**: VLMを用いた評価は効率的ですが、VLM自体のバイアスや、人間との微妙な評価の違いが結果に影響を与える可能性があります。
+
+## 5. 技術詳細：提案手法の技術的な詳細について、できるだけ詳しく。数式やアルゴリズム、モデル構造なども可能な限り詳しく
+本論文で提案されている技術は多岐にわたりますが、主要な要素を以下に詳述します。
+
+### 5.1. WMBench: ワールドモデルをポリシー評価者とするためのベンチマーク
+
+*   **データ構成**:
+    *   **テレオペレーションデータ**: 多様な操作タスク、カメラビューをカバーする、実ロボットのテレオペレーションデータ。
+    *   **ポリシー実行データ**: 複数のポリシーチェックポイントから収集された、成功・失敗の両方を含む実行データ。
+    *   **タスクカテゴリ**: 8つのタスクファミリー（剛体・軟体操作など）をカバー。
+*   **データクリーニング**:
+    *   破損・切断されたビデオ、カメラの非同期、欠損ロボット状態、タイムスタンプの不一致などを排除。
+    *   人間による検証で曖昧な結果ラベルを持つエピソードを除外。
+    *   重複するテレオペレーション軌道を削除し、データ多様性を向上。
+*   **評価プロトコル（4ステップ）**:
+    1.  **実世界ポリシーデータ収集**: 実ロボットでポリシーをトレーニングし、複数のチェックポイントから実行データを収集。初期観測、タスク指示、実行ビデオ、成功ラベルを記録。
+    2.  **ワールドモデル学習とホールドアウト**: 学習データセットでワールドモデルを学習。テストエピソード（オブジェクト配置、初期状態を含む）は厳密にホールドアウトし、一般化能力を評価。
+    3.  **ワールドモデル内での閉ループ実行**: ホールドアウトされたテストエピソードの最初のフレームから開始。ポリシーがアクションを予測し、ワールドモデルがそのアクションと現在の状態に基づいて将来の観測を予測。この予測観測をポリシーにフィードバックし、タスク終了まで閉ループ実行。
+    4.  **指標計算と結果評価**: 生成された軌道を包括的に評価。
+        *   **自動指標**: 視覚的忠実度、物理的運動ダイナミクスを捉える。
+        *   **最終実行スコア (WMES)**: ハイブリッド評価者（人間またはVLM）による評価。生成品質とシミュレーション結果が実世界の結果と一致するかを検証。
+*   **評価指標**:
+    *   **WMES (World Model Evaluator Score)**: タスクレベルの意思決定をサポートするかを測る、0〜3の順序尺度。
+    *   **自動指標（WorldArenaから抜粋）**:
+        *   **視覚的忠実度**: Image Quality (MUSIQ), Aesthetic Quality (LAION/CLIP), JEPA Similarity (V-JEPA特徴), Subject Consistency (DINO), Background Consistency (CLIP), Photometric Consistency (Optical Flow)。
+        *   **幾何学・意味論・インタラクション**: Geometry Accuracy (Depth Map), Semantic Alignment (Qwen2.5-VL), Instruction Following (Qwen2.5-VL), Interaction Quality (Qwen3-VL judge)。
+        *   **運動・長期実行**: Dynamic Degree, Flow Score (RAFT), Motion Smoothness (Frame Interpolation), PSNR, FID, FVD (長ホライズン)。
+*   **VLM支援アノテーション**:
+    *   Qwen3-VL-8B-InstructをLoRAでファインチューニング。
+    *   3視点の実行ビデオとタスク指示を入力とし、WMESスコアと証拠に基づいた理由付け（アスペクトレベル評価）を予測。
+    *   スコア重視の学習目的関数を使用（スコートークンに高い重み）。
+    *   人間とのWMESスコアの一致率: 完全一致87.80%、隣接一致99.16%。
+
+### 5.2. GigaWorld-1: ロードマップに基づくワールドモデル
+
+*   **設計原則**:
+    1.  **データ**: 一般世界知識とロボット固有の制御可能性のバランス。
+    2.  **モデル**: 明示的で空間的に整合されたアクション表現、長期ホライズンでの安定化のためのメモリ。
+    3.  **評価**: 単なる視覚的リアリズムではなく、実世界ポリシー成功との一致。
+*   **アーキテクチャ**:
+    *   **事前学習済みバックボーン**: Wan (公開され、成熟したエコシステムを持つ) を採用。Cosmosも強力な候補。
+    *   **オートリグレッシブ拡散トランスフォーマー**: 長期ホライズン生成のために、固定ウィンドウ拡散モデルをオートリグレッシブ問題として再定式化。
+        ```python
+        # モデル学習（オートリグレッシブ）
+        # X_hist: 過去のフレームの潜在列
+        # C: 条件（アクション、深度、マスク、キャプションなど）
+        # tau: 拡散タイムステップ
+        # epsilon_theta: ネットワークが予測するノイズ
+
+        # 予測：
+        epsilon_theta = model.predict_noise(X_noisy_future, history_memory, control_conditions, timestep)
+
+        # 推論時の因数分解：
+        # p(X_1:T | C) = product_{k=1 to K} p(X_k | H_{k-1}, C)
+        ```
+    *   **統一制御表現**: ヘッドカメラ用End-Effector (EE) ポーズマップと、リストカメラ用Ray Mapを結合。
+        ```python
+        # ヘッドビュー用EEポーズマップ
+        C_t_ee = model.get_ee_pose_map(future_ee_trajectories_in_image_plane)
+        # リストビュー用Ray Map
+        C_t_ray = model.get_ray_map(ray_origin, ray_direction)
+        # 統一制御マップ (幅方向に連結)
+        C_t = concatenate_width(C_t_ee, C_t_ray)
+        # 制御条件の系列
+        Control_Sequence = encode(C_t for t in current_window)
+        ```
+    *   **階層的履歴メモリ**:
+        *   First-Frame Anchor: 初期シーン構成とオブジェクトIDを保持。
+        *   Long-term memory (L): グローバルなシーンレイアウト、オブジェクトID、環境状態。
+        *   Mid-term memory (M): タスクレベルの情報、中間的なアクション進化。
+        *   Short-term memory (S): ローカルな運動連続性、最近のシーン変化。
+        ```python
+        # 履歴状態 (Anchor + Hierarchical Memories)
+        H_t = [X_anchor, H_t_L, H_t_M, H_t_S]
+        # ネットワーク入力
+        epsilon_theta = model.predict_noise(X_noisy_future, Control_Sequence_k, H_t, timestep)
+        ```
+    *   **相対ロータリー位置エンコーディング (Relative RoPE)**: 固定された絶対時間インデックスへの過学習を防ぐ。
+        ```python
+        # ローカル時間位置の定義
+        # history_length = T_h, future_window_length = T_f
+        # P_hist = {0, ..., T_h-1}
+        # P_future = {T_h, ..., T_h+T_f-1}
+        # 全トークンはローカル位置 P = {0, ..., T_h+T_f-1} を観測
+        # 各ローカル位置pにおけるクエリ/キーの回転
+        Q&#39;_p = R(p) * Q_p
+        K&#39;_p = R(p) * K_p
+        ```
+    *   **プロンプト遷移のための球面線形補間 (SLERP)**: セマンティック条件の滑らかな遷移を実現。
+        ```python
+        # 2つのプロンプト埋め込み e1, e2
+        # 角度 theta = arccos( (e1 . e2) / (|e1|*|e2|) )
+        # 補間係数 t = i / (N-1)
+        # SLERP(e1, e2, t) = (sin((1-t)*theta)/sin(theta))*e1 + (sin(t*theta)/sin(theta))*e2
+        # 補間された埋め込み e^(i) を successive generation windows に注入
+        ```
+    *   **段階的トレーニング**:
+        1.  **ロボットワールド基盤モデル**: 事前学習済みモデルを、キュレーションされたデータセットでファインチューニング（フローマッチング目的）。
+        2.  **オートリグレッシブ実行学習**: 上記モデルをオートリグレッシブ生成器に変換。
+        3.  **シーン適応LoRA (オプション)**: 特定のワークスペースへの適応。
+        4.  **DMD2蒸留**: 数ステップでの推論を高速化。
+*   **データキュレーション (Giga DataCrafter)**:
+    *   **データソース**: インターネット・物理ビデオ、オープンソースロボットデータセット、人間中心の生態視点データ、Giga収集ロボットデモンストレーション。
+    *   **品質フィルタリング**: 画像品質、美的品質、時間的整合性（ジャンプ、ブラック、ドロップフレーム）、運動量（静止/低速クリップの排除）、物理的妥当性（高周波運動アーティファクトのペナルティ）、VLMによる同期エラー・キャリブレーションドリフトのフィルタリング。
+    *   **自動アノテーション**:
+        *   セマンティックマスク (SAM-style segmentation/detection)
+        *   単眼深度 (Depth Anything 3)
+        *   言語説明 (Fast-Slow Captioning)
+*   **最適化・効率化**:
+    *   SageAttention: メモリ効率と低精度実行を最適化。
+    *   TinyVAE: プレビューデコーディングの高速化。
+    *   Ulysses Sequence Parallelism: 長シーケンスのGPU間シャード化。
+    *   Triton Kernels: LayerNorm, RoPEなどの演算を融合・最適化。
+
+## 6. この論文を140字以内のツイートで要約すると？
+ロボット評価のボトルネック解消へ！実世界実行の代わりに使う「ワールドモデル」の設計法を確立。WMBenchベンチマークとGigaWorld-1モデルを公開。長期ホライズンでの一貫性やアクション忠実性が重要。コード・データも提供し、ロボットAI評価研究を加速！ #ロボットAI #ワールドモデル</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

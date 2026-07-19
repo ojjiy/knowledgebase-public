@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>16GB のノートPC でも、Claude Code + ローカル LLM は本気で使える — CodeRouter で Tool Call が安定するまで(2026年7月版)｜zephel01</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>16GB のノートPC でも、Claude Code + ローカル LLM は本気で使える — CodeRouter で Tool Call が安定するまで(2026年7月版)｜zephel01</h1>
+<p><strong>Date:</strong> 2026-07-06</p>
+<p><strong>Source:</strong> rss / Hatena Bookmark Technology Hotentry</p>
+
+<p><a href="https://note.com/zephel01/n/n0d53c62dca07">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">この記事は、16GBのRAMを搭載したノートPC（MacBook/Mac mini/Windowsノート）で、Claude CodeとローカルLLMを実用的に活用するためのガイドです。特に、AIが外部ツール（ファイル読み込みやコマンド実行など）を呼び出す「Tool Call」の安定化に焦点を当てています。
+
+**主な課題と解決策:**
+
+*   **メモリ不足:** 16GBのRAMではOSや他のアプリケーションで多くを消費するため、LLMに使えるのは実質8〜10GB程度になり、7B〜9Bクラスのモデルが限界でした。
+*   **Tool Callの不安定さ:** 小さなモデルは、Tool Callを要求された際に正しい形式ではなく、通常のテキストとして出力してしまう癖があります。これにより、AIがツールを呼び出せず、エージェントとして機能しないことがありました。
+
+**2026年7月時点での解決策:**
+
+1.  **「今の」モデル選び:**
+    *   **Qwen Coder系:** Qwen2.5-coder:7bやQwen3.5 9Bは、Tool Callとの相性が良く、安定性が高いです。
+    *   **MoE (Mixture of Experts) モデル:** 見かけよりも軽量で、低量子化（例: Q3, Q4_K_M）のMoEモデルが、16GB環境での新たなトレンドとなっています。純粋なdenseモデルよりも実用的です。
+    *   **Gemma4系:** 急上昇中ですが、Tool Callで稀にループやフォーマット問題が発生する報告があります。
+2.  **Tool Callの修復（CodeRouter）:**
+    *   CodeRouterは、Claude CodeとローカルLLMの間に挟まるルーターで、AIが生成した壊れたTool Callを正規の形式に修復する機能を持っています。
+    *   筆者の実測では、この修復層を挟むことで、壊滅的だったTool Callの成功率を「0%から100%」に改善したモデルが3つあります（温度0、各100リクエスト）。
+    *   超軽量モデル（1.5Bクラス）でもTool Callが100%成功するようになり、強力なモデルでも修復層を挟むことによる劣化は見られませんでした。
+    *   ただし、引数自体をモデルが壊してしまうケースは、誤ったコマンド実行を防ぐために意図的に修復しないとのことです。
+3.  **空応答のフォールバック:**
+    *   Gemma4系などで発生する「空の応答」問題は、CodeRouterの「空応答フォールバック」機能で対応できます。空応答を検知すると、自動的に次のモデルに同じリクエストを流し、処理を継続させます。
+4.  **メモリの事前ガード:**
+    *   CodeRouterには、実機の空きメモリを検出し、コンテキスト長を自動調整する「低メモリガード」機能があります。これにより、メモリ不足によるクラッシュ（OOM）を未然に防ぎます。
+
+**構築手順の概要:**
+
+1.  Ollamaをインストールします。
+2.  16GB向けに推奨されるモデル（Qwen2.5-coder:7b、Qwen3.5 9B、低量子化MoEモデルなど）を`ollama pull`でダウンロードします。
+3.  CodeRouterを起動し、Tool Callの修復機能を有効にします（`coderouter serve --port 8088`）。
+4.  Claude CodeをCodeRouter経由で接続します（環境変数設定後、`claude`コマンドを実行）。
+
+**16GB環境ならではのTips:**
+
+*   メモリ使用量は常に監視し、swapに落ちないようにブラウザのタブを閉じるなどの工夫が必要です。
+*   MoEモデルは低量子化で利用し、修復層でTool Callの壊れやすさをカバーします。
+*   軽量モデルから中型モデルへと繋げるフォールバックchainを構築することで、応答の失敗を減らせます。
+
+**注意点:**
+
+*   ローカル環境はクラウドに比べて速度が劣るため、複雑なタスクはクラウドとの併用が現実的です。
+*   Gemma4系のTool Call問題は「減る」のであって「ゼロになる」わけではありません。
+*   モデルの評判と実際のTool Callの安定性には乖離がある場合があり、実測が重要です。
+
+**まとめ:**
+
+2026年7月現在、16GBクラスのPCでも、適切なモデル選択、CodeRouterによるTool Callの修復、メモリ管理、フォールバック機能の活用により、「本気のローカルLLM + Tool Call」が実現可能になっています。これにより、プライバシーを重視しつつ、低コストでAIを活用する道が開けています。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

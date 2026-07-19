@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>バイブコーディングで本当にアプリはリリースできるのか？エンジニアが実際にアプリをリリースして感じたこと</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>バイブコーディングで本当にアプリはリリースできるのか？エンジニアが実際にアプリをリリースして感じたこと</h1>
+<p><strong>Date:</strong> 2026-07-03</p>
+<p><strong>Source:</strong> rss / Qiita Trend</p>
+
+<p><a href="https://qiita.com/yutaka_kozuka/items/cc3be5930b972130885d?utm_campaign=popular_items&amp;utm_medium=feed&amp;utm_source=popular_items">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">この記事では、エンジニアがAIを活用した「バイブコーディング」でAI英語学習アプリ「Engy」を個人開発し、WebおよびApp Storeでリリースできた経験から、本当にアプリがリリースできるのか、そして非エンジニアにとっての難しさについて詳細に解説しています。
+
+**結論として、AIを使えばコードを書くことは可能だが、商用・セキュアなアプリをリリースするには、非エンジニアにはまだ高いハードルがあると感じられた。**
+
+**非エンジニアには厳しいと感じられた理由:**
+
+1.  **セキュリティと課金への不安:**
+    *   **セキュリティ:** 攻撃から守るための「どこまでやれば大丈夫」という基準線が非エンジニアにはなく、AIが生成したコードに潜むリスクを判断できない。
+    *   **クラウド課金:** AWSのような従量課金サービスは、設定ミスや予期せぬトラフィック増加で高額請求が発生するリスクがあり、その「漠然とした怖さ」から安心して利用しにくい。
+
+2.  **AIエージェントから知識を引き出す能力:**
+    *   AIはインプットされた情報に比例した回答をするため、セキュリティサービス（AWS Security Hubなど）やコスト削減機能（Bedrock Prompt Cachingなど）といった**知識がないと、AIにそれらを指示して引き出すことができない。**
+    *   「セキュリティ大丈夫？」のような曖昧な指示では、AIは網羅的な回答が難しく、最終的な判断は人間の知識量に依存する。
+
+3.  **コーディング以外の重要事項:**
+    *   **AWSのセキュリティ・コスト基本設定:** 最小権限の原則、Rootユーザー保護、AWS Organizations、AWS Budgetsなどの基本設定は、商用サービスとして運用する上で必須だが、AIが自動で完璧に行うわけではない。
+    *   **BedrockのリージョンとQuota:** 特に新規アカウントでは、モデルの同時接続数などのQuotaが非常に小さく、申請しても利用実績がないと引き上げられない場合がある。モデル選定と同時にリージョン・Quotaの確認が必要。
+    *   **DynamoDBのデータ設計:** RDBとは設計思想が異なり、パーティションキーとソートキーの設計が後から変更しにくい。アクセスパターンを事前に洗い出すことが重要。
+    *   **Cognito × Apple Sign Inの落とし穴:** 属性のmutable設定やApple Sign Inの仕様理解不足により、User Poolの再作成が必要になるなど、初期設計のミスが後から大きなコストとなる。
+    *   **フレームワークの制約:** Next.jsの静的書き出し（Static Export）かサーバーモード（SSR）かの選択は、後から変更するのが困難であり、将来的な機能拡張に影響する。
+    *   **モバイル対応方針:** Capacitor、React Native、Swift（ネイティブ）の選択は、Webとのコード共有やUX品質に大きく影響するため、早期に決定すべき。
+    *   **App Store申請:** Xcode（Mac必須）、証明書・プロビジョニングプロファイルの管理、App Store Connectへの提出、Apple IAP（アプリ内課金）の実装、Appleのレビュー対応など、コード以外の作業が大量に発生する。
+    *   **法的ドキュメント:** プライバシーポリシー、利用規約、特定商取引法に基づく表記など、AIが生成した叩き台を自分で法的に問題ないか確認する必要がある。
+    *   **ドメイン取得:** サービス名が決まったら、ドメインは早めに取得し、カスタムドメイン設定などを行う。
+    *   **課金のライフサイクル:** サブスクリプション課金モデルの複雑な状態遷移（アップグレード、ダウングレード、解約、返金など）を理解し、設計する必要がある。
+
+4.  **デバッグ能力:**
+    *   AIはコード生成は得意だが、「なぜ動かないか」を特定するのは難しい。サーバーレス構成では、リクエストが複数の層を通過するため、CORS、認証トークン、IAM権限、環境設定、CDNキャッシュなど、原因を切り分ける能力が求められる。
+    *   **必要なログの有効化**も重要で、後回しにすると問題発生時に手がかりがなくなる。
+
+5.  **AIが作ったものを「理解する」責任:**
+    *   動いているが自分では説明できないシステムにならないよう、**システムの構造、データの流れ、判断の根拠などを自分の言葉で説明できるレベル**で把握しておく必要がある。
+    *   設計意図や決定事項を記録し、AIのセッションが切れてもコンテキストを失わないようにすることが重要。
+
+**結論として、AIは「コードを書く能力」を代替するが、「何を作り、何を確認すべきかを判断する能力」は人間が担う必要がある。** プロトタイプ作成であれば簡易ツールで可能だが、商用・セキュア・スケーラブルなサービスリリースには、インフラ、セキュリティ、ドメイン知識への一定の理解が不可欠である。
+
+AIが生成したコードを理解し、何を気にすべきかという視点を持つことが、今後の開発において重要になると締めくくられている。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

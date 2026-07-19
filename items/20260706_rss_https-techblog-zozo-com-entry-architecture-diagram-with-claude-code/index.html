@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>システム構成図、もう手で描くのやめました ── Claude Codeで構成図を自動生成・自動更新する仕組み - ZOZO TECH BLOG</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>システム構成図、もう手で描くのやめました ── Claude Codeで構成図を自動生成・自動更新する仕組み - ZOZO TECH BLOG</h1>
+<p><strong>Date:</strong> 2026-07-06</p>
+<p><strong>Source:</strong> rss / Hatena Bookmark LLM</p>
+
+<p><a href="https://techblog.zozo.com/entry/architecture-diagram-with-claude-code">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">ZOZO TECH BLOGの記事では、ZOZOのFBZ（Fulfillment by ZOZO）チームが、Claude Codeを活用してシステム構成図の自動生成・自動更新を実現した事例が紹介されています。
+
+FBZのシステムはAWS上に構築されたイベント駆動型アーキテクチャで、500以上のLambdaを含む多数のサービスで構成されています。このような複雑なシステムでは、障害発生時、新機能開発、リファクタリング、新人教育といった様々な場面でシステム構成図が重要になります。しかし、従来のMiro上での手動作成では、以下の課題がありました。
+
+1.  **作成に時間がかかる**: システム規模が大きくなるほど、手動での構成図作成・更新に多大な時間を要し、作成が後回しになりがちでした。
+2.  **ルールや要件が不明文化**: 作成ルールが明文化されていなかったため、作成者によって表現方法が異なり、図の統一感が失われていました。
+3.  **陳腐化**: ソースコードの変更が構成図に反映されず、図が実態と乖離し、信頼性を損なうことがありました。
+
+これらの課題を解決するため、FBZチームはClaude Codeを用いた構成図作成を試みました。当初はClaude Codeに直接図を生成させましたが、AIがどのような根拠で図を作成したのかが不明確で、ルールがブラックボックス化してしまうという問題が残りました。
+
+そこで、**「規約ファイル」**と**「構造ファイル」**という2つの中間ファイルを導入しました。
+
+*   **規約ファイル (conventions.md)**: 図のアイコンルール、フローの向き、矢印の意味、ラベルの位置などの表現ルールを明文化します。これにより、図の作成要件が明確になり、作成者間の表現のばらつきを防ぎます。
+*   **構造ファイル (structure.yaml)**: システムを構成するリソース（ノード）とその関係性（エッジ）を定義します。AWSのCloudFormationのType名などを利用し、YAML形式で記述します。これにより、図の構造情報が明文化され、AIへのコンテキスト提供も効率化されます。
+
+これらの「構造情報」と「規約情報」を分離したことで、以下のメリットが得られました。
+
+*   **変更の局所化**: 構造の変更は構造ファイル、規約の変更は規約ファイルに閉じるため、変更の影響範囲が明確になり、レビューや更新が容易になりました。
+*   **レンダラとの非依存**: 構造情報と規約情報は特定のレンダラ（draw.io, D2, Mermaidなど）に依存しないため、必要に応じてレンダラを差し替え可能になります。
+
+さらに、**GitHub Actions**を用いた**CIによる自動更新**の仕組みを構築しました。リリース時に構成図管理リポジトリにイベントが送信され、Claude Code Actionが起動して、対象ビューの絞り込み、差分分析、構成図の更新、そして更新後のPNG画像を埋め込んだプルリクエスト（PR）の自動作成を行います。構造ファイルにリポジトリ情報が紐づいているため、どのビューに影響があるかを自動判定し、更新漏れを防ぎます。
+
+Claude Codeの**Skills機能**を活用し、コード読解から中間ファイル生成、図のレンダリングまでを「create-diagram」というスキルにまとめ、ワークフロー化しました。
+
+この仕組みにより、以下の効果が得られました。
+
+*   **作成時間の短縮**: 従来1時間以上かかっていた構成図作成が、微調整含め10分程度に短縮（約6分の1）。
+*   **ルール・要件の明文化**: 規約ファイルにより、図の作成ルールが一貫性をもって適用されるようになりました。
+*   **陳腐化の防止**: リリースのたびに自動更新されるため、構成図が実態と乖離するリスクが大幅に低減しました。
+
+また、知見として「一発で完璧な図は作りにくい」「自動レイアウトツールとの相性が良い」「新規機能開発の設計にも活用できる」といった点が挙げられています。
+
+結論として、AIに仕事を任せるには、人間が管理すべき情報とAIに委ねる情報の境界設計が重要であり、中間ファイルによる責務の分離がその境界を明確にし、諸課題を解決する鍵となったとまとめられています。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

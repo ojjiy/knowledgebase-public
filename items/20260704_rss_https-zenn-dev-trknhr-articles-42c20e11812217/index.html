@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>.env に API キーを書きたくないので 軽いCLI を作った</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>.env に API キーを書きたくないので 軽いCLI を作った</h1>
+<p><strong>Date:</strong> 2026-07-04</p>
+<p><strong>Source:</strong> rss / Hatena Bookmark Programming</p>
+
+<p><a href="https://zenn.dev/trknhr/articles/42c20e11812217">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">## EnvVault: ローカル開発におけるAPIキー管理を簡潔化するCLIツール
+
+本稿は、ローカル開発環境でAPIキーなどの機密情報を安全かつ簡潔に管理するための軽量CLIツール「EnvVault」の紹介と、その設計思想、使い方について詳述しています。
+
+### 開発の背景と問題意識
+
+従来のローカル開発では、`.env` ファイルにAPIキーなどの機密情報を平文で記述することが一般的でした。しかし、AIエージェントがローカルリポジトリにアクセスする機会が増えるにつれて、この運用方法にリスクが浮上しました。AIエージェントにリポジトリを触らせることは、作業ディレクトリを他者に触らせることに近しく、`.env` ファイルに直接機密情報が含まれていると、意図せず機密情報が漏洩する可能性が高まります。
+
+この問題に対して、1Password CLI、Infisical、direnv、dotenv系ツール、chamberといった既存の選択肢は存在します。しかし、筆者はより限定的で、以下の要件を満たすツールを求めていました。
+
+*   `.env` ファイルには、リポジトリに含めても安全な参照のみを記述したい。
+*   実際の機密情報はOSのクレデンシャルストアに保存したい。
+*   可能なAPIでは、本物のプロバイダーキーを子プロセスに渡さない選択肢も欲しい。
+*   個人のローカル開発で利用できる程度に軽量であってほしい。
+
+これらの要件を満たすために、EnvVaultが開発されました。
+
+### EnvVaultの主な機能と特徴
+
+EnvVaultは「local-firstなシークレットランチャー」として機能します。
+
+*   **`.env` ファイルへの参照のみの記述**: `.env` ファイルには、実際の機密情報ではなく、`envvault://&lt;credential&gt;` という形式の参照のみを記述します。
+    例:
+    ```
+    OPENAI_API_KEY = envvault://openai/dev
+    DATABASE_URL = envvault://database/dev
+    ```
+*   **OSクレデンシャルストアへの機密情報の保存**: 実際の機密情報は、macOS KeychainのようなOSのクレデンシャルストアに保存されます。
+*   **`envvault exec` による参照解決**: アプリケーションを起動する際、`envvault exec` コマンドが `envvault://...` 参照を解決し、子プロセスに環境変数として渡します。
+*   **クレデンシャルのOSクレデンシャルストアへの保存**: `envvault credential add` コマンドなどを利用して、機密情報をOSのクレデンシャルストアに安全に保存できます。
+*   **`.env` ファイル不要な直接指定**: `.env` ファイルを作成せずに、`--env KEY=envvault://...` の形式で直接機密情報を渡すことも可能です。
+*   **ブラウザUIによる管理**: ブラウザUIからクレデンシャルや、オプションとしてプロキシを登録・管理できます。UIは機密情報の値自体を表示せず、登録のみを可能にする方針です。
+*   **Proxy Mode**: ローカルプロキシ経由でプロバイダーキーを隠蔽する機能も提供します。これは、SDKやアプリケーションがカスタムベースURLやベアラートークンを受け取れる場合に利用できます。
+
+#### Direct Credential Flow (デフォルト)
+
+EnvVaultのデフォルトの動作モードです。`envvault://openai/dev` のような参照は、OSクレデンシャルストアから `openai/dev` の実値を読み出し、子プロセスの `OPENAI_API_KEY` 環境変数にその実値を設定します。これは、`chamber` に似たアプローチですが、ローカルOSクレデンシャルストアを主たる保存場所とし、`.env` ファイルに `envvault://...` 参照を配置する点、そして必要に応じてローカルプロキシに切り替えられる点が異なります。
+
+このモードの利点は、リポジトリに含まれる `.env` ファイルに実際の機密情報が存在しないことです。しかし、起動した子プロセスには最終的に生（raw）のクレデンシャルが渡されます。EnvVaultはサンドボックスではなく、「起動したプロセスから機密情報を絶対に隠す」ことを目的とするのではなく、「リポジトリや `.env` ファイルに生の機密情報が残る領域を減らす」ことを目的としています。
+
+#### Proxy Mode (オプション)
+
+Proxy Modeでは、子プロセスにはEnvVaultのローカルプロキシに対してのみ意味を持つトークンが渡されます。プロキシはリクエストのメソッドやパスを確認し、許可されたリクエストに対してのみ、OSクレデンシャルストアから取得したプロバイダーキーを付与してアップストリームに転送します。
+
+このモードは、SDKやアプリケーションがカスタムベースURLとベアラートークンを受け取れる場合に有効ですが、環境差分が増えたり、SDKの互換性に影響を与える可能性があるため、メイン機能とはしていません。安全性という点では強力ですが、ローカル開発ツールとしての使いやすさはDirect Credential Flowの方が優れています。
+
+### 技術構成
+
+EnvVaultはGo言語で実装されており、以下の部品で構成されています。
+
+*   **CLI**: コマンドラインインターフェース。
+*   **OS Credential Store**: 機密情報の実際の値を保存。macOSでは `/usr/bin/security` を、それ以外の環境では `github.com/zalando/go-keyring` を利用します。
+*   **Config Store**: 機密情報本体は含まず、クレデンシャル名の一覧やプロキシのポリシーなどを保存します。
+*   **`envvault://` Reference Parser**: `.env` ファイルの値が `envvault://` で始まる場合に、EnvVault参照として厳格に解析します。
+*   **Env Resolver**: 親プロセスの環境変数、`.env` ファイル、インライン環境変数を読み込み、`envvault://` 参照を解決します。
+*   **Direct Credential Resolver**: OSクレデンシャルストアから機密情報を取得します。
+*   **Optional Provider Proxy Resolver**: ローカルプロキシサーバーを起動し、リクエストを転送します。
+*   **Child Process Runner**: 解決済みの環境変数で子プロセスを起動します。
+*   **Localhost Admin UI**: ブラウザベースのUIで、クレデンシャルやプロキシの管理を容易にします。
+
+### セキュリティモデルと限界
+
+EnvVaultはサンドボックスではありません。以下の点は守られますが、限界もあります。
+
+**守られること:**
+
+*   リポジトリに生の機密情報を置かない。
+*   `.env` ファイルをリポジトリセーフな参照だけにできる。
+*   参照解析を厳格に行い、意図しない参照表現を弾く。
+*   参照解決に失敗した場合、安全側に倒す（fail closed）。
+*   Proxy modeでは、プロバイダーキーを子プロセスに直接渡さない。
+*   Proxy modeでは、メソッド/パスを制限できる。
+
+**守られないこと:**
+
+*   子プロセスが自身の環境変数を読める。
+*   同じOSユーザーがOSクレデンシャルストアにアクセスできる。
+*   stdout/stderr/logs/shell historyへの漏洩。
+*   悪意あるプロセスからの完全な隔離。
+*   プロバイダーに送るプロンプトやリクエストボディの中身。
+
+Direct Credential FlowはSDK互換性が高い反面、起動後のプロセスから機密情報を隠すものではありません。Proxy modeはプロバイダーキーの露出を減らせますが、SDKの対応が必要です。
+
+EnvVaultの目的は「完璧に機密情報を守る」ことではなく、「ローカル開発で生の機密情報が雑に露出する面積を減らす」ことです。
+
+### Agent Skill
+
+AIエージェントがEnvVaultを利用してコマンドを起動できるように、EnvVaultのスキルも提供されています。これにより、AIエージェントは `envvault exec` や `envvault://` 参照の扱いを学習し、`.env` の中身を直接見ることなくコマンドを実行できるようになります。
+
+### 今後
+
+EnvVaultはまだMVP（Minimum Viable Product）であり、具体的なロードマップはありませんが、将来的にはブラウザUIの改善、プロバイダープリセットの追加、Windows/Linuxのキーリング動作検証、プロキシモードの使いどころの整理、ブラウザ自動化時のID/パスワード扱いの検討などが考えられます。
+
+### まとめ
+
+`.env` ファイルに機密情報を置かないという目的であれば、既存の選択肢も多く存在します。しかし、OSクレデンシャルストアに実際の値を置き、リポジトリには `envvault://...` 参照だけを置き、起動時にだけ解決するという、軽量でシンプルなツールは、個人のローカル開発において有用である可能性があります。EnvVaultは、`.env` ファイルをリポジトリセーフにしたい、しかし大きなシークレットマネージャーは導入したくない、macOSのKeyChainをバックエンドに使いたい、といった場面で活用できるかもしれません。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

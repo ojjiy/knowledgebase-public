@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>【非エンジニアのためClaude/ClaudeCodeシリーズ】Claude for Enterpriseのセキュリティやガバナンスについて考えてみた</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>【非エンジニアのためClaude/ClaudeCodeシリーズ】Claude for Enterpriseのセキュリティやガバナンスについて考えてみた</h1>
+<p><strong>Date:</strong> 2026-07-09</p>
+<p><strong>Source:</strong> rss / DevelopersIO</p>
+
+<p><a href="https://dev.classmethod.jp/articles/claude_security_risk_guideline/">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">## Claude for Enterpriseにおけるセキュリティとガバナンスの考察
+
+本記事では、Claude for Enterprise（以下Claude）の利用におけるセキュリティ対策およびガバナンス設計について、顧客から寄せられる代表的な質問とその回答、Claudeの組織管理機能、そして業界標準のセキュリティフレームワークとの比較を通じて考察しています。
+
+### 顧客からの主な質問とClaudeの回答
+
+顧客から頻繁に寄せられる質問は、主に料金体系への不安と情報漏洩への懸念です。
+
+*   **従量課金制への不安:** Claude for Enterpriseでは、個人ごと、チームごとに支出上限を設定できるため、料金体系のコントロールが可能です。
+*   **情報流出への不安:** Claudeは「SOC 2 Type II」や「ISO 27001:2022」といった厳格な国際セキュリティ認証を取得しており、厳密な統制が担保されています。
+*   **プロンプトの学習利用や悪用への不安:** 公式ドキュメントによれば、入力されたプロンプトはAIモデルの学習には一切利用されず、悪用される心配もありません。
+
+### Claudeの組織管理機能
+
+Claude for Enterpriseは、組織内でのAI利用を安全かつ管理可能にするための機能を提供しています。
+
+*   **支出上限設定:** 従量課金制の料金体系に対する不安に対応するため、個人やチーム単位での支出上限を設定できます。
+*   **接続先制御（カスタムロール）:** AIの利用経験が浅いユーザーにもライセンスを配布する際、Claudeが自律的に外部サービスへアクセスすることを防ぐために、接続先を制御する「カスタムロール」機能が利用できます。例えば、Gmailとの連携において、読み取りは可能だが書き込みや削除は承認制とするなどの設定が可能です。
+
+### 業界標準セキュリティフレームワークとの比較
+
+本記事では、AI利用におけるリスクを網羅する「OWASP LLM Top 10」を業界標準として、Claudeのセキュリティ設定を評価しています。
+
+*   **OWASP LLM Top 10:** 2024年11月に公開された、LLM（大規模言語モデル）に関する10種類のセキュリティリスクをまとめたものです。法的拘束力はありませんが、脅威モデリングやセキュリティ評価に広く利用されています。
+*   **Claudeの評価:** OWASP LLM Top 10の各項目に対してClaudeの強弱を評価した結果、弱点とされる項目は、Anthropic側の責任というよりも、ユーザー側の責任範囲やClaude提供外の機能に関連するものがほとんどでした。このことから、Claude自体に起因するインシデントは発生しにくいと考えられます。
+*   **追加の推奨事項:** Claude単体のセキュリティは高いものの、AI利用全体における共通のルールや利用ガイドラインを整備することで、さらに安全なAI活用を推進できると結論づけています。
+
+### まとめ
+
+Claude for Enterpriseは、顧客の不安に対応するための強力なセキュリティ機能と組織管理機能を提供しています。しかし、AIの利用目的や状況は各社で異なるため、各社が独自のAI利用ガイドラインを整備することが最も重要です。ビジネスにおけるスピード感と安全性を両立させるために、クラスメソッドが支援できるとしています。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

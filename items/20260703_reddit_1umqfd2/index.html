@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>H64LM: A 249M-parameter Mixture-of-Experts Transformer built from scratch in PyTorch [P]</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>H64LM: A 249M-parameter Mixture-of-Experts Transformer built from scratch in PyTorch [P]</h1>
+<p><strong>Date:</strong> 2026-07-03</p>
+<p><strong>Source:</strong> reddit / MachineLearning</p>
+
+<p><a href="https://www.reddit.com/r/MachineLearning/comments/1umqfd2/h64lm_a_249mparameter_mixtureofexperts/">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">1. **このポストの内容を説明してください。**
+
+   このRedditのポストは、ユーザー「Haiderkhan64」が、PyTorchを用いてゼロから構築した「H64LM」という名前の2億4900万パラメータを持つTransformerモデルについて紹介するものです。
+
+   投稿者は、現代のLLM（大規模言語モデル）をより深く理解するために、高レベルのトレーニングフレームワークに頼らず、アテンション、MoE（Mixture-of-Experts）ルーティング、正規化、トレーニングループといったコアコンポーネントを自分で実装したと述べています。
+
+   H64LMの主な特徴は以下の通りです。
+
+   *   **モデルサイズ:** 2億4900万パラメータのTransformer
+   *   **アテンション機構:** Grouped Query Attention (GQA)
+   *   **MoE:** Sparse Mixture-of-Experts（8つのエキスパート、Top-2ルーティング）、3つの補助ルーティング損失
+   *   **その他の技術:** SwiGLU、RoPE、RMSNorm、Sliding-window attention
+   *   **トレーニング:** Mixed-precision training、gradient accumulation、カスタムトレーニングループ（Trainer抽象化なし）、チェックポイントと再開機能
+   *   **トレーニングデータ:** WikiText-103のサブセットで検証（モデルの性能向上目的ではなく、パイプラインの完全な検証のため）
+   *   **学習結果:** エポック10以降で過学習が見られ、検証PPL（Perplexity）は約40.5。
+   *   **既知の制限:** READMEに記載されており、バッチサイズ1でのみ生成可能、真のDDP（Distributed Data Parallel）ではなくDataParallelを使用していることなど。
+
+   投稿者は、GitHubリポジトリへのリンクを共有し、実装やアーキテクチャに関するフィードバックを歓迎しています。
+
+2. **このポストに対するコメントのうち、特に興味深いものを教えてください。**
+
+   このポストに対するコメントの中で、特に興味深いものは以下の質問です。
+
+   *   **「Have you experimented some new things / parameters? Are there results that surprised you (like the overfitting maybe) that you didnt put in the readme? Is it usual to have a weight decay at 0.01 for models like this?」**
+      （何か新しいことやパラメータを実験しましたか？READMEに載せていない、驚くべき結果（過学習のようなもの）はありましたか？このようなモデルでweight decayを0.01にするのは一般的ですか？）
+
+      このコメントは、投稿者が行った実験の詳細や、予想外の結果、そしてモデル構築における一般的なプラクティス（weight decayの設定）について深く掘り下げようとしています。特に、過学習が予想外だったのか、それともある程度予期していたのか、そしてその原因についての疑問は、LLMのトレーニングにおける重要な側面を突いています。また、weight decayの値についての質問は、モデルの安定性や汎化性能に関する技術的な議論を促すものです。
+
+   *   **「Any recomendation for someone who want to learn the same?」**
+      （同じようなことを学びたい人への推薦はありますか？）
+
+      これは、投稿者の経験から学びたいという、他のユーザーからの直接的な質問です。投稿者がどのようにしてこのプロジェクトを始めたのか、どのようなリソースやアプローチが効果的だったのかを知りたいという意図が伺えます。
+
+   *   **「Probably to do what he did.」**
+      （おそらく、彼がやったことをやることでしょう。）
+
+      これは、上の「学びたい人への推薦はありますか？」という質問に対する、皮肉めいた、あるいはユーモラスな回答です。投稿者の行動（ゼロから実装すること）が、まさにそれを学ぶための最良の方法である、ということを示唆しています。これは、LLMの理解を深めるための実践的なアプローチの重要性を強調するコメントと言えます。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

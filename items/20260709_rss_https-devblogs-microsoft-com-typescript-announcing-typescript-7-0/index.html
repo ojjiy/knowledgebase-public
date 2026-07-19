@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Announcing TypeScript 7.0 - TypeScript</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>Announcing TypeScript 7.0 - TypeScript</h1>
+<p><strong>Date:</strong> 2026-07-09</p>
+<p><strong>Source:</strong> rss / Hatena Bookmark Programming</p>
+
+<p><a href="https://devblogs.microsoft.com/typescript/announcing-typescript-7-0/">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">TypeScript 7.0がリリースされ、Go言語によるネイティブ実装により、従来のTypeScript 6.0と比較して10倍高速化されました。この高速化は、ネイティブコードの速度、共有メモリマルチスレッド、および各種最適化によるもので、ビルド時間が8倍から12倍短縮されています。
+
+この高速化は、開発のあらゆる段階で恩恵をもたらします。エディタの起動、プロジェクト全体の検索、オートコンプリート、エラー表示などが劇的に速くなり、開発者がコードを記述してからビルド結果を確認するまでのフィードバックループが短縮されます。実際のプロジェクトにおけるビルド時間の比較や、メモリ使用量の削減効果も示されています。
+
+TypeScript 7.0は、過去10年以上にわたるテストと、多くの大規模チームによる実環境でのテストを経て、安定性と信頼性が確保されています。Slack、Vanta、Microsoftの各チームなど、多くの企業やプロジェクトで導入され、生産性向上や開発サイクルの高速化に貢献しています。特に、Slackではマージキュー時間の40%削減、CIでの型チェック時間の劇的な短縮、エディタでのローカル型チェックの実現などが報告されています。
+
+**主な変更点と新機能:**
+
+*   **パフォーマンス向上:** Go言語によるネイティブポートにより、ビルド時間、エディタでの応答速度などが大幅に改善されました。
+*   **並列処理の強化:** パーシング、型チェック、コード生成などの処理が並列化され、CPUコアをより効率的に利用できるようになりました。`--checkers` および `--builders` フラグにより、並列化の挙動を細かく調整できます。
+*   **`--watch` モードの刷新:** ParcelのファイルウォッチャーをGo言語に移植した新しい基盤により、効率的で安定したクロスプラットフォームなファイル監視が可能になりました。
+*   **TypeScript 6.0からの変更:** TypeScript 7.0はTypeScript 6.0のデフォルト設定（`strict: true`、`module: esnext`など）を踏襲し、6.0で非推奨となった機能はエラーとなります。`rootDir` や `types` のデフォルト値の変更など、一部の挙動変更には注意が必要です。
+*   **テンプレートリテラル型でのUnicodeコードポイントの扱い:** Unicodeコードポイントがより自然に扱われるようになり、サロゲートペアの分割が解消されました。
+*   **JavaScriptサポートの改善:** TypeScriptファイルと同様の解析方法に近づき、JSDocの解釈方法などが変更されています。
+*   **エディタ体験の向上:** LSP（Language Server Protocol）に基づいた新しい基盤により、マルチスレッドでのリクエスト処理が可能になり、エディタでのパフォーマンスが向上しました。VS CodeやVisual Studioなどの主要エディタでサポートが提供されています。
+
+**互換性と移行:**
+
+TypeScript 7.0は、APIがまだ安定していませんが、TypeScript 6.0と並行して実行できるよう、互換性パッケージ`@typescript/typescript6`が提供されています。これにより、一部のツールがTypeScript 6.0のAPIに依存している場合でも、TypeScript 7.0への移行を進めることができます。
+
+Vue、MDX、Astro、Svelteなどの埋め込み言語やAngularのテンプレート型チェックなど、TypeScript 7.0のAPIに依存するツールは、APIの安定化までTypeScript 6.0を使用する必要があります。
+
+TypeScript 7.0は、TypeScriptツールセットの「ネイティブ時代」の幕開けであり、開発者の生産性と開発体験を向上させることを目指しています。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

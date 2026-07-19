@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>The Mirage of Optimizing Training Policies: Monotonic Inference Policies as the Real Objective for LLM Reinforcement Learning</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>The Mirage of Optimizing Training Policies: Monotonic Inference Policies as the Real Objective for LLM Reinforcement Learning</h1>
+<p><strong>Date:</strong> 2026-06-28</p>
+<p><strong>Source:</strong> paper / hf-papers</p>
+
+<p><a href="http://arxiv.org/abs/2606.29526v1">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body"># タイトル
+[View Paper](http://arxiv.org/abs/2606.29526v1)
+
+## 1. 問題意識：解決したい問題はなにか
+大規模言語モデル（LLM）の強化学習（RL）による後処理（post-training）は、指示追従、アライメント、推論能力の向上に有望ですが、学習が不安定になりやすく、破綻する可能性があります。その主要な原因の一つは、「学習-推論の不一致（training-inference mismatch）」です。LLMは、推論（生成効率のため）と学習（精度のため）で別々のエンジンを使用しますが、モデルパラメータが同期されていても、同じ軌跡（trajectory）に対して学習側と推論側で確率が一致しないという問題が発生します。これにより、常に存在する特殊なオフポリシー性の問題が生じ、学習を阻害します。既存研究は、このオフポリシー性に対処して学習ポリシーを安定させようとしましたが、学習ポリシーの更新が必ずしもデプロイ時に使用される推論ポリシーの改善に繋がるとは限らないという、より根本的な「目的の不一致（objective misalignment）」が見過ごされていました。
+
+## 2. 提案手法のアプローチ：どのようなアイデア・アプローチで問題を解決しようとしたか
+本研究では、この「目的の不一致」を解決するため、学習ポリシーの最適化ではなく、「単調な推論ポリシーの改善（Monotonic Inference Policy Improvement; MIPI）」という新しい原則を提唱します。これは、推論ポリシーの性能を単調に改善することを目指すという考え方です。この原則に基づき、「単調な推論ポリシー更新（Monotonic Inference Policy Update; MIPU）」という2段階のフレームワークを提案します。
+MIPUは以下の2つのステップで構成されます。
+1. **サンプラー参照の候補更新（Sampler-referenced candidate updates）:** 推論エンジン（サンプラー）で生成された軌跡を基に、学習ポリシーの候補を生成します。これは、学習・推論の不一致を考慮しつつ、理論的には推論ポリシーの改善に繋がるような候補を構築するステップです。
+2. **推論側ギャップを考慮した同期候補の選択的受容（Synchronized candidates using an inference-side gap proxy）:** ステップ1で生成された候補学習ポリシーを推論ポリシーに同期させた後、その同期された推論ポリシーが実際に改善されているか（推論側ギャップが許容範囲内か）を評価し、受け入れるかどうかを決定します。これにより、学習側で良さそうに見えても、推論側で性能が低下するような更新を排除します。
+
+## 3. 成果：提案手法により、何が達成できたのか
+提案手法MIPUは、実験において以下の成果を達成しました。
+*   **平均推論性能の向上:** 特に、学習-推論の不一致が大きい（例: FP8量子化推論）条件下において、ベースライン手法と比較して、数学的推論ベンチマークにおける平均的なパス@1精度を向上させました。
+*   **学習の安定性の向上:** 不安定になりがちなLLMのRL学習において、MIPUは学習過程の安定性を高め、学習の破綻（collapse）や急激な性能低下を防ぐことができました。これにより、より長期にわたる学習が可能になり、持続的な性能向上が見られました。
+*   **2つのコンポーネントの補完的役割の確認:** 提案手法の2つのステップ（ステップ1：候補生成、ステップ2：候補選択）が、それぞれ異なる問題に対処し、組み合わさることで相補的に機能することが実験により示されました。ステップ1はより良い候補更新を生成し、ステップ2は不確かな更新をフィルタリングすることで、両者が組み合わさることで全体的な性能と安定性が向上しました。
+
+## 4. 課題：本手法の限界・課題にはなにか。本文中で著者が言及しているものと、あなたが想定するもの
+### 本文中で著者が言及している課題：
+*   **計算リソースの制約:** 現在の実験は、中規模モデルに限定されています。より大規模なモデルや、多様なRL学習システムにおいても同様の不一致パターンが見られるか、また、MIPUが同様の効果を発揮するかは今後の検証が必要です。
+*   **ステップ2の柔軟性:** ステップ2で提案されている「推論側ギャッププロキシ」は、同期候補を評価するための有効なインスタンス化の一つですが、より効率的な推定方法、より強力な受容基準、またはポストアップデート推論ギャップを直接活用する最適化スキームなどが今後の研究課題として挙げられます。
+
+### あなたが想定する課題：
+*   **ハイパーパラメータチューニングの複雑さ:** MIPUは、ステップ1での候補生成や、ステップ2での受容閾値（tolerance parameter）など、いくつかのハイパーパラメータに依存すると考えられます。これらのハイパーパラメータの適切な選択が、性能に大きく影響する可能性があります。特に、 FP8量子化などの不一致の度合いや、タスクの性質によって最適な値が変化する可能性があり、チューニングの負荷が増大することが想定されます。
+*   **推論側ギャッププロキシの精度と計算コスト:** ステップ2で用いられる推論側ギャッププロキシは、厳密な値ではなく近似値です。このプロキシの精度が低い場合、本来有効な更新を誤って拒否したり、逆に有害な更新を受け入れてしまったりするリスクがあります。また、このプロキシを計算するために追加の推論（validation rollouts）が必要になる場合、全体の計算コストが増加する可能性があります。
+*   **汎用性:** 本研究では、主に数学的推論タスクにおけるFP8量子化による不一致を扱っています。他の種類のLLMタスク（例: コード生成、対話）や、異なる種類の学習-推論不一致（例: モデルアーキテクチャの微妙な違い、デコーディング戦略の違い）に対しても、提案手法が有効であるかはさらなる検証が必要です。
+
+## 5. 技術詳細：提案手法の技術的な詳細について、できるだけ詳しく。数式やアルゴリズム、モデル構造なども可能な限り詳しく
+
+提案手法MIPUは、学習-推論の不一致（training-inference mismatch）下でのLLMの強化学習において、推論ポリシー（Inference Policy）の性能を単調に改善することを目的とします。
+
+### 1. 問題設定と記法
+*   学習ポリシー: $\pi_{\theta}$ （学習エンジン内のモデルパラメータ $\theta$ で定義される）
+*   推論ポリシー: $\mu_{\omega}$ （推論エンジン内のモデルパラメータ $\omega$ で定義される。通常、$\theta = \omega$）
+*   学習-推論の不一致: $\pi_{\theta} \neq \mu_{\omega}$ （パラメータが同じでも、実装や環境の違いにより確率分布が異なる）
+*   目的関数: $J(\pi) = \mathbb{E}_{\tau \sim \pi}[R(\tau)]$ （ポリシー $\pi$ で生成される軌跡 $\tau$ の報酬 $R(\tau)$ の期待値）
+
+### 2. MIPI (Monotonic Inference Policy Improvement) の原理
+MIPIは、推論ポリシーの改善度 $J(\mu_{k+1}) - J(\mu_k)$ を最大化することを目指します。この改善度を、以下の3つの項に分解します。
+
+$J(\mu_{k+1}) - J(\mu_k) = \underbrace{J(\mu_{k+1}) - J(\pi_{k+1})}_{\text{① post-update inference gap}} + \underbrace{J(\pi_{k+1}) - J(\pi_k)}_{\text{② training-side update}} + \underbrace{J(\pi_k) - J(\mu_k)}_{\text{③ pre-update inference gap}}$
+
+ここで、
+*   $\pi_k, \mu_k$: ステップ $k$ における学習ポリシーと推論ポリシー
+*   $\pi_{k+1}$: ステップ $k+1$ で最適化された学習ポリシー
+*   $\mu_{k+1}$: $\pi_{k+1}$ を同期させた後の推論ポリシー
+
+MIPIの目標は、この分解された3つの項すべてが、最終的に推論ポリシーの改善に寄与するようにすることです。
+
+### 3. MIPU (Monotonic Inference Policy Update) フレームワーク
+MIPUは、このMIPIの原理を実装するための2段階のフレームワークです。
+
+#### ステップ1: サンプラー参照の候補更新 (Sampler-Referenced Policy Update)
+このステップでは、項② ($J(\pi_{k+1}) - J(\pi_k)$) を、推論ポリシー $\mu_k$ からサンプリングされたデータを用いて、効率的に最適化することを目指します。
+
+*   **目的:** $\Delta(\pi_{k+1}, \mu_k) = J(\pi_{k+1}) - J(\mu_k)$ を改善するような $\pi_{k+1}$ を見つける。
+*   **実装:**
+    *   推論ポリシー $\mu_k$ を用いて、状態 $x$ と応答 $y$ のペアをサンプリングします。
+    *   学習ポリシー $\pi_k$ と推論ポリシー $\mu_k$ の間の「事前更新推論ギャップ」（項③）を考慮した重み $w^k = \pi_k / \mu_k$ を使用します。
+    *   現在の学習ポリシー $\pi_\theta$ への更新比率 $r(\theta) = \pi_\theta / \pi_k$ について、PPOのようなクリッピングを行います。
+    *   これにより、以下の目的関数を最大化するように学習パラメータ $\theta$ を更新します。
+
+```python
+# Pseudocode for Step 1 Objective (J_S1)
+# G: number of groups, T_i: sequence length for group i
+# x: state (prompt), y_i: response for group i
+# mu_k: inference policy at step k
+# pi_k: training policy at step k
+# pi_theta: candidate training policy with parameters theta
+# A_hat_mu_k: advantage estimated using mu_k
+
+objective_S1 = 0
+for each group i:
+  samples = sample_from(mu_k, x) # {y_i, rewards, A_hat_mu_k}
+  for each token t in sequence y_i:
+    # Pre-update mismatch weight (truncated)
+    w_k_i_t = pi_k(y_i[t] | x, y_i[:t]) / mu_k(y_i[t] | x, y_i[:t])
+    w_k_i_t_truncated = min(w_k_i_t, C) # Truncation constant C
+
+    # Current update ratio
+    r_i_t_theta = pi_theta(y_i[t] | x, y_i[:t]) / pi_k(y_i[t] | x, y_i[:t])
+
+    # Clipped advantage term
+    clipped_adv = clip(r_i_t_theta, 1-epsilon, 1+epsilon) * A_hat_mu_k[i][t]
+
+    # Dual-clipped objective (assuming advantage A_hat_mu_k is already computed)
+    # This is a simplified representation, actual implementation details may vary.
+    # The paper uses a dual-clipped objective which penalizes large updates more.
+    if A_hat_mu_k[i][t] &gt;= 0:
+      L_clip_i_t = min(r_i_t_theta * A_hat_mu_k[i][t], clipped_adv)
+    else:
+      L_clip_i_t = max(min(r_i_t_theta * A_hat_mu_k[i][t], clipped_adv), (1 + 2*epsilon) * A_hat_mu_k[i][t]) # Simplified dual-clip
+
+    # Token-level objective with truncated mismatch weight
+    token_objective = w_k_i_t_truncated * L_clip_i_t
+    objective_S1 += token_objective / T_i
+  objective_S1 /= G
+
+# Train pi_theta to maximize objective_S1
+```
+
+このステップで得られた $\pi_{\theta^*}$ を $\pi_{k+1}$ とします。そして、同期された推論ポリシー $\mu_{k+1} = \text{Sync}(\pi_{k+1})$ を生成します。
+
+#### ステップ2: 推論側ギャップを考慮した更新受容 (Inference-Gap-Aware Update Acceptance)
+このステップでは、同期された推論ポリシー $\mu_{k+1}$ が、学習ポリシー $\pi_{k+1}$ の改善を実際に実現できているか（項①: $J(\mu_{k+1}) - J(\pi_{k+1})$）を評価し、この「ポストアップデート推論ギャップ」が許容範囲内であれば $\mu_{k+1}$ を採用し、そうでなければ破棄します。
+
+*   **目的:** 項① ($J(\mu_{k+1}) - J(\pi_{k+1})$) が非負である（または、許容範囲内の負の値である）ことを確認する。
+*   **実装:**
+    *   ポストアップデート推論ギャップは、直接計算が困難なため、プロキシ（代理）を用いて推定します。
+    *   プロキシ $\widehat{T}_{\mathrm{post}}$ は、検証用データセット $\mathcal{D}_{\mathrm{val}}$ から、推論ポリシー $\mu_{k+1}$ を用いてサンプリングされた軌跡における、逆形式の期待値として計算されます。
+    *   $\rho_i$: $\mu_{k+1}$ と $\pi_{k+1}$ の間の、正規化されたシーケンス比率（Importance weight）。
+    *   $\hat{A}^{\mu_{k+1}}$: $\mu_{k+1}$ でサンプリングされた軌跡における、グループ相対アドバンテージ。
+
+```python
+# Pseudocode for Step 2 Proxy Estimation (T_post_proxy)
+# D_val: validation dataset
+# mu_k+1: synchronized inference policy
+# pi_k+1: candidate training policy
+# A_hat_mu_k+1: advantage estimated using mu_k+1
+
+T_post_proxy = 0
+for each validation sample (x, y_i) from D_val:
+  # Sample y_i from mu_k+1 (using model parameters of mu_k+1)
+  # Compute advantage A_hat_mu_k+1[i] using mu_k+1
+  # Compute sequence ratio rho_i based on pi_k+1 and mu_k+1
+
+  # Simplified importance weight computation
+  rho_i = exp(sum(log(pi_k+1(y_i[t]|...) / mu_k+1(y_i[t]|...))) / T_i)
+
+  T_post_proxy -= rho_i * A_hat_mu_k+1[i] # Reverse identity based approximation
+
+T_post_proxy /= len(D_val) # Average over validation samples
+```
+
+*   **受容基準:**
+    *   プロキシ値 $\widehat{T}_{\mathrm{post}}$ が、許容値 $\gamma$ を超える場合に、候補 $\pi_{k+1}$ を受け入れ、 $\pi_k \leftarrow \pi_{k+1}, \mu_k \leftarrow \mu_{k+1}$ とします。
+    *   $\widehat{T}_{\mathrm{post}} \geq -\gamma$
+    *   $\gamma$ は、学習の初期段階では大きめに設定され、徐々に小さくなるように調整されます（例: 線形減衰）。
+
+*   **拒否:** 上記の条件を満たさない場合、候補は破棄され、学習エンジンの状態と推論エンジンは以前のチェックポイントにロールバックされます。
+
+### 4. アルゴリズム概要
+```python
+# Pseudocode for MIPU Algorithm
+initialize pi_k, mu_k (e.g., from base model)
+
+for k = 0, 1, ... :
+  # Step 1: Sampler-Referenced Policy Update
+  # Generate samples using mu_k
+  # Compute advantages A_hat_mu_k
+  # Update pi_theta to get pi_{k+1} by maximizing J_S1
+
+  # Synchronize pi_{k+1} to inference engine
+  mu_{k+1} = Sync(pi_{k+1})
+
+  # Step 2: Inference-Gap-Aware Update Acceptance
+  # Estimate post-update inference gap proxy T_post_proxy using mu_{k+1}
+  # Compute acceptance tolerance gamma_k
+
+  if T_post_proxy &gt;= -gamma_k:
+    # Accept the update
+    pi_k = pi_{k+1}
+    mu_k = mu_{k+1}
+    # Save checkpoint
+  else:
+    # Reject the update
+    # Rollback pi_k, mu_k to previous checkpoint
+    # Rollback optimizer state
+```
+
+このフレームワークにより、学習-推論の不一致が存在する状況下でも、推論ポリシーの性能が単調に改善されることを目指します。
+
+## 6. この論文を140字以内のツイートで要約すると？
+LLMのRL学習、推論と学習で確率ズレる問題（不一致）を解決！学習ポリシー更新が推論ポリシー改善に直結しない「目的のズレ」に着目。新提案MIPUは、推論側ギャップで更新を賢く選択。FP8量子化LLMで性能・安定性向上！#LLM #強化学習 #AI</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

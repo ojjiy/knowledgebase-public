@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Pi square is nearly 10</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>Pi square is nearly 10</h1>
+<p><strong>Date:</strong> 2026-07-05</p>
+<p><strong>Source:</strong> rss / Hacker News Front Page</p>
+
+<p><a href="https://mihai.page/pi-square-is-10/">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">円周率の二乗（π²）が約10になるという近似について解説しています。
+まず、円周率の二倍であるτ（タウ）を用いた公式（τr、τr²/2）は、運動量（mv）や運動エネルギー（mv²/2）といった他の物理法則の公式と形式が似ているため、より直感的であると著者は主張しています。しかし、現在ではτは単に2πの二倍という位置づけに留まっています。
+
+本題であるπ² ≈ 10 について、π² ≈ 9.8696 であり、10に近いという事実に触れています。この近似の由来を説明するため、有名な「バーゼル問題」を紹介しています。バーゼル問題とは、自然数の逆数の二乗の和の値を求める問題で、オイラーによって以下の式で解かれることが示されました。
+
+\[ \sum_{n=1}^{\infty}{\frac{1}{n^2}} = \frac{\pi^2}{6} \]
+
+この式から、π² = 6ζ(2) （ζはリーマンゼータ関数）であることがわかります。
+著者は、このゼータ関数を不等式で評価することで、π² ≤ 10 を導いています。具体的には、以下のように変形します。
+
+\[ \zeta(2) = \sum_{n=1}^{\infty}{\frac{1}{n^2}} = 1 + \sum_{n=2}^{\infty}{\frac{4}{4n^2}} \]
+
+ここで、$\frac{4}{4n^2}$ は $\frac{4}{4n^2 - 1}$ 以下であり、分母は平方の差で表されるため、項を分解できます。
+\[ \frac{4}{4n^2-1} = \frac{2}{2n - 1} - \frac{2}{2n + 1} \]
+
+これにより、最後の和は「テレスコーピング級数」となり、以下のように評価されます。
+\[ \zeta(2) \le 1 + \frac{2}{3} = \frac{5}{3} \]
+したがって、π² ≤ 6 × (5/3) = 10 という結論が得られます。
+
+さらに、π² と10の差（誤差）も評価しています。誤差は次のように表され、その値は速く0に収束する項で構成されています。
+\[ \delta = \frac{5}{3} - \zeta(2) = \sum_{n=2}^{\infty}{\frac{1}{n^2(4n^2 - 1)}} \]
+この級数の最初の数項を計算し、誤差の総和に6を掛けると約0.125になることを示しています。これは、π²が10から約0.125だけ小さい、つまり「8分の1」程度の誤差で近似できることを意味します。
+
+この近似の有用性として、半径1/10の円の円周が1を超えるかどうかを素早く判断する例を挙げています。π² ≈ 10 を知っていれば、円周 ≈ 2π/π² = 2/π と概算できるため、具体的な計算なしに概略が把握できるとしています。
+
+最後に、著者はこれは「偶然」かもしれないとして、将来的にπ² ≈ g（重力加速度）という別の近似についても触れることに言及しています。また、上記例は円周 &lt; 1 という自明な結論になるため、より実用的な例として log₁₀(π) の概算に触れています。π² ≈ 10 から、log₁₀(π) ≈ 0.5 よりわずかに小さいと推測できることを示唆しています。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>新しいHTTPメソッド「QUERY」をHono + Bunで実装してみる - Qiita</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>新しいHTTPメソッド「QUERY」をHono + Bunで実装してみる - Qiita</h1>
+<p><strong>Date:</strong> 2026-07-04</p>
+<p><strong>Source:</strong> rss / Hatena Bookmark Programming</p>
+
+<p><a href="https://qiita.com/maaaashi/items/6eefccb7361f64607865">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">この記事では、新しく標準化されたHTTPメソッド「QUERY」について、その特徴と、HonoとBunを使った実装方法を解説しています。
+
+QUERYメソッドは、「ボディを持てる、安全なGET」と位置づけられています。これは、GETメソッドの「リソースを変更しない」「冪等」「レスポンスをキャッシュできる」という利点と、POSTメソッドの「リクエストボディを使える」という利点を併せ持っていることを意味します。
+
+従来のGETメソッドで複雑な検索条件を渡そうとすると、URLの長さ制限に引っかかったり、条件がURLに露呈したりする問題がありました。一方、POSTメソッドで検索を行うと、状態変更に見えたり、レスポンスがキャッシュできなかったりするという欠点がありました。QUERYメソッドは、これらのギャップを埋めるために設計されています。
+
+Honoでは、`app.on(&#34;QUERY&#34;, path, handler)`という方法で、任意のHTTPメソッドを登録できます。記事では、OPTIONSメソッドのレスポンスに`Allow: QUERY, OPTIONS`や`Accept-Query: application/json`を含めることで、クライアントがQUERYメソッドの対応状況や受け付けられるボディ形式を確認できるように実装しています。
+
+ハンドラ部分では、`@hono/zod-validator`を用いて、リクエストボディのバリデーションも行い、JSON形式で検索条件を受け取って処理する例が示されています。
+
+実装例では、`curl`コマンドを使ってOPTIONSリクエストでエンドポイントがQUERYを受け付けるか確認し、さらにQUERYメソッドで実際に検索を実行しています。GETでは表現しにくいJSON形式での検索条件の受け渡しが、QUERYメソッドでは自然に行えることが確認できます。
+
+まとめとして、QUERYメソッドは検索に特化した便利なメソッドですが、ブラウザやプロキシ、CDNなどの対応が追いついていないため、当面はPOSTメソッドとの併用が現実的であると述べられています。新しいHTTPメソッドが標準化されることへの期待感と、検索API設計における選択肢としてQUERYメソッドを考慮に入れることの有用性が示唆されています。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

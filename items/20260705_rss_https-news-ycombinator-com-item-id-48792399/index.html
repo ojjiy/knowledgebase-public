@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Claude Design System Prompt</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>Claude Design System Prompt</h1>
+<p><strong>Date:</strong> 2026-07-05</p>
+<p><strong>Source:</strong> rss / Hacker News Front Page</p>
+
+<p><a href="https://github.com/Trystan-SA/claude-design-system-prompt">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">「Claude Design System Prompt」は、Anthropicが開発した、LLMを意見を持ち、アクセシビリティを考慮し、AIによる安易なデザイン生成を防ぐデザイン協力者へと変革させるためのシステムプロンプトおよびスキルライブラリです。MITライセンスで公開されており、Claude、GPT、Gemini、ローカルモデルなど、システムプロンプトをサポートするあらゆるLLMで使用できます。
+
+このプロンプトは、一般的な「デザインアシスタント」プロンプトが生成しがちな、過度なグラデーション、絵文字、角丸カード、Interフォントといったパターンを意図的に排除し、代わりに包括的なデザイン哲学に基づいたアプローチを提供します。
+
+**主なデザイン哲学:**
+
+*   **コンテンツの規律:** 無駄な要素を排除し、全ての要素がその役割を持つようにする。
+*   **美的規律:** AI特有の定型句を避け、一貫したカラースキームとトーンを維持する。
+*   **視覚的階層とリズム:** サイズ、色、太さ、位置、密度、スペーシングのスケールを体系的に管理する。
+*   **アクセシビリティ:** WCAG基準、セマンティックHTML、キーボードナビゲーション、フォーカスリング、モーション設定を考慮する。
+*   **インタラクションとフィードバック:** ホバー、アクティブ、無効、フォーカス、ローディング、バリデーションなどの状態を考慮する。
+*   **システム思考:** 個別のページではなく、コンポーネントとトークンを中心に設計する。
+*   **媒体への敬意:** CSS Grid、oklch()、text-wrap: pretty、インタラクティブなプロトタイプなど、実際のWeb技術を尊重する。
+*   **量より質:** 幅広さよりも深さを重視し、細部まで磨き上げる。
+
+**含まれるもの:**
+
+*   **Claude Code (Claude.ai variant):**
+    *   `system-prompt.md`: 20章にわたるメインシステムプロンプト。
+    *   `skills/`: 14個の呼び出し可能なスキル（発見的質問、フロントエンドの美的方向性、ワイヤーフレーム作成、デモ資料作成、プロトタイプ作成、調整可能パネル、バリエーション生成、デザインシステム抽出、コンポーネント抽出、アクセシビリティ監査、AIスロップチェック、階層・リズムレビュー、インタラクション状態チェック、最終確認）。
+*   **Codex (OpenAI Codex variant):** Codex用に適応されたプロンプトとスキル。
+*   **README.md:** プロンプトの説明。
+*   **LICENSE:** MITライセンス。
+
+**使用方法:**
+
+1.  **システムプロンプトの直接利用:** `system-prompt.md`の内容をLLMのシステムプロンプトとして貼り付けます。
+2.  **スキルの利用:** ユーザーのリクエストがスキルの説明と一致する場合、エージェントはそのスキルをロードして実行します。スキルは「プロダクション」「システム」「レビュー」の3つのカテゴリに分類されます。
+3.  **スキルの連鎖:** 複数のスキルを組み合わせて、より複雑なワークフローを構築できます（例: `discovery-questions` → `frontend-aesthetic-direction` → `wireframe` → `make-a-prototype` → `polish-pass`）。
+
+**プラットフォームへの適応:**
+このプロンプトはHTML出力のデザイン環境を想定していますが、Figmaプラグインやコードのみのアシスタントなど、他の環境向けに調整することも可能です。
+
+**モデルキャリブレーション:**
+Anthropicの最新モデル（Fable 5, Opus 4.7/4.8）向けに調整されており、指示をより忠実に実行し、より少ない指示で動作します。古いモデルや他社製モデルでは、より強い命令口調が必要になる場合があります。
+
+**デザイン原則の要約 (20章):**
+アイデンティティと役割、ワークフロー、質問、既存コンテキスト、コンテンツ、美的、視覚的階層とリズム、タイポグラフィ、カラー、アクセシビリティとインクルーシビティ、インタラクションとフィードバック、シンプルさと明確なCTA、システム思考、媒体への尊重、ユーザー理解、量より質、出力原則、コラボレーションとデリバリー、IPとコンテンツ境界、利用可能なスキル。
+
+**貢献:**
+追加のレビュー機能、他環境への適応、実用的な失敗例、他言語への翻訳などが歓迎されています。
+
+**ライセンス:**
+MITライセンスにより、商用利用を含むあらゆる用途での使用、改変、配布が可能です。帰属表示は必須ではありませんが、推奨されています。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

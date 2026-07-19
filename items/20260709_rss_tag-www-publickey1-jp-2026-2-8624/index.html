@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>PostgreSQL 19ベータ版が登場。I/Oワーカーの自動スケール、Autovacuumの改善など新機能</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>PostgreSQL 19ベータ版が登場。I/Oワーカーの自動スケール、Autovacuumの改善など新機能</h1>
+<p><strong>Date:</strong> 2026-07-09</p>
+<p><strong>Source:</strong> rss / Publickey</p>
+
+<p><a href="https://www.publickey1.jp/blog/26/postgresql_19ioautovacuum.html">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">PostgreSQL 19ベータ版がリリースされました。主な新機能として、I/Oワーカーの自動スケーリング機能が追加され、バージョン18で導入された非同期I/Oによるパフォーマンス向上がさらに強化されました。スケーリングの最小値と最大値はユーザーが設定可能です。
+
+また、「Autovacuum」機能が改善され、パラレルワーカーを利用することで高速化され、新しいスコアリングシステムにより、処理するテーブルの優先度設定がより適切に行われるようになりました。さらに、テーブルの再編成を行う「Repack」コマンドに、ロックなしで実行できる「CONCURRENTLY」オプションが追加され、より小さなオーバーヘッドで再編成が可能になりました。
+
+検索における外部キーのチェック時のINSERT処理のパフォーマンスも2倍に向上しました。
+
+PostgreSQL 19では、リレーショナルデータベース上でプロパティグラフのクエリを実行できる「SQL/PGQ」が実装されました。これはSQL標準の一部であり、リレーショナルテーブル上の読み取り専用ビューとして定義され、グラフパターンマッチング構文を用いたクエリが実行できます。
+
+その他、UPDATE/DELETEに対する「FOR PORTION OF」句の追加による時間的クエリの強化や、「GROUP BY ALL」の導入によるグループ化におけるNULLの処理などが含まれています。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

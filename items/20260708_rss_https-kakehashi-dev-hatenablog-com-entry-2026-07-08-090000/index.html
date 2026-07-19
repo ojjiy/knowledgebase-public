@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>共通基盤の構築にサーバサイドTypeScriptを選んで嬉しかったこと - KAKEHASHI Tech Blog</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>共通基盤の構築にサーバサイドTypeScriptを選んで嬉しかったこと - KAKEHASHI Tech Blog</h1>
+<p><strong>Date:</strong> 2026-07-08</p>
+<p><strong>Source:</strong> rss / Hatena Bookmark Programming</p>
+
+<p><a href="https://kakehashi-dev.hatenablog.com/entry/2026/07/08/090000">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">この記事は、認証基盤・ID基盤の構築においてサーバサイドTypeScriptを選択したことで得られたメリットについて、著者の実体験に基づき共有するものです。
+
+**1. OIDCとSSR（サーバサイドレンダリング）の親和性**
+
+OpenID Connect (OIDC) の認証フローは、ユーザー認証や同意要求など、サーバサイドでの画面生成が自然な実装となります。これは、クライアントサイドレンダリング (CSR) でSPA (Single Page Application) を初期化するコストを考えると、一時的なページである認証画面においてSSRが有利であることを示しています。特に、`response_mode=form_post` のようなセキュリティに配慮したフローにおいても、SSRは自動送信フォームを返すだけで済むため、CSRにおけるSPA初期化の必要性を回避できます。Keycloakなどの著名なOIDC/OAuth2 OSSも、認証フローにおいてはSSRを採用していることが、その有効性を示唆しています。
+
+**2. サーバサイドTypeScriptによるSSR実装のメリット**
+
+*   **ドメインロジックと表示ロジックの統合:** OIDCの認可フローにおける複雑な分岐ロジック（アカウント選択、ログイン、同意など）を、TypeScriptの代数的データ型（Discriminated Union）を用いて状態管理することで、型安全性と可読性を高めました。これにより、状態遷移の漏れをコンパイル時に検出でき、ミスの許されない認証領域での開発を強力にサポートしました。
+*   **関数のシグネチャによる状態遷移の可視化:** 各遷移関数の入力型と出力型で、どの状態からどの状態へ遷移できるかが一目瞭然となり、コードの理解を助けました。最終的な `authorize` 関数のシグネチャからは、表示されうる画面が明確に把握でき、予期せぬ画面遷移を型検査で防ぐことが可能になりました。
+*   **JSXによる効率的な画面描画:** JSXを用いることで、TypeScriptの型チェッカーがJSXを直接検査し、状態に応じた画面の出し分けを効率的に実装できました。各 `case` 内でその状態特有のプロパティのみが型で見えるため、安全なコード記述が可能です。
+
+**3. 組織単位の設計における構造的型システムの強み**
+
+ID基盤で扱う「薬局」「部門」「エリア」「組織」といった概念の関係性は、ビジネス要件の変化によって頻繁に変わり得ます。TypeScriptの構造的型システムとDiscriminated Unionの組み合わせは、「概念側に手を入れずに、使う側で括りを定義する」アプローチを可能にしました。例えば、「予算管理」や「人員配置」といった文脈に応じて、異なるUnion型で「括り」を定義することで、モデル自体の変更なしに関連性を柔軟に組み替えることができました。これは、関係性が安定しないフェーズにおいて非常に有効でした。また、プレーンなオブジェクトだけで代数的データ型を定義できるため、DBとの連携やテスト、JSONシリアライズも容易でした。
+
+**4. プラットフォームチームの運用とオンボーディング**
+
+認証基盤、ID基盤など複数のプラットフォームシステムを運用するチームにおいて、TypeScriptで実装を統一することで、バックエンドエンジニアの認知レイヤーの移動や拡張を加速しました。これにより、インフラからフロントエンドまで、システム間の依存関係を把握し、非機能要件（セキュリティ、可用性など）を考慮した開発が可能になりました。
+
+**5. プラットフォーム横断の共通ライブラリ**
+
+システム横断で必要なドメインイベントの記録といったロジックを、TypeScriptの型システム（型パラメータ、Discriminated Union）を活用して共通ライブラリとして抽象化しました。これにより、各ドメイン固有のイベント型を定義しつつ、記録・配信のインフラ部分を共通化でき、DBへの書き込みやイベント配信のコードを再利用可能にしました。ただし、過剰な抽象化・共通化には注意が必要であり、システムごとにメンタルモデルが異なってしまうことを防ぐために、共有すべきメンタルモデルに限定して共通ライブラリを作成することが重要です。
+
+**結論**
+
+著者は、技術選定においては、自らの文脈と向き合い続けることが重要であると改めて強調しています。サーバサイドTypeScriptの選択は、OIDCとSSRの親和性、認証状態の網羅的な表現、組織単位の柔軟な括り方、プラットフォームチームの運用効率、横断的な共通ライブラリなど、著者の領域と組織の文脈において多くの「嬉しかったこと」をもたらしました。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

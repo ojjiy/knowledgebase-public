@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CLI向けブラックボックス E2E テストランナー nao1215/atago を作った話</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>CLI向けブラックボックス E2E テストランナー nao1215/atago を作った話</h1>
+<p><strong>Date:</strong> 2026-07-05</p>
+<p><strong>Source:</strong> rss / Hatena Bookmark LLM</p>
+
+<p><a href="https://debimate.jp/post/ja/2026-07-04-cli%E3%81%AB%E3%83%96%E3%83%A9%E3%83%83%E3%82%AF%E3%83%9C%E3%83%83%E3%82%AF%E3%82%B9%E3%83%86%E3%82%B9%E3%83%88e2e%E3%82%92%E8%A1%8C%E3%81%86atago%E3%82%92%E4%BD%9C%E3%81%A3%E3%81%9F%E8%A9%B1/">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">## nao1215/atago: CLI向けブラックボックスE2Eテストランナー誕生秘話
+
+本記事は、LLMの登場によりCLIツールのE2Eテスト作成機会が増えたことを背景に、筆者が開発したCLI向けブラックボックスE2Eテストランナー「nao1215/atago」について、その開発経緯、特徴、機能、そして活用例を詳細に解説するものです。
+
+### 開発の動機：既存ツールの限界と自身のユースケース
+
+LLMの進化により、自然言語でテスト観点やユースケースを記述すれば、テスト実行用のspecファイルを生成してくれるようになり、E2Eテスト作成が容易になりました。筆者は業務でk1LoW/runn（APIシナリオベースE2Eテスト）、プライベートでshellspec/shellspec（CLIブラックボックステスト）といった既存ツールを活用していましたが、自身のユースケースには合致しない部分があることに気づきます。
+
+筆者が重要視したのは以下の点です。
+
+*   **ターゲット:** サーバーやシェルスクリプトではなく、ターミナルで普段使いするコマンド。
+*   **対話型CLIのテスト:** ユーザーとの対話が必要なCLIもテストできること。
+*   **高速実行:** PR作成時のCIでも気にならないほどの実行速度。
+*   **多様な入出力:** 画像、PDF、金融特有フォーマットなどの入出力に対応できること。
+*   **クロスプラットフォーム:** Linux/macOS/Windows環境で実行しやすいこと。
+*   **言語非依存:** 特定の言語に限定されないこと。
+
+これらの要件を満たす既存ツールが見当たらなかったため、筆者は「自作した方が早い」と判断し、atagoの開発に至りました。
+
+### atagoの特徴：CLIテストに特化した設計
+
+atagoは、コマンドを実際に実行し、YAMLで定義されたテストケースに基づき、標準出力(stdout)、標準エラー出力(stderr)、終了コード(exit code)、生成ファイル、スナップショット、対話操作までを検証できるCLI向けブラックボックスE2Eテストランナーです。runnやShellSpecとは意図的に競合しないように設計されており、ターミナルで普段使いするコマンドをメインターゲットとしています。
+
+主な特徴は以下の通りです。
+
+*   **クロスプラットフォーム対応:** Linux, macOS, Windowsで動作します。
+*   **YAMLによる宣言的なテストケース記述:** 複雑さを軽減するため、意図的に式は不採用としています。
+*   **デフォルト並列実行による高速化:** テストを並列実行することで、高速なE2Eテストを実現します。
+*   **バイナリをそのまま対象としたブラックボックステスト:** ソースコードへの依存なく、生成されたバイナリを直接テストします。
+*   **`atago record`機能:** CLIの実行結果からテストケースの雛形を自動生成します。対話型CLIやTUI向けには `--pty` オプションも用意されています。
+*   **`atago snapshot`機能（Golden Test）:** CLIの出力をGolden File（期待値データ）として保存し、以後の実行結果と比較します。ANSIカラーコード、一時ディレクトリ、タイムスタンプなどを正規化して比較するため、環境差分に強いです。
+*   **対話型CLIおよびTUIの操作フロー検証:** 疑似端末(PTY)上でコマンドを実行し、send/expectによる対話操作を検証できます。
+*   **標準出力・終了コード・生成ファイル・ディレクトリ差分・画像・PDFなどのチェック:** 多様な検証項目に対応しています。
+*   **Mock Server/DB/SSHなどの外部環境の用意:** CLIが依存する外部環境をテスト実行時に用意できます。
+*   **CIログやスナップショットへのクレデンシャル流出を抑えるマスキング機構:** セキュリティにも配慮されています。
+*   **YAMLファイルをMarkdownドキュメントに変換:** テストケースからドキュメントを生成できます。
+*   **GitHub Actions対応:** `nao1215/setup-atago` を提供し、CIでの利用を容易にしています。
+
+### YAMLテストケースの具体例
+
+atagoのYAMLテストケースは、終了コード、標準出力、標準エラー出力の検証、対話型CLIのexpect/send検証、Mock Serverを用いたAPIクライアントCLI検証など、多岐にわたるシナリオを記述できます。
+
+*   **終了コード・標準出力・標準エラー出力の検証:** コマンドの終了コードが0であること、標準出力に特定文字列が含まれること、標準エラー出力が空であることを検証します。
+*   **対話型CLIのexpect/send検証:** 疑似端末(PTY)上でコマンドを実行し、`send`で入力を送信し、`expect`で期待される出力を待つことで、対話的な操作をシミュレートします。
+*   **Mock Serverを用いたAPIクライアントCLI検証:** テスト実行時にHTTPモックサーバーを起動し、CLIからのHTTPリクエスト（メソッド、パス、ヘッダー、ボディ）を検証します。
+
+### その他の機能と活用
+
+atagoは、テストケースの雛形生成を行う`record`機能、期待値データを管理する`snapshot`機能、テスト実行環境を隔離し高速化とFlakyテストの発見を助けるサンドボックス機能、さらには`json`や`changes`といった多様なアサート機能も提供しています。
+
+GitHub Actionsとの連携も容易で、`nao1215/setup-atago`アクションを使用することで、ビルド済みのatagoバイナリをセットアップできます。Go製CLIの場合、ユニットテストとE2Eテストのカバレッジを合算できる機能も特筆すべき点ですが、これはatago自体が提供する機能ではなく、Goの仕組みを活用したものです。
+
+筆者はatago自身のテストに加え、自身が開発したOSS（8個）や著名なOSS（29個）に対してもatagoでE2Eテストを実施し、その信頼性を高めています。
+
+### atagoの由来と開発の変遷
+
+atagoという名前は、防火の神様である「愛宕」に由来し、「炎上を食い止める存在」への成長を願って名付けられました。Go製ツールであることから末尾に&#34;go&#34;が付いている点も、名前に込められた意図の一つです。
+
+atagoの開発は、約3年前のGo向けテストツール開発経験を踏まえた「リベンジ」でもあります。過去の開発で感じた実装の困難さや、既存ツールとの差別化の難しさなどを乗り越え、「runnと競う必要はない、自分の課題を解決するツールであればよい」という割り切りを経て、atagoは完成しました。筆者はCLIのE2Eテストにこだわる理由として、過去に「出力するファイルの形式を変えた」ことで怒られた経験を挙げ、あらゆる出力をテストしたいという強い思いがあることを語っています。
+
+最後に、atagoはまず筆者自身のOSS群を安心して変更し続けるためのツールとして育てていくとのことです。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Show HN: KiCad in the Browser</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>Show HN: KiCad in the Browser</h1>
+<p><strong>Date:</strong> 2026-07-05</p>
+<p><strong>Source:</strong> rss / Hacker News Front Page</p>
+
+<p><a href="https://demo.pcbjam.com/">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">Emergence Engineeringというハンガリーの開発会社が、オープンソースのPCB設計ソフトウェアであるKiCadをWebブラウザ上で動作するように移植した「PCBJam」というプロジェクトを発表しました。現在、デモプロジェクトや自身のプロジェクトを持ち込んで試すことができます。Firefoxでの利用が推奨されており、Chromeでも動作しますが、Safariはまだ「動作中」という状態です。
+
+このプロジェクトは、CTOであるViktor氏の趣味から始まり、数ヶ月をかけてMVP（Minimum Viable Product）レベルまで開発が進められました。KiCadのPCBキャンバスのOpenGLコードをWeb上でエミュレートするために、WebGLコードを直接記述し、Graphics Abstraction Layerと連携させることで実現しました。wxWidgetsの既存のWebポートを基盤として、KiCadに必要なレベルまで引き上げる作業は現在も継続中です。
+
+Emscriptenを用いることで、DRCやソフトウェア3Dレンダリングで使用されるマルチスレッドアプリケーション（Pthreads）をWeb上で動作させることが可能になりました。また、Asyncifyとネイティブ例外の互換性問題に対処し、バンドルサイズを削減してアプリケーションのロード時間を改善しました。さらに、Open CASCADEを遅延ロードされるWASMモジュールとして分離することで、バンドルサイズを180MBから130MBに削減することに成功しました（brotli圧縮後24MB）。
+
+開発チームは、KiCadのコア部分に約150個のファイル変更（ビルドスクリプトや一部コード変更を含む）を加え、wxWidgetsのポートもコアに近い部分を修正しています。将来的には、これらの変更をKiCad本体にマージすることを目指しており、メインラインとの互換性を維持することを重視しています。
+
+今後、無料プランに加え、月額約30ドルの有償プラン（大規模/クローズドプロジェクト向け）を提供する予定です。また、将来的にはAI連携、セルフホスティング、エンタープライズ機能、ネイティブおよびモバイル版の開発も検討されています。
+
+Emergence Engineeringは、KiCadやwxWidgets開発者への貢献を目指しており、LinuxにおけるRed Hatのような、KiCadを基盤としたコラボレーション、AI連携、共有、各種連携機能を持つ製品開発を計画しています。プロジェクトのフロントエンドコードはGPLライセンスで提供されており、誰でも実行可能です。ソースコードはGitHubで公開されています。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

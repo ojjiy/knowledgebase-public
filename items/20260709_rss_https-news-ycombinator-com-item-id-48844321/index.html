@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>LLM-as-a-Verifier: A General-Purpose Verification Framework</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>LLM-as-a-Verifier: A General-Purpose Verification Framework</h1>
+<p><strong>Date:</strong> 2026-07-09</p>
+<p><strong>Source:</strong> rss / Hacker News LLM</p>
+
+<p><a href="https://arxiv.org/abs/2607.05391">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">本論文は、「LLM-as-a-Verifier」という、汎用的な検証フレームワークを提案する。大規模言語モデル（LLM）の能力向上には、事前学習、事後学習、テスト時計算能力の拡張が中心的なパラダイムとなっているが、本研究では「検証」、すなわち解の正しさを判断する能力を新たなスケーリング軸として特定した。
+
+「LLM-as-a-Verifier」は、追加学習を必要とせずに、エージェントタスクに対してきめ細やかなフィードバックを提供する。従来のLMジャッジが候補解に対して離散的なスコアを生成するようLLMに指示するのとは異なり、本フレームワークはスコアリングトークン対数（logits）の分布に対する期待値を計算することで、連続的なスコアを生成する。この確率的定式化により、検証は以下の複数の次元でスケーリング可能となる。(1)スコアの粒度、(2)繰り返し評価、(3)基準分解。
+
+特に、スコアリング粒度をスケーリングすることで、肯定的な解と否定的な解との間の分離が向上し、よりキャリブレーションされた比較が可能になることが示されている。さらに、繰り返し評価と基準分解のスケーリングは、分散と複雑性を低減することで、検証精度を継続的に向上させる。また、検証器の連続スコアを用いた候補解の中から最良の解を選択するための、コスト効率の高いランキングアルゴリズムも導入されている。
+
+「LLM-as-a-Verifier」は、Terminal-Bench V2（86.5%）、SWE-Bench Verified（78.2%）、RoboRewardBench（87.4%）、MedAgentBench（73.3%）において、最先端の性能を達成した。検証機能以外にも、「LLM-as-a-Verifier」からのきめ細やかな信号は、タスクの進捗を推定するための代理としても機能する。開発者が自身のエージェントシステムを監視・改善できるように、Claude Codeの拡張機能が構築された。さらに、「LLM-as-a-Verifier」は強化学習（RL）に対して密なフィードバックを提供でき、ロボティクスおよび数学的推論ベンチマークにおけるSACおよびGRPOのサンプル効率を改善できることが示されている。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

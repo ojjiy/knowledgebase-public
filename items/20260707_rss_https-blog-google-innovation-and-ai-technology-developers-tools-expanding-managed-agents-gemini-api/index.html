@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Expanding Managed Agents in Gemini API:  background tasks, remote MCP and more</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>Expanding Managed Agents in Gemini API:  background tasks, remote MCP and more</h1>
+<p><strong>Date:</strong> 2026-07-07</p>
+<p><strong>Source:</strong> rss / Google AI Blog</p>
+
+<p><a href="https://blog.google/innovation-and-ai/technology/developers-tools/expanding-managed-agents-gemini-api/">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">Gemini APIのマネージドエージェントが、バックグラウンド実行、リモートMCPサーバー連携、カスタム関数呼び出し、認証情報更新といった新機能によって拡張されました。これにより、開発者はより信頼性が高く、本番環境で利用できるエージェントを構築できるようになります。
+
+**主な新機能:**
+
+*   **バックグラウンド実行:** 非同期処理をサーバー側で実行できるようになり、HTTP接続を長時間維持する必要がなくなりました。APIは即座にIDを返し、クライアントはステータス確認や進捗ストリーミング、再接続が可能です。
+*   **リモートMCPサーバー連携:** プライベートデータベースや内部APIへのアクセスにカスタムプロキシミドルウェアを記述する必要がなくなり、マネージドエージェントを直接リモートのModel Context Protocol (MCP) サーバーに接続できるようになりました。Google検索やコード実行などの組み込み機能と組み合わせることで、エージェントは安全なサンドボックス環境からエンドポイントと通信できます。
+*   **カスタム関数呼び出し:** 組み込みサンドボックスツールと並行してカスタムツールを追加できるようになりました。APIはステップマッチングを使用し、組み込みツールはサーバーで自動実行されます。カスタム関数は、クライアントがローカルビジネスロジックを実行できるように、`requires_action`状態に遷移します。
+*   **ネットワーク認証情報更新:** アクセストークンやAPIキーの有効期限切れに対応し、既存の`environment_id`と新しいネットワーク構成を渡すことで、認証情報を更新またはローテーションできるようになりました。これにより、ファイルシステムの状態、インストール済みパッケージ、クローンされたリポジトリなどは維持されたまま、新しいルールが即座に適用されます。
+
+これらのアップデートにより、マネージドエージェントはアプリケーションをブロックすることなく、実際の開発環境内で動作する非同期ワーカーへと進化しました。Gemini Interactions APIの概要やマネージドエージェントのクイックスタートガイドで、カスタムエージェント定義、環境構成、ネットワークルール、高度なストリーミングパターンなどを確認できます。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

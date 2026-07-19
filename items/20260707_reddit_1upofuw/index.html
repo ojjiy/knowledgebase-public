@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>MIRA: Multiplayer Interactive World Models trained on Rocket League [R]</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>MIRA: Multiplayer Interactive World Models trained on Rocket League [R]</h1>
+<p><strong>Date:</strong> 2026-07-07</p>
+<p><strong>Source:</strong> reddit / MachineLearning</p>
+
+<p><a href="https://www.reddit.com/r/MachineLearning/comments/1upofuw/mira_multiplayer_interactive_world_models_trained/">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">1. **このポストの内容を説明してください。**
+
+このRedditのポストは、**MIRA (Multiplayer Interactive World Models)** という、ロケットリーグ（Rocket League）のゲームプレイデータを用いて学習されたAIモデルのリリースについて発表しています。
+
+*   **開発チーム:** General Intuition、Kyutai、Epic Gamesの共同プロジェクトです。
+*   **学習データ:** 1万時間分の合成（synthetic）されたロケットリーグのデータで学習されています。
+*   **モデルの規模:** 50億個のパラメータを持ち、B200というGPU 1基で4人プレイを20fpsで実行できます。
+*   **公開情報:**
+    *   オンラインでプレイ可能なデモ（https://mira-wm.com）
+    *   詳細な技術レポート（https://mira-wm.com/paper）
+    *   4人プレイのゲームプレイデータ1000時間分を収録したデータセット（GitHubリポジトリ https://github.com/mira-wm/mira に関連情報があると思われます）
+*   **イベントでのデモ:** ICMLカンファレンスでは、インタラクティブなデモ（ブース111）も実施しており、参加者はPlayStationコントローラーを使って実際にプレイできるとのことです。
+
+要するに、このポストは「ロケットリーグを学習した高機能AIモデル『MIRA』を公開しました。デモや技術情報も用意しています」という内容です。
+
+2. **このポストに対するコメントのうち、特に興味深いものを教えてください。**
+
+このポストに対するコメントはいくつかありますが、特に興味深いものを以下に挙げます。
+
+*   **「Very cool result! I only skimmed the paper so I may have missed it but I’m curious why 10k hours was used instead of some other number.」**
+    *   このコメントは、開発チームの成果を称賛しつつ、学習に「1万時間」という具体的なデータ量を使用した理由について技術的な興味を示しています。なぜ他の時間数ではなく、1万時間だったのか、その選定理由や効果について掘り下げたいという意図が伺えます。
+*   **「wait the demo actually works in browser? hitting 20fps on one b200 for all 4 players is pretty tight」**
+    *   このコメントは、ブラウザ上でデモが動作することに驚きを示し、さらに「B200 GPU 1基で4人プレイを20fpsで実行できる」という性能について、その実現の難しさ（&#34;pretty tight&#34;）に言及しています。技術的な実現性やパフォーマンスに対する感心と疑問が混ざったコメントです。
+*   **「the 10k hours of synthetic data part is interesting, always wondered how far you can push world models on purely generated training data. curious how it handles the weird edge cases in rocket league, like when physics go janky near the walls」**
+    *   このコメントは、合成データのみで学習した点に強い関心を示しています。「ワールドモデル（world models）」というAIの概念に触れ、生成されたデータだけでどこまでAIの能力を引き出せるか、という点に興味を持っています。さらに、ロケットリーグ特有の「物理現象がおかしくなる（janky physics）」ような、現実には起こりうるけれどイレギュラーな状況（edge cases）にAIがどう対応できるか、という具体的なゲームの挙動についても言及しています。
+*   **「Whoa that&#39;s cool. As expected the model sometimes seems to simulate moves that weren&#39;t made, especially when doing &#34;weird&#34; stuff like trying to fly that it probably isn&#39;t capable of doing. But when the amount it does get right is nevertheless crazy」**
+    *   このコメントは、モデルの挙動を観察した感想を述べています。AIが「本来できないはずの動き（例えば、飛ぶこと）をシミュレートしてしまう」という、AIの予測や推論における限界や「おかしな」挙動を指摘しつつも、それが「奇妙な」状況での話であり、全体として「正しくできている量も信じられないほどすごい（crazy）」と、その能力を高く評価しています。AIの動作の興味深さや、その能力の高さについて言及しています。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

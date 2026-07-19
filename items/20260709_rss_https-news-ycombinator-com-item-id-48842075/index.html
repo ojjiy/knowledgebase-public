@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Probelock – lockfile for LLM tool calling</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>Probelock – lockfile for LLM tool calling</h1>
+<p><strong>Date:</strong> 2026-07-09</p>
+<p><strong>Source:</strong> rss / Hacker News LLM</p>
+
+<p><a href="https://github.com/kelkalot/probelock">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">Probelockは、LLM（大規模言語モデル）のツール呼び出し能力をテスト・監視するためのロッカーファイル（lockfile）およびテストフレームワークです。モデルのツール呼び出しに関する能力を記録し、モデルの変更（例：量子化レベルの変更、ランタイムの変更）によって能力が低下した場合にCI（継続的インテグレーション）を失敗させることができます。
+
+Probelockの主な特徴は以下の通りです。
+
+*   **能力の記録と監視**: モデルがツール呼び出しと出力チェックにおいてどのような能力を発揮するかを記録します。
+*   **CIでの回帰検出**: モデルの変更が能力の低下につながった場合、CIパイプラインで自動的に検出・通知します。
+*   **テストケース不要**: プロンプトエンジニアリングの専門知識がなくても、ツールのスキーマ定義から自動的にテスト（プローブ）を生成します。
+*   **コードによるスコアリング**: LLMによる評価ではなく、JSONスキーマ検証、完全一致、ツール名チェックなどのコードベースで客観的にスコアリングします。
+*   **再現性**: 同じモデルに対して実行すれば、常に同じ結果が得られます。
+*   **比較ベース**: 絶対的なリーダーボードではなく、モデル自身のベースラインと比較することで、モデルの変更による相対的な影響を評価します。
+*   **多様なプロバイダー・フレームワーク対応**: OpenAI互換APIを持つもの（Ollama, vLLM, Llama.cpp Server, LM Studio, HF TGIなど）や、Anthropic, GeminiなどのプロバイダーもSDK経由で利用可能です。
+*   **リアルデータからのプローブ生成**:
+    *   **トレースからのプローブ生成 (`--traces`)**: 実際の対話履歴から、より現実的なテストケースを生成します。
+    *   **ログからのマイニング (`probelock ingest`)**: エージェントの生のログから、最小限の労力で多段階のテストケースをマイニングします。
+*   **トレンド分析**: 複数のロックファイルを比較し、モデルの能力の経時的な変化や、量子化レベルごとの能力の推移を分析できます。
+*   **サンプリングとノイズゲート**: サンプリング数を増やし、統計的な有意性に基づいてゲートを失敗させることで、ノイズの多い結果による誤検知を防ぎます。
+
+Probelockは、`uvx probelock --help` で最新版を実行したり、`pip install probelock` でインストールして利用できます。CLIコマンドを通じて、プローブの生成、実行、比較、ゲート処理などが行えます。
+
+総じて、ProbelockはLLMのツール呼び出し能力の安定性と回帰を保証するための、開発者フレンドリーで客観的な評価・監視ツールと言えます。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

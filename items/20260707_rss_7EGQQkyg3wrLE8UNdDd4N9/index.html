@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>型安全な SQL クエリビルダー「Kysely」の利点を検証する</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>型安全な SQL クエリビルダー「Kysely」の利点を検証する</h1>
+<p><strong>Date:</strong> 2026-07-07</p>
+<p><strong>Source:</strong> rss / DevelopersIO</p>
+
+<p><a href="https://dev.classmethod.jp/articles/kysely-type-safe-sql-query-builder/">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">## Kysely：型安全なSQLクエリビルダーの利点と活用方法
+
+本記事では、AIコーディング支援ツールの普及を背景に、バックエンド開発で利用される型安全なSQLクエリビルダー「Kysely」について、その立ち位置と利点を、実際の検証プロジェクトを通じて詳細に解説しています。
+
+### Kyselyとは何か：ORMとSQL直書きの中間
+
+Kyselyは、ORM（Object-Relational Mapping）でもSQL直書きでもなく、「SQLを隠さないクエリビルダー」です。SQLの構造がコードにほぼそのまま反映されるため、SQLの知識を活かしつつ、TypeScriptの型安全性を享受できます。
+
+### Kyselyの主な利点
+
+1.  **型安全性の実現（コンパイル時エラー検出）**:
+    *   テーブル名、列名、型の誤りを実行前にコンパイルエラーとして検出できます。これにより、実行時のエラーを防ぎ、開発効率を向上させます。
+    *   SELECT文で指定した列に基づき、戻り値の型が自動的に推論されます。
+
+2.  **Prismaとの役割分担**:
+    *   Prismaはデータベーススキーマの定義とマイグレーションを担当し、Kyselyは実際のクエリ実行を担当するという役割分担が可能です。Prismaによって生成される型定義をKyselyが利用することで、効率的な開発が実現します。
+
+3.  **複雑なクエリの型安全な記述**:
+    *   JOIN、jsonArrayFrom（N+1問題回避）、UPSERT、トランザクションといった複雑なSQL操作を、型を保ったまま記述できます。
+
+### 検証内容と具体例
+
+本記事では、「図書館」を題材として、以下の検証内容を実DB（PostgreSQL）に対するテストを通じて確認しています。
+
+*   **SQL直書き・ORM（Prisma）・Kyselyの書き比べ**:
+    *   「在庫がある本をタイトル順に一覧する」という処理を3つの方法で実装し、KyselyがSQL直書きに近い書き味とORMのような型の恩恵を併せ持つことを示しています。
+
+*   **SELECT、WHERE、ORDER BYと型安全**:
+    *   動的なクエリ構築の例を挙げ、戻り値の型が自動推論される様子や、存在しない列を指定した場合にコンパイルエラーとなる様子を示しています。
+
+*   **JOIN（テーブル結合）**:
+    *   貸出中の本と会員名を一覧するクエリを例に、JOIN操作をSQLと同様の構造で記述できることを示しています。
+
+*   **N+1問題の回避（jsonArrayFrom）**:
+    *   本のリストとそれに対応する著者リストを1つのクエリで取得する例を、`jsonArrayFrom` ヘルパー関数を用いて解説しています。これにより、N+1クエリ問題を回避し、パフォーマンスを向上させることができます。
+
+*   **書き込み（INSERT / UPSERT）**:
+    *   `onConflict` による重複無視（INSERT）や、`doUpdateSet` によるUPSERT処理を、SQLインジェクション対策も施された形で記述できることを示しています。
+
+*   **トランザクション**:
+    *   貸出処理における「在庫減算」と「貸出レコード作成」をアトミックに行うトランザクション処理を、`db.transaction().execute()` を用いて解説しています。在庫切れの場合のロールバック処理も含まれます。
+
+### まとめ：Kyselyの立ち位置と価値
+
+Kyselyは、SQLの構造を理解しつつ、TypeScriptの型安全性を最大限に活かしたい開発者にとって強力なツールです。Prismaと組み合わせることで、データベース設計からクエリ実行までを効率的かつ安全に進めることが可能になります。本記事が、Kyselyの導入を検討している方々の一助となれば幸いです。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

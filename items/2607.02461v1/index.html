@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>OrbitQuant: Data-Agnostic Quantization for Image and Video Diffusion Transformers</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>OrbitQuant: Data-Agnostic Quantization for Image and Video Diffusion Transformers</h1>
+<p><strong>Date:</strong> 2026-07-02</p>
+<p><strong>Source:</strong> paper / hf-papers</p>
+
+<p><a href="http://arxiv.org/abs/2607.02461v1">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body"># タイトル
+[View Paper](http://arxiv.org/abs/2607.02461v1)
+
+## 1. 問題意識：解決したい問題はなにか
+Diffusion Transformers (DiTs) は、画像や動画生成において最先端の性能を示していますが、その推論コストが高いという問題があります。これは、多段階のサンプリングプロセスと、モデルのパラメータ数の増加に起因します。特に、DiT の推論は計算負荷が高く、単純な重みのみの量子化では速度向上が見られません。そこで、推論コストを削減するために、重みと活性化の両方を低ビット精度で量子化する Post-Training Quantization (PTQ) が自然な解決策となります。しかし、従来の PTQ 手法では、DiT の活性化がタイムステップ、プロンプト、ガイダンスの枝によって大きく変動するため、各チェックポイント、モダリティ、あるいは入力ごとにキャリブレーションデータを再調整する必要があり、手間がかかるという課題がありました。
+
+## 2. 提案手法のアプローチ：どのようなアイデア・アプローチで問題を解決しようとしたか
+本論文では、この課題を解決するために、データに依存しない（data-agnostic）重み・活性化量子化手法である OrbitQuant を提案しています。OrbitQuant の核心的なアイデアは、活性化の変動を range estimation（範囲推定）によって捉えるのではなく、正規化された回転基底（normalized, rotated basis）で量子化することです。具体的には、ランダム化された置換ブロック・アダマール（RPBH: Randomized Permuted Block-Hadamard）変換を用いて、入力に依存せず、各座標が固定された既知の分布（marginal）の周りに集中するようにします。これにより、一度計算した Lloyd-Max コードブックが、全てのタイムステップ、プロンプト、レイヤーで再利用可能になります。
+
+さらに、この量子化手法を重みの行にも拡張しています。回転はオフラインで重みに折り込まれ、線形層内で相殺されるため、実行時には活性化に対する前方回転のみが必要となります。このアプローチは、画像と動画の両方の DiT に適用可能で、モダリティごとのチューニングは不要です。
+
+## 3. 成果：提案手法により、何が達成できたのか
+OrbitQuant により、以下の成果が達成されました。
+
+*   **データ非依存の量子化:** タイムステップ、プロンプト、ガイダンスなどの変動に影響されず、単一のコードブックで全ての DiT の重みと活性化を量子化できるようになりました。これにより、キャリブレーションデータの再収集と再調整の手間が不要になりました。
+*   **状態遷移（State-of-the-Art）の PTQ 性能:** FLUX.1, Z-Image-Turbo, Wan 2.1, CogVideoX といった様々な画像・動画 DiT モデルにおいて、低ビット設定（例: W2A4）で既存の PTQ 手法を上回る性能を達成しました。
+*   **低ビット量子化の限界突破:** 特に W2A4 のような非常に低いビット幅設定では、従来の PTQ ベースラインが生成品質の著しい低下やノイズに陥るのに対し、OrbitQuant は実用的な生成品質を維持することができました。
+*   **画像・動画間の汎用性:** 同じ手法を画像 DiT と動画 DiT の両方に適用でき、モダリティごとの追加チューニングを必要としませんでした。
+*   **推論オーバーヘッドの低減:** 実行時のオーバーヘッドは、他の重み・活性化量子化手法と比較して最小限に抑えられています。
+
+## 4. 課題：本手法の限界・課題にはなにか。本文中で著者が言及しているものと、あなたが想定するもの
+### 本文中で著者が言及している課題
+*   **AdaLN モジュレーション層の量子化:** AdaLN (Adaptive Layer Normalization) のモジュレーション層は、タイムステップ依存のスケールとシフトを行うため、重みに折り込むことができません。そのため、これらの層は重みのみを INT4 で量子化し、活性化は BF16 のままにする必要があります。さらに、AdaLN 層の重みを低ビット（例: W2）にすると、モデル全体の生成品質が著しく低下するモデルが存在します。このため、AdaLN 層の重みは INT4 に固定されています。
+*   **実行時の回転コスト:** OrbitQuant は、推論時に RPBH 変換を活性化に適用するため、計算コストが発生します。これは、重みのみの量子化や BF16 推論にはないオーバーヘッドです。ただし、このコストは比較的小さく、将来的なカーネル最適化によってさらに削減される可能性があります。
+*   **低ビットでの完全な精度維持の難しさ:** 特に W2A4 のような極端に低いビット幅では、Z-Image-Turbo のような一部のモデルでは生成品質が著しく低下します。これは、キャリブレーションフリーなコードブック設計の限界を示唆しています。
+
+### あなたが想定する課題
+*   **RPBH 変換の計算コストの最適化:** 現状では、RPBH 変換は dequantize されたコードと BF16 での積和演算（GEMM）によって実装されており、最適化の余地があります。将来的に、整数テンソルコアを活用した、より効率的な低ビット演算カーネルが開発されることで、実効速度が向上する可能性があります。
+*   **コードブックの汎用性とモデルアーキテクチャへの依存:** OrbitQuant は、画像・動画 DiT に対して統一的なアプローチを提供しますが、特定のモデルアーキテクチャ（例: Transformer のブロック構造、Attention 機構）に最適化されている可能性があります。全く異なるアーキテクチャ（例: CNN ベースのモデル）への適用性や、その際の性能については別途検証が必要です。
+*   **特殊な層への対応:** AdaLN 以外にも、DiT モデルには様々な特殊な層（例: 位置エンコーディング、埋め込み層）が含まれる可能性があります。これらの層に対する OrbitQuant の適用性や、量子化による影響についての詳細な分析が求められます。
+*   **誤用・悪用の可能性:** 高度な生成モデルの効率化は、その利用機会を広げますが、同時に悪意のある生成（例: ディープフェイク）への利用リスクも高める可能性があります。
+
+## 5. 技術詳細：提案手法の技術的な詳細について、できるだけ詳しく。数式やアルゴリズム、モデル構造なども可能な限り詳しく
+OrbitQuant の技術的な詳細を以下に説明します。
+
+### 1. 主要なアイデア：回転基底と分布コードブック
+
+*   **問題の再定義:** DiT の活性化は、タイムステップ、プロンプト、ガイダンスによって大きく変動するため、従来の PTQ のように固定の範囲をキャリブレーションするのが困難です。OrbitQuant は、この「変動するターゲット」を追うのではなく、「回転によって固定されたターゲット」に変換します。
+*   **正規化と回転:** 入力ベクトル $\mathbf{x}$ をまず L2 ノルムで正規化し、その絶対値（norm）と方向（direction）に分離します。方向ベクトル $\tilde{\mathbf{x}} = \mathbf{x} / \|\mathbf{x}\|_2$ に対して、ランダム化された置換ブロック・アダマール（RPBH）変換 $\bm{\Pi}_d$ を適用します。
+    ```python
+    # 正規化と回転
+    norm_x = np.linalg.norm(x, ord=2)
+    if norm_x &lt; epsilon: # ゼロノルム対策
+        rotated_x_normalized = np.zeros_like(x)
+    else:
+        normalized_x = x / norm_x
+        rotated_x_normalized = Pi_d @ normalized_x # Pi_d は RPBH 変換行列
+    ```
+*   **RPBH 変換 ($\bm{\Pi}_d$):**
+    *   これは、アダマール変換（Hadamard transform）とランダムな置換（permutation）を組み合わせたものです。
+    *   ブロック単位でアダマール変換を適用し、その後に全体としてランダムな置換を行います。
+    *   $\bm{\Pi}_d = \text{blkdiag}(\mathbf{H}_h \mathbf{D}_1, \ldots, \mathbf{H}_h \mathbf{D}_{d/h}) \cdot \mathbf{P}_{\pi}$
+        *   $\mathbf{H}_h$: $h \times h$ のアダマール行列。
+        *   $\mathbf{D}_j$: 対角行列。
+        *   $\mathbf{P}_{\pi}$: dimension $d$ の uniform random permutation 行列。
+    *   この変換により、入力ベクトルの各座標が、入力に依存しない固定された一様な分布（marginal distribution）の周りに集中します。
+    *   ランダムな置換は、ブロック・アダマール変換で分離されがちな外れ値（outlier）をブロック間で分散させ、変換後の座標の分散を均一化する役割を果たします。
+*   **分布コードブック:** RPBH 変換後の座標は、理論的に（または近似的に）既知の分布（例: Beta 分布、またはそれに近い分布）に従います。この分布に対して、事前にオフラインで MSE 最適な Lloyd-Max スカラー量子化器（コードブック $\mathcal{C}^{(d,b)}$）を構築します。
+    *   このコードブックは、次元 $d$ およびビット幅 $b$ に対して一度だけ計算され、全てのレイヤー、タイムステップ、プロンプト、さらには重みにも共有されます。
+    *   量子化（quantization）は、各座標 $u_k$ を最も近いコードブックのエントリ $\hat{q}_b^{(d)}(u_k)$ にマッピングすることで行われます。
+    ```python
+    # 量子化（一次元の場合）
+    def quantize_coordinate(value, codebook):
+        # value を codebook の中で最も近い値にマッピング
+        quantized_value = min(codebook, key=lambda c: abs(value - c))
+        return quantized_value
+
+    # ベクトル全体の量子化
+    quantized_vector = [quantize_coordinate(coord, codebook) for coord in rotated_x_normalized]
+    ```
+*   **重みへの適用:**
+    *   重み行列 $\mathbf{W}$ の各行 $\mathbf{w}_i$ も同様に正規化・回転されます。
+    *   $\mathbf{W}^{\prime} = \mathbf{W} \bm{\Pi}_d^{\top}$ (オフラインで重みに回転を適用)
+    *   $\mathbf{r}^{\prime}_i = \|\mathbf{w}^{\prime}_i\|_2$, $\tilde{\mathbf{w}}^{\prime}_i = \mathbf{w}^{\prime}_i / \mathbf{r}^{\prime}_i$
+    *   $\hat{\mathbf{W}}^{\prime} = \text{diag}(\mathbf{r}^{\prime}) \cdot \hat{Q}_{b_w}^{(d)}(\tilde{\mathbf{W}}^{\prime})$
+    *   この処理により、重みも活性化と同じ回転基底で表現されます。
+
+### 2. 推論時の処理
+
+*   **回転の相殺:** 線形層 $\mathbf{y} = \mathbf{W}\mathbf{x}$ において、重みと活性化が同じ回転基底で量子化されている場合、計算は以下のようになります。
+    $\hat{\mathbf{W}}^{\prime} \hat{\mathbf{x}}^{\prime} \approx (\mathbf{W} \bm{\Pi}_d^{\top}) (\bm{\Pi}_d \mathbf{x}) = \mathbf{W} \mathbf{x}$
+    つまり、重みと活性化に適用された回転が互いに打ち消し合い、元の行列積の近似となります。
+*   **実行時:** 実際には、重み $\mathbf{W}$ には $\bm{\Pi}_d^{\top}$ がオフラインで「折り込まれて」いるため、推論時には $\mathbf{W}^{\prime} = \mathbf{W} \bm{\Pi}_d^{\top}$ として扱われ、活性化 $\mathbf{x}$ に対してのみ $\bm{\Pi}_d$ による回転が実行されます。
+    ```python
+    # 推論時の活性化処理
+    rotated_activations_normalized = Pi_d @ (activations / np.linalg.norm(activations, ord=2))
+    # 量子化
+    quantized_rotated_activations = [quantize_coordinate(coord, codebook) for coord in rotated_activations_normalized]
+    # スケールを元に戻す
+    scaled_quantized_activations = (activations_norm) * np.array(quantized_rotated_activations)
+    
+    # 積和演算 (近似)
+    output = W_prime_quantized @ scaled_quantized_activations # W_prime_quantized はオフラインで量子化された重み
+    ```
+*   **計算パス:**
+    1.  **オフライン処理:**
+        *   RPBH 変換 $\bm{\Pi}_d$ を決定（ランダム置換を生成）。
+        *   DiT の各次元 $d$ に対して、RPBH 変換後の marginal distribution を用いて Lloyd-Max コードブック $\mathcal{C}^{(d, b_w)}, \mathcal{C}^{(d, b_a)}$ を構築。
+        *   重み行列 $\mathbf{W}$ の各行に RPBH 変換と量子化を適用し、$\hat{\mathbf{W}}^{\prime}$ を得る。
+    2.  **オンライン（推論時）処理:**
+        *   入力活性化 $\mathbf{x}$ を取得。
+        *   $\mathbf{x}$ の L2 ノルム $s = \|\mathbf{x}\|_2$ を計算。
+        *   正規化された活性化 $\tilde{\mathbf{x}}^{\prime} = (\mathbf{x} \bm{\Pi}_d^{\top}) / s$ を計算。
+        *   $\tilde{\mathbf{x}}^{\prime}$ の各座標を、対応する次元 $d$ の Lloyd-Max コードブック $\hat{Q}_{b_a}^{(d)}$ を用いて量子化し、$\hat{\mathbf{x}}^{\prime}$ を得る。
+        *   量子化された活性化に元のノルム $s$ を掛け合わせる: $\hat{\mathbf{x}}^{\prime} \leftarrow s \cdot \hat{Q}_{b_a}^{(d)}(\tilde{\mathbf{x}}^{\prime})$。
+        *   重み $\hat{\mathbf{W}}^{\prime}$ と量子化された活性化 $\hat{\mathbf{x}}^{\prime}$ を用いて積和演算を実行: $\hat{\mathbf{y}} = \hat{\mathbf{W}}^{\prime} \hat{\mathbf{x}}^{\prime}$。
+
+### 3. アルゴリズム概要
+
+```python
+# OrbitQuant オフライン処理
+def orbitquant_offline(model, weight_bits, activation_bits):
+    for each layer in model:
+        if layer is a linear projection:
+            W = layer.weight
+            d = W.shape[1] # 入力次元
+
+            # RPBH 変換行列を生成（一度だけ、または次元ごとに）
+            Pi_d = generate_rpbh_transform(d) 
+
+            # コードブックを構築（次元 d、ビット幅 bw, ba ごとに一度だけ）
+            codebook_w = build_lloyd_max_codebook(d, weight_bits, marginal_distribution_after_rpbh(Pi_d))
+            codebook_a = build_lloyd_max_codebook(d, activation_bits, marginal_distribution_after_rpbh(Pi_d))
+            
+            # 重みの回転と量子化
+            W_prime = Pi_d.T @ W # 注: 論文では W&#39; = W * Pi_d.T だが、転置の適用順序は計算コンテキストによる。ここでは W&#39; = W @ Pi_d.T とする。
+            norms_W_prime = np.linalg.norm(W_prime, axis=1, ord=2)
+            normalized_W_prime = W_prime / norms_W_prime[:, np.newaxis]
+            quantized_normalized_W_prime = quantize_vector(normalized_W_prime, codebook_w)
+            layer.weight_quantized = np.diag(norms_W_prime) @ quantized_normalized_W_prime
+
+    return model
+
+# OrbitQuant オンライン（推論時）処理
+def orbitquant_forward(layer, x):
+    W_prime_quantized = layer.weight_quantized
+    d = x.shape[-1] # 入力次元
+    Pi_d = get_rpbh_transform(d) # オフラインで生成された Pi_d を取得
+    codebook_a = get_codebook_a(d) # オフラインで構築されたコードブックを取得
+
+    # 活性化の正規化と回転
+    norm_x = np.linalg.norm(x, ord=2, axis=-1, keepdims=True)
+    epsilon = 1e-5 # ゼロノルム対策
+    normalized_x = x / (norm_x + epsilon)
+    rotated_normalized_x = Pi_d @ normalized_x.T # shape: (d, batch_size)
+
+    # 活性化の量子化
+    quantized_rotated_x = []
+    for i in range(rotated_normalized_x.shape[1]): # バッチサイズ分ループ
+        quantized_vector_i = [quantize_coordinate(coord, codebook_a) for coord in rotated_normalized_x[:, i]]
+        quantized_rotated_x.append(quantized_vector_i)
+    
+    quantized_rotated_x = np.array(quantized_rotated_x).T # shape: (d, batch_size)
+    scaled_quantized_x = (norm_x.T) * quantized_rotated_x # shape: (d, batch_size)
+
+    # 積和演算
+    output = W_prime_quantized @ scaled_quantized_x # shape: (out_features, batch_size)
+    return output.T # shape: (batch_size, out_features)
+```
+
+### 4. 技術的な貢献のまとめ
+*   **データ非依存の量子化:** 活性化の変動を克服するための、革新的な回転基底と固定コードブックのアプローチ。
+*   **RPBH 変換:** 効率的で、低ビット量子化に適したランダム化された置換ブロック・アダマール変換の提案。
+*   **重みと活性化の共有回転:** 量子化された演算における回転の相殺を実現し、推論時のオーバーヘッドを最小限に抑える設計。
+*   **画像・動画 DiT への汎用的な適用:** 一つの手法で異なるモダリティの DiT に対応。
+
+## 6. この論文を140字以内のツイートで要約すると？
+DiTの推論コスト削減へ！OrbitQuantは、回転基底と分布コードブックでデータ非依存の低ビット量子化を実現。画像・動画DiTでSOTA性能を達成し、W2A4でも実用的な品質を維持。キャリブレーション不要な革新的手法。#DiT #量子化 #AI</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

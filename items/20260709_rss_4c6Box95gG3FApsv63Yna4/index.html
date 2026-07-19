@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Cosmos 3 Superで欠陥画像の合成をやってみた</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>Cosmos 3 Superで欠陥画像の合成をやってみた</h1>
+<p><strong>Date:</strong> 2026-07-09</p>
+<p><strong>Source:</strong> rss / DevelopersIO</p>
+
+<p><a href="https://dev.classmethod.jp/articles/cosmos3-super-defect-data/">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">NVIDIAのCosmos 3 Superを用いて、製造業における欠陥画像の合成を試みた検証結果を報告する。本検証の目的は、NGパターンの学習素材が集めにくいという課題に対し、リアルな欠陥画像を生成できるかを確認することである。
+
+結論として、本検証においては、text2imageによる欠陥画像生成は期待通りの結果を得られなかった。生成された画像はCG調で、実写の検査画像とはかけ離れており、プロンプトやパラメータを調整しても実写レベルには達しなかった。これは、CG調になる問題がCosmos 3の性質に由来する可能性が高く、sim2real（シミュレーションとリアルの乖離）のギャップが大きくなる要因となりうると考察される。ただし、検証方法に問題があった可能性も否定できないため、引き続き調査を続ける。
+
+image2videoからの画像切り出しアプローチも試みたが、仕様上、入力画像を保持するだけで自然に傷などを追加することはできなかった。
+
+これらの結果から、欠陥画像を合成するには、サンプル画像を複数用意したimage2imageのアプローチが有効であると示唆された。また、Cosmosプラットフォームの「Cosmos-AnomalyGen」という、良品画像に欠陥を描き足すツールが、今回やりたかった用途に適している感触を得たため、次回以降で検証する予定である。
+
+検証環境はAWSを使用し、インスタンスはp5.48xlarge（NVIDIA H100 80GB × 8）、モデルはnvidia/Cosmos3-Super（64B）を用いた。text2imageでは、プロンプトを詳細化したり、LLMによるプロンプト拡張機能（prompt upsampler）を使用したり、guidanceやshift、num_stepsなどのパラメータを調整したりしたが、リアルさの向上は見られなかった。image2videoでは、入力画像を基に傷が現れる動画を生成し、後半フレームを切り出す方法を試したが、仕様上、局所的な編集は不可能であった。
+
+次回はCosmos-AnomalyGenを用いた画像生成の検証を行う予定である。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

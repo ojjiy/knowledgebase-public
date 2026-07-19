@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Snowflake から Google Cloud へ Workload Identity Federation （OIDC）で接続する</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>Snowflake から Google Cloud へ Workload Identity Federation （OIDC）で接続する</h1>
+<p><strong>Date:</strong> 2026-07-06</p>
+<p><strong>Source:</strong> rss / LayerX blog</p>
+
+<p><a href="https://tech.layerx.co.jp/entry/snowflake-outbound-wif-to-google-cloud">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">2026年7月1日にSnowflakeの新機能「Workload identity federation for Snowflake workloads that access external services（本記事ではSnowflake Outbound WIFと表記）」が一般提供開始されました。この機能は、Snowflake自身がOIDC Providerとなり、Snowflake内のワークロードが外部サービスに対して静的なキーを必要とせずに認証できるようになるものです。
+
+従来、SnowflakeからBigQueryやGCSのような外部サービスへアクセスする際には、サービスアカウントキーなどの静的な認証情報をSnowflakeのシークレットに保存して利用する方法が一般的でした。しかし、この方法にはキーのローテーション運用負荷、漏洩リスク、監査の難しさといった課題がありました。
+
+Snowflake Outbound WIFは、これらの課題を解決し、Workload Identity Federation (WIF) の考え方をSnowflakeにもたらします。Snowflake Inbound WIF（外部ワークロードからSnowflakeへ認証）とは異なり、Outbound WIFではSnowflakeがトークン発行側（OIDC Provider）となります。
+
+**Snowflake Outbound WIFによるIDトークン発行の3ステップ:**
+
+1.  **Snowflake側でワークロードを登録（Secretの作成）:** `WORKLOAD_IDENTITY_FEDERATION` 型のSecretを作成します。これにより、SnowflakeがIDトークンの発行元（OIDC Provider）となり、ワークロードがトークンを受け取る主体（OIDC client）として登録されます。
+2.  **外部サービス側とTrust Relationshipを構築（issuer URLとsubjectの共有）:** `DESC SECRET` コマンドで取得できる `workload_identity_federation_issuer` と `workload_identity_federation_subject` を外部サービスに渡します。外部サービスは、これらの値がIDトークンの`iss` (issuer) および `sub` (subject) クレームと一致するかどうかで、Snowflakeが発行したトークンであることを判断します。
+3.  **認証時にIDトークンを発行（システム関数の呼び出し）:** ワークロードが外部サービスにアクセスするたびに、`SYSTEM$ISSUE_WORKLOAD_IDENTITY_FEDERATION_TOKEN` システム関数を呼び出して、有効期限15分の短命なIDトークンを取得します。この際、送信先の外部サービスを指定する`aud` (audience) クレームも指定します。
+
+発行されるJWTには、`iss`、`sub`、`aud` の他に、`iat`、`nbf`、`exp`、`jti` といった標準的なクレームに加え、Snowflake固有の`sf_onm` (組織名)、`sf_anm` (アカウント名)、`sf_rnm` (ロール名) といったクレームが含まれます。特に`sf_rnm`は、外部サービス側で「特定のロールから発行されたトークンのみを信頼する」といった細かいアクセス制御を可能にします。
+
+**Google Cloudへの接続例（CLI編）:**
+
+1.  **Workload Identity Poolとプロバイダの作成:** `gcloud` コマンドでGoogle Cloud上にWorkload Identity PoolとOIDCプロバイダを作成します。この際、Snowflakeから取得した`issuer-uri`と`attribute-condition`（`assertion.sub`）を指定します。
+2.  **サービスアカウントへのImpersonation権限付与:** 作成したWorkload Identity PoolのSubjectに対して、Google CloudのサービスアカウントへのImpersonation権限 (`roles/iam.workloadIdentityUser`) を付与します。
+3.  **SnowflakeでIDトークンを発行:** `SYSTEM$ISSUE_WORKLOAD_IDENTITY_FEDERATION_TOKEN` を呼び出してIDトークンを取得します。`aud` クレームはGoogle CloudのWorkload Identity Pool Providerの正規リソース名などを指定します。
+4.  **STSでToken Exchange:** 取得したIDトークンをGoogle Cloud Security Token Service (STS) に送信し、federated access token を取得します。
+5.  **サービスアカウントのアクセストークンを取得:** federated access token を使用して、IAM Credentials APIから通常のサービスアカウントのアクセストークン（1時間有効）を取得します。
+
+**Snowparkでの利用:**
+
+Snowparkでは、`_snowflake.get_generic_secret_string()` では `WORKLOAD_IDENTITY_FEDERATION` 型のSecretを読み込めないため、Snowparkセッション経由でシステム関数をSQLとして実行します。`google-auth` ライブラリの `SubjectTokenSupplier` インターフェースを実装し、Snowflakeセッションを渡すことで、STS交換とSAインパーソネーションをライブラリに委任できます。
+
+**運用上の注意点:**
+
+*   IDトークンの有効期限は15分固定であるため、長時間処理では再発行が必要です。
+*   トークン発行はプライマリアカウントでのみ可能です。
+*   `issuer` / `subject` はTrust Relationship設定用の識別情報であり、公開すべきではありません。
+*   `sf_rnm` クレームを活用することで、外部サービス側での認証条件を最小化できます。
+*   トークン発行はSnowflakeのクエリ履歴や監査ログで追跡可能です。
+
+Snowflake Outbound WIFの導入により、Snowflakeから外部サービスへの接続における静的キーの管理が不要となり、よりセキュアで効率的な運用が可能になります。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

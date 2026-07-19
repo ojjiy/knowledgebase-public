@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>How should I encode both target and feature variable for a multiclass classification? [D]</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>How should I encode both target and feature variable for a multiclass classification? [D]</h1>
+<p><strong>Date:</strong> 2026-07-06</p>
+<p><strong>Source:</strong> reddit / MachineLearning</p>
+
+<p><a href="https://www.reddit.com/r/MachineLearning/comments/1upa8yc/how_should_i_encode_both_target_and_feature/">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">1. このポストの内容を説明してください。
+
+このRedditの投稿者は、XGBoostを用いた多クラス分類のために、CSVデータセットの前処理を行っています。具体的には、特徴量（feature variable）には数値データとカテゴリカルデータ（例：患者名、電話番号、運動履歴）が含まれており、目的変数（target variable）には複数のカテゴリカルデータ（例：心臓発作、脳卒中、アルツハイマー病などの病名）が含まれています。
+
+投稿者は、特徴量のカテゴリカルデータをOne-Hotエンコーディングで処理できることは理解していますが、目的変数についても同様にOne-Hotエンコーディングを使用すべきか、あるいはLabelエンコーディングのような別の方法を使うべきかについて疑問を抱いています。この点について、明確な情報を求めています。
+
+2. このポストに対するコメントのうち、特に興味深いものを教えてください。
+
+このポストに対するコメントの中で、特に興味深いのは以下の点です。
+
+*   **目的変数のエンコーディング方法について:**
+    *   多くのコメントが、目的変数のエンコーディングにはLabelエンコーディングを推奨しています。これは、多クラス分類において、目的変数を0からN-1までの単一の整数ラベルとして表現するのが一般的であり、XGBoostもその形式を期待するためです。
+    *   One-Hotエンコーディングを目的変数に適用すると、目的変数の次元がクラス数と同じだけ広がる（N wideになる）という指摘があります。これは、モデルの出力形式に影響するため、通常は推奨されません。
+
+*   **特徴量としての患者名や電話番号の適切性について:**
+    *   複数のコメントで、患者名や電話番号といった個人情報は、通常、病気の予測に役立たないため、特徴量から削除すべきであるという指摘がされています。これは、モデルの過学習を防ぎ、より汎化性能の高いモデルを構築するために重要なアドバイスです。投稿者自身も、これらはあくまで例示であり、実際には使用しないことを後で明記しています。
+
+*   **単一ラベル分類と多ラベル分類の区別:**
+    *   あるコメントでは、予測したい病気が1つだけなのか、それとも複数の病気が同時に発生しうるのか（多ラベル分類）によって、問題の性質が異なると説明しています。
+    *   投稿者が「モデルは情報に基づいて1つの病気だけを予測する」と明確にしたため、これは単一ラベル分類の問題であることが確認されました。もし多ラベル分類であれば、標準的なXGBoostの多クラス分類では対応が難しく、別のモデル（例：MLP）が適している可能性も示唆されています。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

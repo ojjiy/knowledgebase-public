@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>【小ネタ】AgentCore Gatewayのインターセプターにカスタムヘッダーを渡してみた</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>【小ネタ】AgentCore Gatewayのインターセプターにカスタムヘッダーを渡してみた</h1>
+<p><strong>Date:</strong> 2026-07-09</p>
+<p><strong>Source:</strong> rss / DevelopersIO</p>
+
+<p><a href="https://dev.classmethod.jp/articles/agentcore-gateway-interceptor-custom-header/">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">Amazon Bedrock AgentCore Gatewayのインターセプター機能について、カスタムHTTPヘッダーがインターセプターに到達するかどうかが検証されました。
+
+**結論として、カスタムヘッダーは特定の条件下でインターセプターに送信可能であることが確認されました。**
+
+**主要なポイント:**
+
+*   **`passRequestHeaders` の有効化が必須:**
+    *   Gatewayの設定で `inputConfiguration.passRequestHeaders` を `true` にした場合のみ、リクエストヘッダーが `gatewayRequest.headers` に渡されます。
+    *   この設定がされていない場合、`headers` は空のマップ `{}` となり、カスタムヘッダーは一切送信されません。
+*   **ヘッダーの小文字化:**
+    *   インターセプターに到達したカスタムヘッダーは、元のケースに関わらず小文字に正規化されていました（例: `X-Dept-Id` → `x-dept-id`）。
+    *   ヘッダーを参照する際は、小文字で扱うことが推奨されます。
+*   **`Authorization` ヘッダーの扱い:**
+    *   `passRequestHeaders` を `true` にすると、`Authorization` ヘッダー（Bearerトークンなど）もそのまま渡されます。
+    *   ログ出力時に機密情報が含まれる可能性があるため、注意が必要です。
+*   **セキュリティ上の注意点:**
+    *   カスタムヘッダーはクライアントによって書き換え可能であるため、認可などの重要な制御に直接使用することは推奨されません。
+    *   ヘッダーの改ざんがないことが保証されている（例: 信頼できるプロキシによる付与・上書き）構成の場合に限り、検討の余地があります。
+
+**検証環境と方法:**
+
+*   Amazon Cognito User Pool（client\_credentialsフロー）を用いたインバウンド認証。
+*   Python 3.13のLambda関数をREQUESTインターセプターとして使用。
+*   `passRequestHeaders` を `true` に設定したGatewayと、設定しない場合の両方で比較検証。
+*   カスタムヘッダー（`X-Dept-Id`, `X-App-Id`, `X-Trace-Note`）を付与してツールを呼び出し、インターセプターLambdaのCloudWatch Logsで受信内容を確認。
+*   ヘッダー値による簡易的なアクセス制御（`X-Dept-Id` の許可リスト）も技術的に可能であることが実証されました。
+
+**補足事項:**
+
+*   REQUESTインターセプターは、リクエストボディ（JSON-RPCリクエスト）の参照・加工も可能です。これにより、ツールの引数などを動的に変更したり、条件分岐させたりできます。
+*   `transformedGatewayResponse` を返すことで、ターゲットのLambdaを呼び出さずにインターセプターから直接クライアントに応答を返すことができます。
+
+この検証により、AgentCore Gatewayのインターセプターでカスタムヘッダーを扱うための条件と注意点が明確になりました。`passRequestHeaders` の設定を適切に行うことで、カスタムヘッダーを利用したログ記録、監査、あるいは限定的な情報付与などが可能になります。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

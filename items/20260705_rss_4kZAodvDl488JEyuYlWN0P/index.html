@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Flutter から Gemini Nano を動かす - ML Kit GenAI API の6機能を試してみた</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>Flutter から Gemini Nano を動かす - ML Kit GenAI API の6機能を試してみた</h1>
+<p><strong>Date:</strong> 2026-07-05</p>
+<p><strong>Source:</strong> rss / DevelopersIO</p>
+
+<p><a href="https://dev.classmethod.jp/articles/flutter-genimi-nano/">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">FlutterからGemini NanoをML Kit GenAI API経由で利用し、6つの生成AI機能（プロンプト、要約、校正、書き換え、画像の説明、音声認識）を実装した検証結果についてまとめた記事です。
+
+**Gemini NanoとML Kit GenAI APIについて:**
+*   Gemini Nanoは、ネットワーク接続不要で端末内で完結するGoogleのオンデバイス基盤モデルです。AndroidのシステムサービスAICore上で動作し、モデルの配布・更新、安全性フィルタはAICoreが管理します。
+*   ML Kit GenAI APIは、タスクごとに以下の6つの高レベルAPIを提供しています。出力は全てテキストです。
+    *   プロンプト (Prompt API): テキストまたは画像+テキストを入力とし、自由記述のプロンプトに対してテキストで応答します。汎用性が高い機能です。
+    *   要約 (Summarization API): 長文を箇条書きで要約します。
+    *   校正 (Proofreading API): 短い文章の文法チェックと誤字脱字修正を行います。
+    *   書き換え (Rewriting API): 文章のトーンや長さを「丁寧に」「簡潔に」などのスタイルで変換します。
+    *   画像の説明 (Image Description API): 画像から短い説明文を生成します（現バージョンでは英語出力）。
+    *   音声認識 (Speech Recognition API): マイク入力をリアルタイムに文字起こしします（日本語対応）。
+
+**リリースステータスと動作条件:**
+*   2026年7月現在、ML Kit GenAI APIは全てベータ版（音声認識のみアルファ版）であり、GA（正式リリース）のAPIはありません。
+*   対応デバイスはPixel 9/10シリーズ、Galaxy S25/26など一部のフラグシップ機に限られ、AICoreを持たないエミュレーターでは動作しません。
+
+**利用規約上の注意点:**
+*   Preview/Experimental Access指定のAPIは本番利用が禁止されています。
+*   生成物の著作権はGoogleが主張しませんが、公開前の妥当性判断は利用者の責任です。
+*   モデルのリバースエンジニアリング・抽出は禁止されています。
+
+**Flutterからの呼び出し方:**
+*   ML Kit GenAI APIはAndroidネイティブ向けにのみ提供されており、公式Flutterプラグインは存在しません。
+*   本記事では、Pigeonツールを用いてDartとKotlin間のブリッジを自前実装し、Flutterから6機能全てを呼び出せるようにしています。
+
+**アプリでの活用イメージ:**
+*   **共通の価値:** オフライン動作、プライバシー（データ非外部送信）、低レイテンシ。
+*   **具体的な活用例:**
+    *   プロンプト: チャットアプリの返信サジェスト、問い合わせ内容分類。
+    *   要約: ニュース記事の3行要約、商談メモや日報の要約。
+    *   校正: SNS投稿や顧客向けメッセージの送信前チェック。
+    *   書き換え: メッセージのトーン変換、報告書の文体統一。
+    *   画像の説明: アクセシビリティ向けの代替テキスト自動生成、現場写真への説明付与。
+    *   音声認識: ボイスメモや議事録のオフライン文字起こし。
+*   **利用上の制約:** 推論はアプリがフォアグラウンドの場合のみ許可され、バックグラウンドでの自動処理には使用できません。精度重視・複雑な推論が必要な場合はクラウドLLMの方が適しています。「ネットが弱い/機密性が高い/軽量な下処理でよい」場面に絞って利用するのが現実的です。
+
+**iOS対応の見通し:**
+*   iOSでは、Apple Intelligenceが有効な対応デバイスで利用できるAppleのFoundation Models frameworkが、Gemini Nano + ML Kit GenAI APIに相当します。
+*   Google側はタスク別APIを提供しプロンプト設計の負担が少ない一方、Apple側は汎用APIを提供し、開発者がプロンプトでユースケースを自作する前提です。
+
+**まとめ:**
+ML Kit GenAI APIの6機能をFlutterから実装・検証した結果、オンデバイスAIは通信環境やAPIコストを気にせず、機密情報も端末外に出さずに生成AI機能を組み込めるポテンシャルがあることが示されました。GAと対応デバイスの拡大が進めば、要約や校正、文字起こしといった機能はアプリの標準装備となり、iOS側でもFoundation Models frameworkにより両OSでのオンデバイスAI活用基盤が整いつつあるため、オンデバイスAIがアプリの当たり前になる日が期待されます。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

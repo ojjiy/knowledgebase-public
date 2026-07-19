@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>そうだ、時計作ろう - 重力に縋るな</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>そうだ、時計作ろう - 重力に縋るな</h1>
+<p><strong>Date:</strong> 2026-07-05</p>
+<p><strong>Source:</strong> rss / Hatena Bookmark Technology Hotentry</p>
+
+<p><a href="https://sksat.hatenablog.com/entry/pico-gnssdo">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">この記事は、Raspberry Pi PicoとGNSSモジュールを使用して、数十ナノ秒（ns）精度の高精度な時刻同期を実現し、パスタを正確なタイミングで茹でることを目指すプロジェクトについて詳細に解説しています。
+
+**GNSSによる高精度時刻同期の重要性**
+筆者は、パスタを茹でる際など、日常的に時間を測定する場面があることに触れ、さらに正確な時刻を知ったり、特定の時刻にアクションを起こしたりする必要性に言及しています。GNSS（GPSを含む測位衛星システム）は、衛星から配信される正確な位置情報と時刻情報に基づいて測位を行うシステムです。電波が光速で伝搬することを利用し、衛星と受信機間の距離を算出することで、三次元的な位置を特定できます。
+
+**高精度時刻同期の課題と解決策**
+高精度な測位には、受信機側の正確な時刻が不可欠ですが、多くの受信機はそこまで高精度な時計を搭載していません。また、オフライン環境でも測位を実現したいというニーズもあります。そのため、GNSS衛星は原子時計を搭載し、非常に正確な時刻を配信しています。測位には最低4機の衛星が必要ですが、これは位置情報だけでなく、受信機自身の時刻も未知数として連立方程式で解くためです。
+
+**Raspberry Pi PicoとGNSSモジュールを用いた時計製作**
+本プロジェクトでは、Raspberry Pi PicoとGNSSモジュールを使い、高精度な時刻同期を実現します。しかし、UART通信だけでは数十nsの精度は達成不可能であり、GNSS受信機が提供するPPS（Pulse Per Second）信号を利用する必要があります。PPS信号は、1秒ごとに正確なパルスを出力する機能です。
+
+**PIO（Programmable I/O）の活用**
+Raspberry Pi PicoのRP2040には、STM32のInput Captureのようなハードウェア的なタイムスタンプ機能はありません。そこで、PIO（Programmable I/O）という軽量コプロセッサを活用します。PIOを使うことで、PPS信号の立ち上がりを検知し、その瞬間のカウンタ値を記録することで、Input Captureのような機能を実現します。
+
+**GNSSDO（GPS Disciplined Oscillator）の模倣**
+PIOで取得できるのはRP2040の内部クロック基準でのタイムスタンプであり、この内部クロックは精度が低いという問題があります。そこで、GNSSDO（GNSS Disciplined Oscillator）の考え方を応用します。これは、GNSSからの1PPS信号を基準として、内部クロックの周波数を微調整することで、内部時計を正確に保つ技術です。
+
+**ループバックとフィードバック制御**
+本プロジェクトでは、GNSSDO信号の出力ピンと別の入力ピンをループバック接続し、PIOを用いてPPS信号とGNSSDO信号の誤差を高精度に計測します。この計測結果をフィードバックし、PID制御などの制御器を用いて収束させることで、高精度な時刻同期を目指します。
+
+**精度向上のための課題と工夫**
+当初、PIOの別々のステートマシンで観測を行うことによるオフセット誤差や、レジスタ書き込みやピン切り替え時の問題が判明しました。これらを解決するために、PIOのロジックを調整し、0を跨ぐ際のサイクル数を揃えるなどの工夫を行いました。さらに、温度変化によるクロック精度のばらつきに対処するため、RP2040の温度計を利用したフィードフォワード制御も試みました。
+
+**最終的な成果**
+これらの工夫の結果、オフセット誤差の中央値が+8.0ns、±100ns内（サブ100ns精度）を81.4%達成することができました。これにより、パスタを安心して正確なタイミングで茹でられるレベルに到達したとしています。
+
+**結論**
+最終的な結論として、パスタにちゃんとした保証を求める場合は、qErr補正機能付きのGNSS受信機とTCXO（温度補償型水晶発振器）を使用した機械を用いることを推奨しています。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

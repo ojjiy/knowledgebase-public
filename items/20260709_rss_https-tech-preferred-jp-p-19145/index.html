@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>大規模言語モデルの次期バージョンPLaMo 3シリーズにおける120B事前学習モデル、31B蒸留モデルの評価</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>大規模言語モデルの次期バージョンPLaMo 3シリーズにおける120B事前学習モデル、31B蒸留モデルの評価</h1>
+<p><strong>Date:</strong> 2026-07-09</p>
+<p><strong>Source:</strong> rss / PFN TechBlog</p>
+
+<p><a href="https://tech.preferred.jp/ja/blog/plamo_3_120b_distillation_cpt/">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">Preferred Networksは、情報通信研究機構（NICT）と共同で、日本の文化や社会に配慮した高品質かつ安全で高性能な国産大規模言語モデル（LLM）「PLaMo 3シリーズ」を開発しました。本記事では、その次期バージョンとして新たに開発された120B（1200億パラメータ）の事前学習モデル「plamo-3-nict-2604-120b-base」と、31B（310億パラメータ）の蒸留モデル「plamo-3-nict-2604-31b-base」の評価結果について報告しています。
+
+**短文脈性能評価:**
+120Bモデルは、投入計算量が同レベルのGemma 3 PT 27BやQwen3-8B-Baseと比較して、日本語生成、知識、コーディング、翻訳といった多様なベンチマークで同等以上の性能を示しました。特に、日本語生成能力や翻訳精度においては、学習データに占める日本語の比率が高いと精度が向上しやすいベンチマークで、より高い精度を達成しています。より投入計算量が多いQwen3-32Bと比較した場合でも、日本語関連のベンチマークではPLaMo 3 120Bが優位でした。ただし、MMLU-ProX jaやJHumanEvalといった一部のベンチマークではQwen3-32Bが上回っており、これは投入計算量の差に起因すると分析されています。
+
+**長文脈性能向上への取り組み:**
+PLaMo 3シリーズでは、PLaMo 2（32Kトークン対応）からさらに進化させ、128Kトークンを超える長文脈に対応することを目指しました。PLaMo 2で用いた手法（ABF、RoPE、約1Bトークンの継続事前学習）を適用した結果、64Kトークン以降で性能が著しく低下することが判明しました。この問題に対処するため、以下の実験が行われました。
+
+1.  **YaRNの導入:** 他モデルで有効性が確認されているYaRNを導入した結果、64Kトークン以降の性能低下が大幅に緩和され、長文脈への外挿性能が大きく改善されました。
+2.  **学習token数の増加:** YaRN適用後、継続事前学習の学習トークン数を増加させた実験では、短い文脈（32Kトークンまで）では性能向上が見られましたが、64Kトークン以上では逆に性能が低下しました。これは、長時間の学習によってYaRNの能力が失われる可能性が示唆されています。
+
+これらの実験結果に基づき、PLaMo 3では「YaRNの適用」と「学習token数を大きく伸ばさない」という方針が採用されました。
+
+**長文脈性能評価:**
+長文脈性能の評価では、PhonebookおよびRULERのサブセットベンチマークが使用され、最大256Kトークンまで評価されました。比較対象としてOLMo 3 32B（最大64Kトークン対応）が用いられました。評価結果では、31Bおよび120Bモデルともに32Kトークン以上の長文脈でも一定の精度を維持しており、YaRNの導入と学習トークン数の調整が有効であったことが示されました。しかし、OLMo 3 32Bと比較すると、32Kトークン時点での精度は依然として下回っており、フルスクラッチで学習されているモデルの長文脈対応にはさらなる開発が必要であると結論付けています。
+
+**公開と今後の展望:**
+今回開発されたplamo-3-nict-2604-31b-baseモデルはHugging Faceで公開されています。Preferred Networksは、今後もLLMの開発を継続し、さらなる精度向上と仲間を募集していくとしています。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

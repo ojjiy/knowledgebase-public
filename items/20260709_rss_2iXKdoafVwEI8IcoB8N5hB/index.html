@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Unitree Go2とG1を活用したロボット目視検査エージェントのMVPを作り始めました</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>Unitree Go2とG1を活用したロボット目視検査エージェントのMVPを作り始めました</h1>
+<p><strong>Date:</strong> 2026-07-09</p>
+<p><strong>Source:</strong> rss / DevelopersIO</p>
+
+<p><a href="https://dev.classmethod.jp/articles/robot_inspection_agent_week_1/">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">Unitree Go2/G1ロボットを活用した「ロボット目視検査エージェント」のMVP開発が開始されました。このエージェントは、ロボットのカメラ画像を用いてオフィスや施設内の状況を把握し、VLM/LLM（Visual-Language Model / Large Language Model）によってシーン理解、異常検知、リスク判断、構造化JSON出力、レポート生成を行います。
+
+想定されるユースケースでは、「入口周辺を確認し、異常があれば報告してほしい」といった指示に対し、ロボットが画像から「通路付近に段ボール箱があり、通行の妨げになる可能性がある。確認と必要に応じた移動を推奨する」といった具体的な判断と推奨アクションをJSON形式で出力します。
+
+MVP（Minimum Viable Product）開発では、まず画像入力からVLM解析、JSON化、レポート生成までの一連のパイプラインをローカル環境で構築することを目指しています。技術構成案として、ロボットはUnitree Go2/G1、VLMには社内承認済みモデル、LLMはJSONからレポートを生成するものが検討されています。
+
+今週は、アイデア整理からローカルVLMを用いた実画像評価まで可能なMVPスケルトンの実装が進みました。具体的には、プロジェクトリポジトリ構造の作成、検査結果用スキーマの定義、モックVLMクライアントとMarkdownレポートジェネレータの実装、そしてローカルVLM（SmolVLM2、Qwen2.5-VL-3B-Instruct）の検証とQwen2.5-VLをCLIに統合しました。
+
+MVPスケルトンでは、VLMから構造化JSONを出力させ、スキーマ検証、レポート生成までを行います。検査結果スキーマ（InspectionResult）には、シーンタイプ、画像品質、検出オブジェクト、人の存在、ドアの状態、障害物、潜在的ハザード、経路遮断、リスクレベル、推奨アクション、信頼度、日本語要約などの情報が含まれます。
+
+ローカルVLMの検証では、SmolVLM2は軽量ですが推論能力に課題が見られました。一方、Qwen2.5-VL-3B-Instructは構造化JSON出力、日本語要約生成、プロンプトへの反応性の点で優れており、現時点でのメインバックエンドとして採用されました。
+
+プロンプト改善により、Qwen2.5-VLは「通路上の箱を障害物として扱う」「経路が塞がれているかを明示的に判断する」といった、より実用的な判断が可能になりました。
+
+実画像評価では、iPhoneで撮影した低角度画像を使用し、ローカルQwen VLM推論からJSON生成、スキーマ検証、Markdownレポート生成までの一連の流れを確認しました。この評価から、以下の改善点が明確になりました。
+
+1.  **スキーマの揺れ:** VLMが同じ意味の項目でも異なるフィールド名を出力するため、後処理でのエイリアス正規化が必要です。
+2.  **JSON形式の崩れ:** Markdownフェンスやコメント、不正なカンマ、シングルクォートなどの形式崩れが発生するため、JSON修復処理の強化が必要です。
+3.  **リスク判断の不安定さ:** 通常の家具を障害物と見なしたり、不明瞭なケーブルをハザードと判断したり、リスクを過大評価したりする傾向があるため、プロンプト、正規化、評価ルールの組み合わせによる改善が必要です。
+
+今後の実装では、エイリアスマッピングの強化、リスト形式の「なし」を表す文字列の空配列への正規化、複数画像のバッチ処理機能の追加が予定されています。最終的には、評価テーブルを作成し、失敗例と改善方針を具体的に整理していく計画です。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

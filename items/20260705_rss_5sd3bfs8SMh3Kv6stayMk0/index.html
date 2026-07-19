@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AIが開発／運用しやすいクラウド サーバーレスの視点から考える設計原則（CNS449）</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>AIが開発／運用しやすいクラウド サーバーレスの視点から考える設計原則（CNS449）</h1>
+<p><strong>Date:</strong> 2026-07-05</p>
+<p><strong>Source:</strong> rss / DevelopersIO</p>
+
+<p><a href="https://dev.classmethod.jp/articles/2026-07-05-aws-summit-cns449-serverless-ai-design-principles/">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">## AIが開発・運用しやすいサーバーレスクラウド設計原則
+
+本レポートは、AWS Summit Japan 2026にて開催されたセッション「CNS449: AIが開発／運用しやすいクラウド サーバーレスの視点から考える設計原則」の内容をまとめたものです。AIエージェントが開発・運用しやすいクラウド構成およびソフトウェア設計の原則について、コンテキストエンジニアリング、ソフトウェア設計原則、サーバーレスアーキテクチャ、クラウド運用といった4つの観点から詳細に解説されました。
+
+**1. AIのコンテキストウィンドウと「コンテキストロット」への対策**
+
+AIモデルが扱えるコンテキストウィンドウには、精度良く機能する「Smart Zone」と精度が劣化する「Dumb Zone」が存在します。特に大規模なコンテキスト（例: Opus 4.7では300K〜400Kトークン）では、入力情報が増えるにつれてAIの精度が低下する「コンテキストロット」が発生します。これに対する対策として、作業の区切りごとに必要なコンテキストを圧縮・集約したドキュメントを作成し、新しいセッションで引き継ぐアプローチが推奨されます。Claude Codeの`/compact`コマンドのような機能も有効活用できます。
+
+**2. Monorepoとモジュール設計によるコンテキスト集約と可読性向上**
+
+コーディングエージェントの効果的な活用には、ソースコード、IaC、設定ファイル、設計ドキュメントなどを単一リポジトリ（Monorepo）に集約することが理想的です。これにより、AIは必要な情報を一元的に参照できます。ただし、Monorepoではコードベースが肥大化しやすいため、パッケージ間の依存関係を最小限にし、実装の詳細に依存せずとも理解できる構造（「Deep Module」の考え方）を設計することが重要です。具体的には、モジュール境界を意識した設計や、インターフェースを通じてのみやり取りする疎結合な構造が求められます。
+
+**3. ドキュメントの役割と「WHY/WHY NOT」の記録**
+
+AIが参照するドキュメントは、実装から乖離するほど信頼性が低下します。そのため、現在（WHAT）や実装の詳細（HOW）はコードやインターフェースに任せ、ドキュメントにはアーキテクチャの設計思想や意思決定の背景、棄却された選択肢（WHY/WHY NOT）といった、変化しにくい情報のみを記録することが推奨されます。
+
+**4. サーバーレスアーキテクチャへの適用**
+
+*   **Lambda関数の粒度:** Lambda関数は、単一のリクエストを処理する「Micro Lambda」や、全エンドポイントを内包する「Lambda-lith」ではなく、境界づけられたコンテキスト（例: ユーザー管理、商品管理）で分割する「Pragmatic Lambda」が有効です。
+*   **テスト戦略:** Lambda関数のテストにおける課題（`APIGatewayProxyEvent`の手動構築、モックの複雑化など）は、Lambda Web Adapter（LWA）の利用により、通常のHTTPテストと同様の簡便さで実施可能になります。また、DynamoDB Localなどのローカルエミュレータを活用し、ローカル/CI環境での高速なテストを実現し、統合テストはクラウド環境と併用するアプローチも有効です。
+
+**5. 運用エージェントが運用しやすいクラウド構造**
+
+AI運用エージェントが効率的に稼働するためには、以下の3つの要件を満たすクラウド構造が不可欠です。
+
+*   **探索可能なログとメトリクス:** 依存関係のある全てのログ、メトリクスが、サービス境界を明確に示し、探索可能であること。
+*   **明確なアーキテクチャ境界:** サービス間の境界が明確に定義されていること。
+*   **コンテキストロットしない領域での作業:** AIのコンテキストウィンドウの制約内で、十分な情報量で作業が完結できること。
+
+これを実現するため、構造化されたログ（サービス境界、トレーサビリティ、ビジネスコンテキストなどを明記）や、Lambda Powertoolsを利用したメトリクス収集が有効です。`serviceName`などを適切に設定し、観測性を担保することが重要です。
+
+**まとめ**
+
+本セッションでは、AIが開発・運用しやすいクラウド設計の原則として、コンテキストウィンドウの制約を前提とした設計、Monorepoとモジュール境界の設計、ドキュメントの役割の再定義、サーバーレスアーキテクチャへの具体的な適用、そして運用エージェントの視点からの観測性確保が強調されました。特に、「コンテキストの圧縮を、ドキュメントだけでなくアーキテクチャで実現する」というメッセージが一貫していました。Deep/Shallow Moduleの考え方を実プロジェクトに落とし込むことで、AI駆動開発の可能性をさらに広げることが期待されます。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

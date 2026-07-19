@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ECS Express Modeの新機能「CPUアーキテクチャ自動検出」で、x86_64からARM64イメージへの切り替えを試してみた</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>ECS Express Modeの新機能「CPUアーキテクチャ自動検出」で、x86_64からARM64イメージへの切り替えを試してみた</h1>
+<p><strong>Date:</strong> 2026-07-09</p>
+<p><strong>Source:</strong> rss / DevelopersIO</p>
+
+<p><a href="https://dev.classmethod.jp/articles/ecs-express-mode-auto-detect-cpu-architecture/">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">## ECS Express Modeの新機能「CPUアーキテクチャ自動検出」によるx86_64からARM64イメージへの切り替え検証
+
+AWS ECS Express Modeにおいて、CPUアーキテクチャの自動検出機能が追加され、x86_64からARM64イメージへの切り替えが可能になりました。
+
+**これまでの課題と対応:**
+
+Express Modeでは、サービス作成時にタスク定義が自動生成されていましたが、CPUアーキテクチャは常にx86_64に固定されていました。そのため、ARM64イメージを指定しても「exec format error」でタスクが停止する問題がありました。この課題に対し、以下の対応が行われてきました。
+
+*   **〜2026年6月:** ワークアラウンドとして、x86_64で作成後にタスク定義を手動でARM64に変更する必要がありました。
+*   **2026年7月1日:** カスタムタスク定義のサポートにより、ユーザーが明示的にアーキテクチャを指定できるようになりました。
+*   **2026年7月8日:** CPUアーキテクチャ自動検出機能が追加され、ECSがイメージのアーキテクチャを検出し、タスク定義とのミスマッチがある場合に自動でオーバーライドを適用するようになりました。
+
+**検証内容:**
+
+本記事では、このCPUアーキテクチャ自動検出機能の挙動を検証しました。
+
+1.  **x86_64イメージでのサービス作成:**
+    まず、x86_64ビルドのnginxイメージ（`:x86`）を使用してExpress Modeサービスを作成し、正常に稼働することを確認しました。この時点でのタスク定義は `runtimePlatform.cpuArchitecture: X86_64` でした。
+
+2.  **ARM64イメージへのアップデート:**
+    次に、`update-express-gateway-service` コマンドを使用して、ARM64ビルドのイメージ（`:arm64-v2`）へ更新しました。
+    *   1回目のアップデートではロールバックが発生しましたが、原因は特定できていません。
+    *   2回目のアップデートで、ECSがイメージのアーキテクチャを検出し、サービスリビジョンレベルで `overrides.runtimePlatform.cpuArchitecture` が `ARM64` に自動設定されました。タスク定義自体はx86_64のままで、このオーバーライドによってARM64タスクとして起動しました。
+    *   アップデートから約25分後にARM64タスクがRUNNING状態になり、デプロイが完了しました。
+
+**検証結果:**
+
+*   CPUアーキテクチャ自動検出機能により、既存のExpress ModeサービスをARM64イメージへスムーズにアップデートできることが確認できました。
+*   タスク定義は変更されず、サービスリビジョンレベルでのオーバーライドによってアーキテクチャの差分が補正されます。
+*   ARM64実行環境はx86_64より料金が安いため、ARM64で動作するアプリケーションであれば、コスト削減に繋がる可能性があります。
+
+**注意点:**
+
+*   **初回作成時の挙動:** ARM64イメージを直接指定して新規サービスを作成した場合、自動検出は適用されず、タスクはx86_64として起動し停止しました。新規サービスでARM64を使用する場合は、カスタムタスク定義で `runtimePlatform.cpuArchitecture` を明示的に指定する必要があります。
+*   **overridesフィールド:** これはECSによって自動設定されるRead-onlyフィールドであり、ユーザーが直接設定することはできません。
+*   **反映までの時間:** overridesの出現まで時間がかかる場合があるため、`describe-service-revisions` で確認する際は注意が必要です。
+*   **AWS CLIバージョン:** overridesフィールドの取得には、AWS CLI v2.35.18以降が必要です。
+*   **公式APIドキュメント:** 2026年7月9日時点で、ServiceRevisionの公式リファレンスページにはこの変更が反映されていません。
+
+**まとめ:**
+
+ECS Express ModeのCPUアーキテクチャ自動検出機能は、既存サービスをARM64イメージへ移行する際の大きなメリットを提供します。ただし、新規サービス作成時にはカスタムタスク定義による明示的な指定が必要である点に注意が必要です。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>MultAttnAttrib: Training-Free Multimodal Attribution in Long Document Question Answering</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>MultAttnAttrib: Training-Free Multimodal Attribution in Long Document Question Answering</h1>
+<p><strong>Date:</strong> 2026-07-01</p>
+<p><strong>Source:</strong> paper / hf-papers</p>
+
+<p><a href="http://arxiv.org/abs/2607.01420v2">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body"># タイトル
+MultAttnAttrib: Training-Free Multimodal Attribution in Long Document Question Answering
+[View Paper](http://arxiv.org/abs/2607.01420v2)
+
+## 1. 問題意識：解決したい問題はなにか
+AIアシスタントに搭載される説明責任を持つQA（質問応答）システムにおいて、生成された回答を証拠に正確に帰属させることは、ユーザーの信頼とモデルの安全性にとって極めて重要です。単一モダリティ（テキストのみなど）の帰属については広く研究されていますが、複数のモダリティ（テキストと画像など）が混在する文書における帰属は、まだ十分に研究されていません。特に、長い文書では、回答の各要素が文書内のどの部分（テキスト、画像など）に基づいているかを正確に特定することが困難です。
+
+## 2. 提案手法のアプローチ：どのようなアイデア・アプローチで問題を解決しようとしたか
+本研究では、「MultAttnAttrib」という、追加学習を必要としない（training-free）マルチモーダル帰属生成手法を提案しています。この手法は、モデルの「プリフィルパス」（推論の初期段階で入力を処理する部分）で得られる注意機構（attention mechanism）のパターンを利用します。具体的には、特定の注意ヘッド（attention heads）を選択し、それらの注意信号を分析することで、文書内の証拠（テキストや画像）を特定します。さらに、キャリブレーションされた閾値を用いることで、どの証拠が回答を支持しているかを判断します。
+
+## 3. 成果：提案手法により、何が達成できたのか
+- **高い帰属精度**: MultAttnAttribは、複数の既存の帰属生成手法、およびGPT-5.4のような最先端モデルと同等の性能を示しました。単一モダリティとマルチモーダル両方の帰属精度を大幅に向上させました。
+- **低レイテンシ**: 同一のベースモデルを用いた場合、プロンプトベースのアプローチと比較して、最大で7分の1の推論レイテンシで帰属を生成できます。これは、学習不要で、推論を1回のフォワードパスで完了できるためです。
+- **新しいベンチマークの提供**: マルチモーダル帰属評価のための新しいベンチマークデータセット「MultAttrEval」を導入しました。これは、長文のマルチモーダル文書に特化した、詳細なグラウンドトゥルース帰属情報を持つ初めてのデータセットです。
+
+## 4. 課題：本手法の限界・課題にはなにか。本文中で著者が言及しているものと、あなたが想定するもの
+**本文中で著者が言及している課題:**
+- **プローブセットの必要性**: MultAttnAttribは、注意ヘッドの特定と閾値キャリブレーションのために、少量のラベル付きQAペア（プローブセット）を必要とします。著者らは、教師なしヘッドスコアリングなどの方法でこの要件をなくす可能性に言及していますが、性能とのトレードオフを考慮する必要があります。
+- **データセットの画像に関する課題**: MultAttrEvalデータセットには、意味的価値が低い画像（装飾的な画像など）が含まれることがあります。また、画像のみのQAA（Question-Answer-Attribution）では単一の画像のみが正解としていますが、実際には視覚的に類似した複数の画像が証拠となりうるため、性能を低下させる可能性があります。将来的には、画像関連のフィルタリングを強化し、複数の画像帰属をサポートすることが望ましいとされています。
+
+**あなたが想定する課題:**
+- **注意ヘッドの選択の汎用性**: 本手法は、特定のモデルアーキテクチャ（Transformerベースのモデル）の注意機構に依存しています。異なるアーキテクチャや、注意機構の役割が異なるモデルに対して、そのまま適用できるとは限りません。
+- **「トレーニングフリー」の定義**: 追加学習は不要ですが、ヘッドの特定や閾値キャリブレーションのために「プローブセット」を用いた調整が必要です。この調整プロセス自体が、ある種の「設定（configuration）」や「チューニング」と見なせる場合、完全な「トレーニングフリー」という表現が適切か議論の余地があるかもしれません。
+- **複雑な推論の限界**: 注意信号は、モデルが情報をどのように処理しているかの一端を示しますが、人間のような複雑で多段階の推論プロセスを完全に捉えきれない可能性があります。非常に複雑な推論が求められる質問に対しては、帰属の精度が低下する可能性も考えられます。
+
+## 5. 技術詳細：提案手法の技術的な詳細について、できるだけ詳しく。数式やアルゴリズム、モデル構造なども可能な限り詳しく
+
+MultAttnAttribは、主に以下の3つのステップで構成されます。
+
+1.  **注意ヘッドの特定 (Attention Head Identification)**:
+    文書内の証拠（テキストや画像）への注意が、どの注意ヘッドに集中的に現れるかを特定します。このために、2つの方法が検討されました。
+    *   **Mean Attention Scoring (MAS)**:
+        各注意ヘッドの、グラウンドトゥルース証拠位置への平均注意スコアの、文書全体への平均注意スコアに対する比率を計算します。これは、証拠にどれだけ選択的に注意を向けているかを測ります。
+        ```python
+        # Conceptual representation of MAS
+        # L: Number of layers, H: Number of heads
+        # attention_scores[layer][head][query_token][key_token]
+        # ground_truth_positions: set of key_tokens that are ground truth evidence
+        # all_document_positions: all key_tokens in the document
+
+        head_scores_mas = {}
+        for l in range(L):
+            for h in range(H):
+                mean_attention_to_gt = mean(attention_scores[l][h][query_token][key_token] for query_token in query_tokens for key_token in ground_truth_positions)
+                mean_attention_total = mean(attention_scores[l][h][query_token][key_token] for query_token in query_tokens for key_token in all_document_positions)
+                score = mean_attention_to_gt / mean_attention_total
+                head_scores_mas[(l, h)] = score
+        ```
+    *   **Causal Mediation Analysis (CMA)**:
+        より因果的なアプローチです。入力文書を「クリーンな状態」（元の文書）と「破損した状態」（証拠部分を他の文書のコンテンツで置き換えた状態）の2つでモデルを2回フォワードパスさせます。そして、グラウンドトゥルース証拠位置への平均注意スコアの、クリーン状態と破損状態での差分を計算します。これにより、その注意ヘッドが因果的に証拠の特定に寄与しているかを測定します。
+        ```python
+        # Conceptual representation of CMA
+        # Clean input: original document (x)
+        # Corrupted input: document with evidence replaced (x_corrupted)
+        # attention_clean = model(x, query)
+        # attention_corrupt = model(x_corrupted, query)
+
+        # IE (Intervention Effect) for a head (l, h)
+        IE = mean(attention_clean[l][h][query_token][ground_truth_positions] - attention_corrupt[l][h][query_token][ground_truth_positions] for query_token in query_tokens)
+
+        # Entropy-based weighting to suppress uniform attention
+        entropy = calculate_entropy(attention_clean[l][h][query_token][:]) # attention distribution over all tokens for a query
+        weight = max(0, 1 - entropy / log(document_length))
+
+        # Final CMA score for head (l, h)
+        cma_score = IE * weight
+        ```
+    これらのスコアを用いて、各ヘッドがテキスト証拠、画像証拠、または両方にどれだけ関連しているかを評価します。最終的に、最も関連性の高いトップK個（例: K=20）のヘッドを選択します。
+
+2.  **証拠スコアリングと閾値キャリブレーション (Evidence Scoring and Threshold Calibration)**:
+    特定された注意ヘッド（特に、クロスモーダルな注意を向けるヘッド）の注意信号を集約して、文書内のテキストスパンと画像領域のスコアを計算します。
+    *   **スコア計算**:
+        選択された注意ヘッドの注意マップを平均化し、各テキストスパンと画像パッチ（画像はグリッドに分割される）のスコアを計算します。
+        ```python
+        # Assuming selected_heads is a list of (layer, head) tuples
+        # attention_maps: aggregated attention maps from selected heads
+        # text_spans: all possible text spans in the document
+        # image_patches: all image patches
+
+        text_span_scores = {}
+        for span in text_spans:
+            score = mean(attention_maps[token_index] for token_index in span)
+            text_span_scores[span] = score
+
+        image_patch_scores = {}
+        for patch in image_patches:
+            score = mean(attention_maps[patch_index] for patch_index in patch)
+            image_patch_scores[patch] = score
+
+        # Min-max normalization of scores
+        normalized_text_scores = normalize(text_span_scores)
+        normalized_image_scores = normalize(image_patch_scores)
+        ```
+    *   **閾値キャリブレーション**:
+        得られたスコアは、そのままでは解釈が難しいため、キャリブレーションを行います。プローブセットのデータを用いて、テキストと画像のそれぞれに対して、F1スコアを最大化するような閾値（`T_img`, `T_txt`）を決定します。
+        ```python
+        # For probe_set in MultAttrEval:
+        #   Get text_scores, image_scores for each item
+        #   Calculate F1 scores for various thresholds T_img and T_txt
+        # T_img = argmax_{T} F1_image(probe_set, T)
+        # T_txt = argmax_{T} F1_text(probe_set, T)
+        ```
+        これにより、どのスコア以上であれば、そのテキストスパンや画像領域が証拠として採用されるかの基準が定義されます。
+
+3.  **帰属生成 (Attribution Generation)**:
+    キャリブレーションされた閾値を使用して、推論時に最終的な帰属を生成します。
+    *   **スコアリングと閾値適用**:
+        文書内の各テキストスパンと画像領域に対して、計算されたスコアを正規化し、キャリブレーションされた閾値と比較します。
+        ```python
+        # For a new document, question, answer:
+        #   Calculate normalized_text_scores and normalized_image_scores using selected heads
+
+        predicted_images = {img for img, score in normalized_image_scores.items() if score &gt;= T_img}
+        predicted_text_spans = {span for span, score in normalized_text_scores.items() if score &gt;= T_txt}
+
+        # If no score exceeds threshold, fallback to highest scoring element
+        if not predicted_images and not predicted_text_spans:
+            highest_scoring_img = argmax(normalized_image_scores.values())
+            highest_scoring_span = argmax(normalized_text_scores.values())
+            # Decide based on scores which to include, or include both if scores are close
+            predicted_images.add(highest_scoring_img) # Example fallback
+            predicted_text_spans.add(highest_scoring_span) # Example fallback
+        ```
+    *   **最終的な帰属**:
+        閾値を超えたテキストスパンと画像領域が、回答の証拠として採用されます。これらの結果を結合して、最終的なマルチモーダル帰属を生成します。
+
+**モデル構造:**
+提案手法は、特定のモデルアーキテクチャに縛られるものではありませんが、Transformerベースのマルチモーダル言語モデル（MLLM）で効果を発揮するように設計されています。特に、入力としてテキストと画像を同時に処理できるモデル（例: Qwen3-VL-30B, GPT-5.4）が対象となります。注意機構の出力（attention maps）を利用するため、これらのモデルの内部構造にアクセスできることが前提となります。
+
+## 6. この論文を140字以内のツイートで要約すると？
+長文マルチモーダルQAで回答根拠を素早く特定！学習不要なMultAttnAttribは、モデルの注意機構から証拠（テキスト・画像）を抽出し、低レイテンシで高精度な帰属を実現。新データセットMultAttrEvalも提案。#AI #NLP #マルチモーダル</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

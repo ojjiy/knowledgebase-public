@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>DINOv2 way worse than SigLIP in k-NN. Is this expected? [R]</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>DINOv2 way worse than SigLIP in k-NN. Is this expected? [R]</h1>
+<p><strong>Date:</strong> 2026-07-08</p>
+<p><strong>Source:</strong> reddit / MachineLearning</p>
+
+<p><a href="https://www.reddit.com/r/MachineLearning/comments/1uqtamz/dinov2_way_worse_than_siglip_in_knn_is_this/">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">## 1. このポストの内容を説明してください。
+
+このRedditのポストは、画像認識タスク、特に「細粒度（fine-grained）画像分類」における、異なる事前学習済みモデルの性能比較に関するものです。投稿者は、VW Golfの世代をリストの写真から識別するという、自動車の細粒度分類をテーマに学士論文を執筆しています。
+
+投稿者は、自身の小規模なデータセット（訓練データ175枚、テストデータ132枚）で、以下の3つのモデルを「凍結エンコーダー → 埋め込み → 重み付きk-NN」というシンプルな設定で評価しました。
+
+*   **SigLIP2 SO400M:** 約92%の精度
+*   **CLIP ViT-L:** 約59%の精度
+*   **DINOv2 Giant:** 約41%の精度
+
+投稿者は、SigLIPがコントラスト学習で訓練されており、埋め込み空間がコサイン類似度での比較に適しているのに対し、DINOv2は自己教師あり学習であり、その性能を発揮するには学習済みのヘッドが必要だと推測しています。しかし、SigLIPとDINOv2の精度に約50%もの大きな差があることに驚き、DINOv2を線形プローブ（linear probe）で細粒度タスクに適用した場合に性能が向上するのか、あるいはDINOv2がそもそも画像検索（retrieval）タスクに適していないのか疑問に思っています。
+
+また、投稿者は、誤った層の選択やプーリング方法など、自分が見落としている可能性のある点についても、助言を求めています。
+
+## 2. このポストに対するコメントのうち、特に興味深いものを教えてください。
+
+このポストに対するコメントの中で、特に興味深いのは以下の点です。
+
+*   **DINOv2の特性とSigLIPとの差の理由に関する解説:**
+    *   あるコメントでは、DINOv2は「意味論的モデル（semantic model）」であり、パッチ埋め込みの崩壊（collapse）に問題を抱える可能性があると指摘しています。また、DINOv2は局所的・大局的な対応関係や、微小な変化に対して不変性（invariance）を生み出すようなデータ拡張（augmentation）を用いるため、細粒度タスクで重要となる「微小な違い」を捉えにくいのではないかと推測しています。
+    *   さらに、DINOv2にはコントラスト学習の要素がないため、異なる自動車モデルを互いに遠ざけるような学習が促されていないことも、性能差の一因である可能性が示唆されています。
+    *   SigLIPは、言語ラベル（例：「白い2012年製VWポロ」といった代替テキスト）を含んで訓練されているため、自動車モデルに関する「細かな差異」を学習する信号が含まれている可能性が高いと指摘されています。
+
+*   **データ拡張と特徴抽出に関する洞察:**
+    *   別のコメントでは、DINOv2の訓練方法が、色やズームといったランダムなデータ拡張（augmentation）で生じる変化に対して「同じ出力」を生成するように設計されていることに言及しています。
+    *   これにより、ランダムなデータ拡張に含まれる要素（例：色）は、特徴量としてあまりエンコードされない可能性があると示唆されています。自動車分類において色は重要な信号であるため、これがSigLIPとの性能差に繋がっている可能性が示唆されています。
+    *   一方、DINOv2は、形状のような、ランダムなデータ拡張に含まれない要素を非常にうまくエンコードするだろうとも述べています。しかし、自動車は全体的に似たような形状をしているため、これは細粒度分類においてはあまり役立たないだろうと分析しています。
+
+*   **経験的な類似事例:**
+    *   SigLIPとDINOv2を同様の分類タスク（インターネットミームの分類）で使用した経験を持つユーザーもおり、その際もDINOv2の性能がSigLIPに劣ったと報告しています。
+    *   そのユーザーは、DINOv2の類似性は「構造的」であり「意味論的」ではないため、学習済みのヘッドやファインチューニング用のデータペアを用いた場合に有効なバックボーンモデルとして機能するだろうと推測しており、投稿者の問題意識と一致しています。
+
+これらのコメントは、投稿者が直面している問題に対して、DINOv2の学習方法や特性、 SigLIPの訓練方法との違い、そしてデータ拡張が画像認識タスクに与える影響といった、より深いレベルでの解説や示唆を与えており、非常に興味深いと言えます。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

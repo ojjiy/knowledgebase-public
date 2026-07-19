@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AIP合格記：試験対策がてらBedrockを使って弱点特化した問題を作らせる学習システムを自作した</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>AIP合格記：試験対策がてらBedrockを使って弱点特化した問題を作らせる学習システムを自作した</h1>
+<p><strong>Date:</strong> 2026-07-09</p>
+<p><strong>Source:</strong> rss / Qiita Trend</p>
+
+<p><a href="https://qiita.com/y_wakai/items/e4ba31be43d518b9fdbc?utm_campaign=popular_items&amp;utm_medium=feed&amp;utm_source=popular_items">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">## AIP合格記：Bedrockを活用した弱点特化型問題生成学習システムの自作
+
+本記事は、AWSの資格試験、特に情報が少ない新設資格であるAIP-C01（Generative AI Developer Professional）の対策として、Amazon Bedrockを用いた弱点特化型問題生成学習システムを自作した体験談と、そのシステムアーキテクチャ、実装における工夫を紹介するものです。
+
+**問題意識とシステム開発の動機:**
+
+AWS資格の複数受験経験から、マイナーな資格や新設資格では問題集の入手が困難であったり、問題のバリエーションが少なかったり、本番レベルの難易度に達していないという課題に直面しました。特にAIP-C01は問題集がほとんど存在しない状況でした。この課題に対し、「生成AIを題材にした試験を受けるならば、自分で問題集を作成すれば良い」という発想から、自作学習システムの開発に着手しました。
+
+**システム開発で実現したこと:**
+
+1.  **資格特化最適化:** 自身が受験する資格に特化した問題を作成。
+2.  **弱点ドメイン重点学習:** 苦手な分野を重点的に学習できるよう調整。
+3.  **学習履歴連動問題生成:** 生成AIが学習履歴（弱点）を考慮して問題を作成。
+
+**システム概要:**
+
+*   **対応資格:** 全12種のAWS資格に対応。
+*   **問題数:** 3,000問以上をランダム出題。
+*   **弱点分析:** 弱点ドメインを自動分析し、重点学習を促す。
+*   **オンデマンド問題生成:** Amazon Bedrock（Claude）が弱点ドメインに特化した問題を生成。
+*   **コスト:** 全てサーバーレス構成で、月額ほぼ0円。
+
+**アーキテクチャと技術スタック:**
+
+インフラはAWS CDK（Python）で管理し、以下の技術スタックで構成されています。
+
+*   **フロントエンド:** React 18 + TypeScript + Vite
+*   **認証:** Amazon Cognito
+*   **API:** API Gateway + Lambda（Python 3.12）
+*   **DB:** DynamoDB（PAY\_PER\_REQUEST）
+*   **メッセージング:** SQS FIFO（問題生成の非同期処理）
+*   **AI生成:** Amazon Bedrock（Claude Sonnet 4.6 + Prompt Caching）
+*   **知識ベース:** Bedrock Knowledge Base（試験ガイドPDF）
+*   **IaC:** AWS CDK（Python）
+*   **ホスティング:** S3 + CloudFront
+
+**実装の工夫:**
+
+1.  **重み付きサンプリング:** プレイ回数に反比例する重みを設定し、同じ問題ばかり出題されるのを防ぎます。また、試験の出題比率に合わせたドメイン配分制御も実装。
+2.  **SQS + Prompt Cachingによる信頼性の高い問題生成:** 時間のかかる問題生成をSQS FIFOキューで1問ずつ非同期処理にすることで、一部の問題生成失敗が全体に影響しないようにしました。Prompt Cachingにより、固定ルール部分のコストを大幅に削減。
+3.  **DynamoDBのアクセスパターン設計:** 問題テーブルと回答履歴テーブルに対し、効率的な検索・分析を可能にするGSI（Global Secondary Index）を設計。特にフィードバック用GSIは、高品質な参考問題の取得に貢献。
+4.  **Bedrock × Knowledge Baseによる高品質問題生成:** 試験ガイドPDF、高評価の既存問題、弱点ドメイン情報を組み合わせたプロンプト設計により、事実誤認がなく、最新仕様に基づいた難易度・形式の同等な問題生成を実現。難易度に応じたプロンプト調整も実施。
+5.  **弱点分析アルゴリズム:** ドメイン別の正解率や直近の誤答問題を分析し、それを問題生成プロンプトに反映させることで、弱点克服に特化した学習サイクルを構築。
+6.  **生成問題のファクトチェックと類似性排除:** プロンプトでの指示、LLM as a Judgeによる類似問題検出、構造品質チェック、ユーザーフィードバックによる多層的な品質担保を実施。高評価問題の循環利用により、問題プールの品質向上を図っています。
+
+**コスト:**
+
+サービスは全てサーバーレス構成で、無料枠や低トラフィックを考慮すると、月額ほぼ0円で運用可能です。問題生成時のみBedrockの費用が発生しますが、10問あたり約0.5ドルと非常に安価です。
+
+**試験結果と効果:**
+
+このシステムで約2週間・200問以上を解いてAIP-C01を受験した結果、無事合格しました。特に、弱点ドメインの克服、問題形式への慣れ、そしてシステム構築過程そのものが試験対策になったことが実感としてあります。
+
+**振り返りと今後の展望:**
+
+「ないなら作る」という発想で、生成AIを題材にした試験対策として、試験範囲のサービスで問題を生成する環境を自作することは非常に有効でした。弱点分析と特化型問題生成による自己最適化学習環境は、学習効果を高める重要な要素でした。
+
+今後は、回答時間の計測、生成問題の自動品質評価、他ベンダー資格への対応、進捗表示機能の追加などを検討しています。AWSの新設資格で悩んでいる方には、ぜひ自作システム構築を試すことをお勧めします。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

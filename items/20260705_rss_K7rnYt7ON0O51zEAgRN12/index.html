@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>【PostgreSQL】INSERT/UPDATE/DELETE で xmin/xmax がどう変わるかを確認してみた</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>【PostgreSQL】INSERT/UPDATE/DELETE で xmin/xmax がどう変わるかを確認してみた</h1>
+<p><strong>Date:</strong> 2026-07-05</p>
+<p><strong>Source:</strong> rss / DevelopersIO</p>
+
+<p><a href="https://dev.classmethod.jp/articles/postgresql-xmin-xmax-insert-update-delete/">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">PostgreSQL のシステム列である `xmin` と `xmax` は、テーブルの各行のライフサイクルを追跡するために使用されます。`xmin` はその行を作成したトランザクションID（XID）を記録し、`xmax` はその行を削除または更新したトランザクションIDを記録します。行がまだ削除・更新されていない場合は `xmax` は 0 になります。
+
+本記事では、PostgreSQL で `INSERT`、`UPDATE`、`DELETE` 操作を実行した際に `xmin` と `xmax` の値がどのように変化するかを検証しています。
+
+**検証の準備:**
+* EC2（AL2023）に PostgreSQL 17.10 をインストール。
+* `pageinspect` 拡張機能を有効化（dead tuple の確認に必要）。
+
+**`xmin` と `xmax` について:**
+* `xmin`: 行バージョン（行の個別の状態）を作成したトランザクションID。
+* `xmax`: 行バージョンを削除したトランザクションID。削除されていない場合は 0。
+* これらの列は、PostgreSQL の MVCC（多版型同時実行制御）を実現するために使用され、「どのトランザクションからどの行が見えるか」を管理しています。
+* トランザクションID（XID）は、トランザクションごとに連番で採番されます。
+
+**操作ごとの `xmin`/`xmax` の変化:**
+
+1.  **INSERT:**
+    *   `xmin` には、その行を挿入したトランザクションのXIDが記録されます。
+    *   `xmax` は 0 のままです（削除・更新されていないため）。
+
+2.  **UPDATE:**
+    *   PostgreSQL の `UPDATE` は、既存の行を直接書き換えるのではなく、古い行を無効化（dead tuple）し、新しい行（live tuple）を作成するという動作をします。
+    *   **dead tuple（古い行）:** `xmax` に、その行を無効化した（更新した）トランザクションのXIDが記録されます。
+    *   **live tuple（新しい行）:** `xmin` に、新しく作成されたトランザクションのXIDが記録されます。`xmax` は 0 のままです。
+    *   `pageinspect` 拡張機能を使用することで、通常の `SELECT` では見えない dead tuple も確認できます。
+
+3.  **DELETE:**
+    *   `DELETE` 操作により、対象の行は dead tuple となります。
+    *   通常の `SELECT` では行が見えなくなります。
+    *   `pageinspect` で確認すると、dead tuple として物理的に残っており、`xmax` にその行を削除したトランザクションのXIDが記録されていることが確認できます。
+
+**まとめ:**
+
+| 操作       | tuple の種類            | xmin                | xmax          |
+| :--------- | :---------------------- | :------------------ | :------------ |
+| INSERT     | live tuple              | 挿入したXID         | 0             |
+| UPDATE     | live tuple（新しい行）  | 更新したXID         | 0             |
+| UPDATE     | dead tuple（古い行）    | 変化なし (挿入時のXID) | 更新したXID   |
+| DELETE     | dead tuple              | 変化なし (挿入時のXID) | 削除したXID   |
+
+本記事では、これらの操作を通じて `xmin` と `xmax` の挙動を具体的に確認し、その理解を深めることができたと結論付けています。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

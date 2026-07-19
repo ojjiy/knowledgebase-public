@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Knowledge Should Not Be Gated</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>Knowledge Should Not Be Gated</h1>
+<p><strong>Date:</strong> 2026-07-05</p>
+<p><strong>Source:</strong> rss / Hacker News Front Page</p>
+
+<p><a href="https://www.formaly.io/blog/knowledge-should-not-be-gated">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">記事「Knowledge Should Not Be Gated」は、AIシステムに知識を組み込む際の従来の複雑なインフラストラクチャ構築（ドキュメントのチャンク化、埋め込みモデルの利用、ベクトルデータベースの構築、Retrieval-Augmented Generation (RAG) の活用など）が、知識を人間にとって読みにくく、特定のシステムに閉じ込めてしまう「フォーマットの壁」を生み出していると指摘しています。
+
+著者は、この問題に対するシンプルで効果的な解決策としてMarkdown形式を提案しています。Markdownは、構造化されつつも簡潔であり、人間が直接読み解ける一方で、AIモデルも処理しやすい形式です。Andrej Karpathy氏の「LLM Wiki」パターンは、この考え方を具体化しており、生データ、AIが生成・管理するMarkdownページ（要約、概念ページなど）、そしてAIの動作を指示するスキーマファイル（CLAUDE.mdやAGENTS.mdなど）の3層構造を提唱しています。このアプローチでは、AIは人間が煩雑で飽きやすいメンテナンス作業（クロスリファレンスの更新、矛盾の解消など）を効率的に行うため、知識は一度コンパイルされ、常に最新の状態に保たれます。これにより、クエリごとに知識を再検索・再構築するRAGのオーバーヘッドを削減できます。
+
+Google Cloudが発表したOpen Knowledge Format (OKF) は、この「AI-wiki」の考え方をベンダーニュートラルな標準フォーマットに落とし込んだものです。OKFは、Markdownファイルで構成され、各ファイルが概念（データセット、テーブル、メトリクスなど）を表し、YAMLフロントマッターで構造化されたメタデータ（`type`、`title`、`description`など）が付与されます。Markdownリンクによって概念間の関係性がグラフ構造を形成し、外部データベースを必要としません。OKFの重要性は、その技術的な新しさではなく、異なるツール間での知識のポータビリティと相互運用性を実現する「合意」にあると強調されています。
+
+結論として、知識をAIシステムに組み込む際に、複雑なインフラストラクチャや独自のツールに依存するのではなく、人間とAIの両方が容易に読み書きできるMarkdownのような「つまらない」フォーマットを採用することが、知識を「ゲート」から解放し、真に有用にする鍵であると主張しています。これは、個々のツールやシステムに知識を閉じ込めるのではなく、知識を自由に流動させることを目指すものです。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

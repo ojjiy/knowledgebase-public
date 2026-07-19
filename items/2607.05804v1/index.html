@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TurnOPD: Making On-Policy Distillation Turn-Aware for Efficient Long-Horizon Agent Training</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>TurnOPD: Making On-Policy Distillation Turn-Aware for Efficient Long-Horizon Agent Training</h1>
+<p><strong>Date:</strong> 2026-07-07</p>
+<p><strong>Source:</strong> paper / hf-papers</p>
+
+<p><a href="http://arxiv.org/abs/2607.05804v1">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body"># タイトル
+TurnOPD: Making On-Policy Distillation Turn-Aware for Efficient Long-Horizon Agent Training
+[View Paper](http://arxiv.org/abs/2607.05804v1)
+
+## 1. 問題意識：解決したい問題はなにか
+本論文では、言語エージェントの学習において、特に長期間にわたるタスク（long-horizon agentic tasks）におけるOn-Policy Distillation (OPD) の効率性の低さを解決したいと考えています。具体的には、以下の2つの非効率性を指摘しています。
+
+1.  **全ホライゾン（full-horizon）のロールアウトによるリソースの浪費**: 長いタスク全体を一度にロールアウト（データ収集）すると、タスクの終盤（tail turns）では教師モデルからのKLダイバージェンスによる教師信号が弱く、ノイズが多くなる傾向があります。しかし、それでも終盤までロールアウトを続けるため、貴重な計算リソースが非効率的に消費されてしまいます。
+2.  **軌跡レベル（trajectory-level）のKL目的関数による学習の偏り**: OPDで一般的に用いられる軌跡レベルでのKLダイバージェンスの最適化では、損失の大部分がタスクの初期段階（shallow tokens）に集中しがちです。これにより、初期の振る舞いが教師モデルに近づいた後、タスクの後半の意思決定に関わる重要なターン（deeper decision turns）が十分に学習されないという問題が生じます。
+
+これらの問題により、長期間にわたるエージェントの学習に時間がかかりすぎる、あるいは学習が十分に進まないという状況が発生しています。
+
+## 2. 提案手法のアプローチ：どのようなアイデア・アプローチで問題を解決しようとしたか
+これらの課題に対処するため、本論文では「TurnOPD」という、ターンレベルでの予算配分戦略を提案しています。TurnOPDは、長期間にわたるエージェントの効率的なOn-Policy Distillationを実現するために、以下の2つの主要な予算制御（budget controllers）を導入します。
+
+1.  **適応型ロールアウト深度予算（adaptive rollout-depth budgeting）**: タスクの各ターンで生成される教師信号の質を評価し、ロールアウトの長さを動的に決定する手法です。具体的には、「プローブベースのターン統計（probe-based turn statistics）」を利用して、どのターンまでロールアウトを続ければ有益な教師信号が得られるかを判断します。これにより、教師信号が弱くなったりノイズが多くなったりするタスクの終盤までのロールアウトを避け、リソースの浪費を防ぎます。
+2.  **段階的ターン正規化損失予算（progressive turn-normalized loss budgeting）**: KLダイバージェンスの損失の重み付けを、タスクの進行に合わせて調整する手法です。初期段階ではトークンレベルでの細かな一致を重視しますが、学習が進むにつれて、より重要な「ターンごとのバランスが取れた教師信号（turn-balanced supervision）」へと重み付けをシフトさせていきます。これにより、タスクの初期段階だけでなく、後半の意思決定ターンも適切に学習されるように誘導します。
+
+これらのアプローチを組み合わせることで、長期間タスクにおけるOPDの効率性と学習効果を向上させることを目指します。
+
+## 3. 成果：提案手法により、何が達成できたのか
+提案手法であるTurnOPDは、実証実験において以下の顕著な成果を達成しました。
+
+*   **同等の壁時計学習時間（wall-clock training budgets）での優れた検証精度**: ALFWorld、WebShop、Multi-Hop Searchといった、長期間にわたるタスクで実験を行った結果、TurnOPDは、従来のOPDと比較して、同じ計算時間（壁時計時間）でより高い検証精度（validation accuracy）を達成しました。これは、TurnOPDが効率的に学習を進められたことを示しています。
+*   **精度と時間のフロンティアの進展**: TurnOPDは、精度と学習時間のトレードオフの関係（accuracy--time frontier）において、従来のOPDを凌駕する性能を示しました。すなわち、より短い学習時間で同等以上の精度を達成するか、あるいは同等の学習時間でより高い精度を達成することを可能にし、効率的なエージェント学習の新たな基準を打ち立てました。
+
+これらの成果は、TurnOPDが長期間タスクにおけるOPDの効率性を大幅に改善し、より高性能な言語エージェントを迅速に訓練できる可能性を示唆しています。
+
+## 4. 課題：本手法の限界・課題にはなにか。本文中で著者が言及しているものと、あなたが想定するもの
+### 本文中で著者が言及している課題
+本文中では、TurnOPDの限界や課題について直接的に明記されている箇所はありません。しかし、手法の性質から以下のような点が課題となり得ると推測されます。
+
+*   **「プローブベースのターン統計」の設計とチューニング**: 適応型ロールアウト深度予算において、どのような統計量（例: エントロピー、教師モデルの確信度など）を「プローブ」として使用し、どのようにそれらを解釈してロールアウト深度を決定するかは、タスクや教師モデルの特性に依存する可能性があります。これらの統計量の選択や、それらに基づく予算配分の閾値設定には、ある程度のチューニングが必要となるかもしれません。
+*   **「段階的ターン正規化損失」のシフト戦略**: 損失の重み付けをトークンレベルからターンレベルへどのように「段階的」にシフトさせるか、その具体的なスケジュールや遷移方法も、タスクの特性や学習の進捗具合によって最適なものが異なる可能性があります。このシフト戦略の設計も、性能に影響を与える要因となり得ます。
+
+### あなたが想定する課題
+*   **汎用性**: 本研究ではALFWorld, WebShop, Multi-Hop Searchといった特定のタスクと、それらに特化した教師モデルで実験が行われています。TurnOPDの有効性が、より多様なタスク（例: 対話、コード生成、ゲームプレイなど）や、汎用的な教師モデルに対してどこまで維持されるかは、さらなる検証が必要かもしれません。
+*   **計算コストの増加**: 適応型ロールアウト深度予算や段階的損失予算の制御メカニズム自体が、単純なOPDと比較して若干の計算オーバーヘッドを生む可能性があります。特に、ターンごとの統計計算や動的な重み付け調整は、ロールアウトや学習のループ内で実行されるため、そのオーバーヘッドが無視できないレベルになる場合、全体の効率性に影響を与える可能性があります。
+*   **教師モデルの性能への依存**: OPD全般に言えることですが、学習する学生モデルの性能は、教師モデルの性能に強く依存します。TurnOPDは学習効率を改善する手法ですが、教師モデル自体の性能が低い場合、期待されるほどの成果は得られない可能性があります。
+*   **「弱くノイズの多い」教師信号の定義**: タスクの終盤で「弱くノイズの多い」教師信号が発生するとされていますが、この「弱さ」や「ノイズ」を定量的に、かつロバストに判定する基準の設計は、タスクによっては難しい場合があります。
+
+## 5. 技術詳細：提案手法の技術的な詳細について、できるだけ詳しく。数式やアルゴリズム、モデル構造なども可能な限り詳しく
+TurnOPDの核心は、効率的なOn-Policy Distillation (OPD) のための「ターンレベルでの予算配分戦略」にあります。これは、主に以下の2つのコンポーネントから構成されます。
+
+### 1. 適応型ロールアウト深度予算 (Adaptive Rollout-Depth Budgeting)
+
+このコンポーネントの目的は、教師信号の質が低下するタスクの終盤での無駄なロールアウトを削減することです。
+具体的には、以下のようなプロセスが想定されます。
+
+*   **プローブベースのターン統計**: 各ターン $t$ において、現在の学生ポリシー $\pi_s$ を用いてロールアウトを継続し、教師モデル $\pi_t$ との間の「何らかの統計量」を計算します。この統計量は、教師信号の「質」や「有用性」を示す指標となります。
+    *   **考えられる統計量の例**:
+        *   **KLダイバージェンス**: $D_{KL}(\pi_t(\cdot|o_t) || \pi_s(\cdot|o_t))$。ただし、これは最終的な損失関数の一部でもあるため、純粋な「プローブ」として使うには工夫が必要です。
+        *   **教師モデルの確信度**: 教師モデルが次のアクションをどれだけ確信しているかを示す指標（例: 最大対数確率）。確信度が低い場合、教師信号は不安定である可能性があります。
+        *   **学生モデルと教師モデルの予測分布の距離**: 上記KLダイバージェンス以外にも、Jensen-Shannon Divergence (JSD) など、分布間の距離を測る指標。
+        *   **タスク固有の指標**: 特定のタスクにおいて、そのターンの重要性を示す指標（例: 報酬に直結する確率、状態遷移の不確実性など）。
+*   **ロールアウト深度の決定**: 統計量が事前に設定された閾値（例: $V_{threshold}$）を下回った場合、または統計量が一定期間（例: $\Delta t$ ターン）にわたって単調に悪化した場合、そのターンでロールアウトを打ち切ります。
+    *   **疑似コード例**:
+
+    ```python
+    def decide_rollout_depth(current_turn, teacher_model, student_model, observation):
+        # Calculate probe statistics for the current turn
+        probe_stats = calculate_probe_statistics(teacher_model, student_model, observation) # Example: KL divergence, confidence, etc.
+
+        # Define a threshold for stopping rollout
+        stop_threshold = get_stopping_threshold(probe_stats) # This might be fixed or adaptive
+
+        if probe_stats &lt; stop_threshold:
+            return current_turn # Stop rollout at this turn
+        else:
+            return None # Continue rollout
+    ```
+    この「プローブベースのターン統計」の具体的な定義と、それをどのように「閾値」と結びつけるかが、このアプローチの鍵となります。
+
+### 2. 段階的ターン正規化損失予算 (Progressive Turn-Normalized Loss Budgeting)
+
+このコンポーネントは、学習の進行度合いに応じて、損失関数の重み付けを調整することで、特に長期間タスクの後半の意思決定ターンへの学習を強化します。
+
+*   **標準的なOPDの損失**: 従来のOPDでは、軌跡全体（または一部）にわたるアクションの対数尤度（またはKLダイバージェンス）を最適化します。
+    *   **疑似コード例 (標準OPD)**:
+    ```python
+    # For a trajectory [o_1, a_1, ..., o_T, a_T]
+    # Loss_OPD = - sum_{t=1 to T} log pi_s(a_t | o_t)  (if maximizing likelihood)
+    # Or Loss_OPD = sum_{t=1 to T} D_KL(pi_t(action | o_t) || pi_s(action | o_t)) (if matching teacher KL)
+    ```
+*   **TurnOPDにおける損失の重み付け**: TurnOPDでは、この損失をターンごとに計算し、その重み付けを調整します。
+    *   **ターン正規化**: 各ターン $t$ の損失に、何らかの「正規化係数」または「重み」$w_t$ を乗じます。
+    *   **段階的シフト**: この重み $w_t$ は、学習の進行度合い（例: エポック数 $E$）や、タスクのターン数 $T$ に応じて変化します。
+        *   **初期段階**: トークンレベルでの損失、つまり各アクション選択に対する損失の重みを比較的高く設定します。
+        *   **後期段階**: タスクの後半のターン（$t$ が大きい場合）や、より「意思決定」の重要度が高いとされるターンに対して、より大きな重みを割り当てるようにシフトさせます。
+    *   **具体的な重み付け関数**:
+        *   **学習進行度に基づくシフト**:
+            ```
+            w_t = f(t, E, T)
+            ```
+            ここで、$f$ は学習の進行度 $E$ が増すにつれて、あるいはタスクのターン数 $T$ に応じて、後半のターン（$t$ が大きい）の重みを相対的に増加させる関数です。例えば、以下のような形式が考えられます。
+            *   `w_t = 1.0` (初期エポック)
+            *   `w_t = (t/T)^gamma` (学習後期、$\gamma &gt; 0$ は調整パラメータ)
+            *   `w_t = beta * (t/T) + (1-beta)` (線形補間、$\beta$ は学習進行度で変化)
+
+        *   **ターンごとの重要度に基づくシフト**:
+            タスクの性質上、特定のターンが他のターンよりも意思決定において重要であると判断できる場合、そのターンに高い重みを割り当てます。この「重要度」は、タスク設計や事前知識に基づいて定義される可能性があります。
+
+    *   **TurnOPDの損失**:
+        ```
+        Loss_TurnOPD = sum_{t=1 to T&#39;} w_t * D_KL(pi_t(action | o_t) || pi_s(action | o_t))
+        ```
+        ここで、$T&#39;$ は適応型ロールアウト深度予算によって決定された実際のロールアウト長です。
+
+### モデル構造と学習ループ
+
+*   **モデル構造**: 学生ポリシー $\pi_s$ と教師ポリシー $\pi_t$ は、通常、Transformerベースの言語モデル（例: GPT-like architecture）として実装されます。これらのモデルは、観測 $o_t$ を入力として受け取り、次アクション $a_t$ の確率分布を出力します。
+*   **学習ループ**:
+    1.  **ロールアウト**: 現在の学生ポリシー $\pi_s$ を用いて、環境（ALFWorld, WebShopなど）でインタラクションし、観測 $o_t$ とアクション $a_t$ のシーケンスを生成します。
+    2.  **ロールアウト深度決定**: 適応型ロールアウト深度予算メカニズムを使用して、ロールアウトをいつ打ち切るかを決定します。
+    3.  **教師信号生成**: 決定されたロールアウト長に基づいて、教師モデル $\pi_t$ から各ターン $t$ における教師アクションの確率分布（または、学習対象によっては教師モデルの応答そのもの）を取得します。
+    4.  **損失計算**: TurnOPDの損失関数（段階的ターン正規化損失予算を適用）を計算します。
+    5.  **ポリシー更新**: 計算された損失を用いて、学生ポリシー $\pi_s$ のパラメータを勾配降下法などで更新します。
+    6.  このプロセスを繰り返します。
+
+TurnOPDは、これらのメカニズムを組み合わせることで、長期間タスクにおけるOPDの効率性と効果を向上させています。
+
+## 6. この論文を140字以内のツイートで要約すると？
+長期間タスクでの言語エージェント学習を高速化！TurnOPDは、無駄なロールアウトを避け、後半の意思決定ターンに学習を集中させる新手法。同等学習時間で精度向上、学習効率を大幅改善！#AI #言語エージェント #強化学習</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

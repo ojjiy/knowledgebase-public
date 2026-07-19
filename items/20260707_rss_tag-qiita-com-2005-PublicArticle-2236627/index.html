@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Vibe Codingで商用品質を目指して失敗してきた記録と、いま試している仮説</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>Vibe Codingで商用品質を目指して失敗してきた記録と、いま試している仮説</h1>
+<p><strong>Date:</strong> 2026-07-07</p>
+<p><strong>Source:</strong> rss / Qiita Trend</p>
+
+<p><a href="https://qiita.com/autotaker1984/items/7d16cf9bb28c1f5ae088?utm_campaign=popular_items&amp;utm_medium=feed&amp;utm_source=popular_items">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">Vibe Codingで商用品質を目指す過程で、著者はいくつかの失敗を経験し、現在新たな仮説を検証中です。
+
+**これまでの失敗と学び（検証済み）：**
+
+1.  **何も決めずにVibeしたら、保守できないものができた:**
+    *   **問題点:** 責務の分割がされておらず、UI、ビジネスロジック、DB操作が同一関数に混在。コードが整理されず、似たようなコードが散在し、テストの意図も不明瞭。
+    *   **学び:**
+        *   アーキテクチャ（ディレクトリ構成、レイヤー分割、依存関係）は人間が最初に決定する必要がある。AI任せにすると後から修正コストが増大する。
+        *   コーディングガイドラインを定め、AIにレビューさせる。また、コードの複雑度計測ツール（Lizardなど）をCIに導入し、閾値を超えたらリファクタリングする。AIの出力品質はプロンプトの丁寧さではなく、事前に敷いた構造と機械的なゲートで決まる。
+
+2.  **仕様と実装が、いつの間にか両方とも「正解」じゃなくなった（ドリフト問題）:**
+    *   **問題点:** 仕様変更が繰り返されるうちに、仕様書と実装の両方が中途半端に古くなり、正しい状態が分からなくなる。仕様を修正すると実装が壊れ、実装を優先すると意図から離れていく。
+    *   **学び:**
+        *   実装したエージェントとは別のエージェントに、仕様から抽出した「受入条件」を満たしているかをチェックさせるQAを実施する。
+        *   生成と検証を別エージェントに分けること、チェック基準をコードではなく仕様由来の受入条件に固定することが重要。
+        *   別々の経路で作られた成果物を突き合わせ、不一致を見つけることに価値がある。
+
+3.  **形式手法に夢を見た:**
+    *   **問題点:** 自然言語の仕様を形式化しても、期待する形式化（現実のコードと接点のあるモデル）は生成されず、抽象的できれいなモデルが作られるだけだった。モデルと実装の乖離が大きすぎ、ドリフトの検知も困難。
+    *   **学び:**
+        *   自然言語仕様だけでは、現実と接点のない抽象的なモデルしか作れない。
+        *   モデルと実装の距離が遠すぎると、「不一致を見る」アプローチが機能しない。
+        *   「形式化されている」ことと「自分の意図が形式化されている」ことは別であり、後者を確認する手段がなければ証明に意味がない。
+
+**現在試している仮説（未検証）：**
+
+形式化の順番を逆にし、以下のステップで検証可能な抽象モデルの作成を目指しています。
+
+1.  **アーキテクチャとガイドラインを人間が先に決定する**（失敗1の学び）。
+2.  Vibe Codingで動く実装を速く作成する。
+3.  **できた実装からインターフェース（エンティティ名、フィールドと型、APIの入出力）だけを抽出する。**
+4.  抽出した骨格と「保証したいこと」（仕様由来の主張）をAIに渡し、Leanで小さな抽象モデルを作らせる。
+5.  **モデルと実装を突き合わせて、意図の違いや境界の不整合を検知する**（失敗2の学びの発展形）。
+
+この仮説の核は、モデルに「実装由来の語彙（構造）」と「仕様由来の意味（保証したいこと）」の両方を与えることで、現実のシステムと座標系の合ったモデルを生成し、設計上の曖昧さや境界の不整合（例：必須フィールドなのに値の出所がない、下書きなのに公開日時が入ってしまうなど）をコンパイルエラーのような形で早期に検知することです。
+
+**今後の検証計画:**
+
+意図的に仕様バグ（上流に出所のないフィールドなど）を持った骨格を渡し、生成されたモデルがそのバグを再生産するか、それとも指摘するかを検証します。
+
+Vibe Codingの速さを商用品質に繋げる道はまだ確立されていませんが、失敗談や未検証の仮説を共有することで、同じ課題に取り組む人々との情報交換に繋がると考えています。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

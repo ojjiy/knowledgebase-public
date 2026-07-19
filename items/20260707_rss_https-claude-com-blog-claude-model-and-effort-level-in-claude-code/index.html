@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Choosing a Claude model and effort level in Claude Code</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>Choosing a Claude model and effort level in Claude Code</h1>
+<p><strong>Date:</strong> 2026-07-07</p>
+<p><strong>Source:</strong> rss / Claude</p>
+
+<p><a href="https://claude.com/blog/claude-model-and-effort-level-in-claude-code">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">Claude Codeでは、モデルの選択と努力レベルの調整によって、AIの応答の質と効率を最適化できます。
+
+**モデル選択:**
+
+*   **モデルとは？**
+    *   モデル選択は、AIの「固定された知識」または「全体的な能力範囲」を決定します。
+    *   モデルは、学習済みの「重み（パラメータ）」のセットを指し、これはトレーニング時に設定され、読み取り専用です。
+    *   プロンプトやコンテキストはモデルの重み自体を変更することはなく、あくまで推論を「誘導」する役割を果たします。
+    *   例えば、学習時に存在しなかったライブラリの情報は、コンテキストとして提供されてもモデルの重みに永続的に追加されるわけではありません。
+*   **モデルの種類と使い分け:**
+    *   **より小さいモデル（例: Sonnet）:** 定型的なタスク、明確な指示で実行できる作業、コードの機械的な変更、既存コードに関する質問などに適しています。必要以上の能力を使う必要がなく、速度向上やコスト削減につながります。
+    *   **より大きいモデル（例: Opus、Fable）:** 複雑で曖昧なタスク、微妙なバグ、未知のドメイン、アーキテクチャの決定など、高度な推論や複数の可能性を検討する必要がある場合に有効です。自信を持って間違える場合や、文脈をいくら与えても改善しない場合に、より上位のモデルへの切り替えを検討します。
+    *   **Fable:** 特定の難易度の高い問題に特化した「スペシャリスト」であり、最も高価ですが、他のモデルでは到達できないタスクを完了できる場合があります。
+    *   **Opus:** 専門知識を持つ「エキスパート」であり、類似の問題解決経験に基づいた洞察を提供しますが、詳細なコードレビューには時間をかけられない場合があります。
+    *   **Sonnet:** 優秀な「ジェネラリスト」であり、時間をかければコードを徹底的に理解できますが、特有のパターン認識力はFableやOpusに劣る可能性があります。
+
+**努力レベル:**
+
+*   **努力レベルとは？**
+    *   単なる「思考時間」ではなく、リクエスト全体に対してClaudeが行う作業量を制御します。
+    *   具体的には、読み込むファイルの数、使用するツールの数、ユーザーに確認を求めるまでのステップ数などが含まれます。
+    *   努力レベルが高いほど、Claudeはより多くのファイルを確認し、テストを実行し、作業を二重チェックするなど、より徹底的にタスクに取り組みます。
+    *   努力レベルが低い場合、Claudeは自分で解決しようと試みるよりも、ユーザーに追加のコンテキストを求める傾向があります。
+*   **努力レベルの選択:**
+    *   **デフォルト:** ほとんどのタスクでは、各モデルのデフォルトの努力レベルから始めることが推奨されます。これは、一般的なユーザーがタスクに費やすであろう時間や労力に合わせて調整されています。
+    *   **手動調整:** 特定のタスクで、より徹底した確認や迅速な対応を重視したい場合に、手動で調整します。これは、タスクごとではなく、自身の作業スタイルに基づいた一般的な設定として行うのが効果的です。
+    *   **高努力レベルが適している場合:** ファイルの読み飛ばし、テストの未実行、リファクタリングの途中放棄など、「試行が不十分」だと判断される場合に選択します。
+    *   **低努力レベルが適している場合:** 通常のタスクで、より迅速な応答が必要な場合に検討します。
+*   **結果の生成:**
+    *   Claudeの応答は、思考、ツール呼び出し、テキスト出力のトークンで構成されます。
+    *   高努力レベルでは、より多くのトークンが生成され、より高い信頼度での回答が得られる傾向があります。
+    *   高努力レベルでは、タスクの計画の深さと広さに影響を与え、中間結果に基づいて計画が更新されることもあります。
+
+**問題解決のヒューリスティック:**
+
+Claudeが期待通りの結果を出せなかった場合、まず提供したコンテキスト（プロンプト、CLAUDE.md、ツール、スキルなど）が適切かを確認します。それでも問題が解決しない場合は、以下の2つの質問で原因を特定します。
+
+1.  **Claudeは「十分な知識を持っていなかった」のか？**
+    *   この場合、より**高機能なモデル**を選択します。
+    *   例: 微妙なバグ、未知のドメイン、曖昧な指示。
+    *   逆に、定型的なタスクでより上位モデルを使っている場合は、低価格・高速な下位モデルに切り替えることでコストを削減できます。
+2.  **Claudeは「十分に試行しなかった」のか？**
+    *   この場合、より**高い努力レベル**を選択します。
+    *   例: ファイルの確認漏れ、テストの未実行、作業の不十分な確認。
+
+**モデルと努力レベルの相互作用:**
+
+*   **定型作業:** 同じ努力レベルであれば、より小さいモデルでも問題なく実行できます。ただし、大きいモデルは追加の検証ステップにより多くのトークンを消費し、トークン単価も高いため、定型作業では小さいモデルを選ぶことでコストを節約できます。
+*   **複雑な多段階作業:**
+    *   小さいモデルは限界まで処理を試みるため、多くのイテレーションを消費する可能性があります。
+    *   大きいモデルは、より少ないステップで同等の品質を達成できるため、トークン単価は高くても、タスク全体のコストが低くなることがあります。
+    *   さらに、大きいモデル（特にFable）は、小さいモデルでは達成不可能なタスクを完了できる場合があります。
+*   **トークン消費:** 努力レベルはトークン消費を「形作ります」が、「制限する」わけではありません。厳密な制限は`max_tokens`ですが、タスク予算やプロンプトでの指示など、よりソフトな制御が有効です。
+
+**基本指針:**
+
+「デフォルト設定から始め、問題が発生した場合に、Claudeが『知識不足』か『試行不足』かを判断して、モデルまたは努力レベルを調整する」ことが推奨されます。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

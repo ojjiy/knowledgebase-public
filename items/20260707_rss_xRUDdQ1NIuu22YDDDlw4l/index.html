@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>VS CodeでMarkdownを⌘⌥ZするとZennプレビューで見られる執筆環境を作ってみた</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>VS CodeでMarkdownを⌘⌥ZするとZennプレビューで見られる執筆環境を作ってみた</h1>
+<p><strong>Date:</strong> 2026-07-07</p>
+<p><strong>Source:</strong> rss / DevelopersIO</p>
+
+<p><a href="https://dev.classmethod.jp/articles/vscode-zenn-preview-devio-setup/">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">この記事では、VS CodeでMarkdown執筆時に、標準のプレビュー機能よりも見栄えの良いZennのレイアウトで確認できる環境を構築する方法が紹介されています。
+
+**実現したいこと:**
+どこにあるMarkdownファイルでも、ショートカットキー（macOSでは⌘⌥Z）一つでZennのプレビューを横に開けるようにすること。
+
+**仕組みの全体像:**
+1.  **VS Code キーバインド (⌘⌥Z):** ユーザーがショートカットキーを押す。
+2.  **ミニVS Code拡張 (zennPreview.open コマンド):** 拡張がアクティブになり、現在開いているMarkdownファイルを保存し、同期スクリプトを実行し、Simple BrowserでZennプレビューを開く。
+3.  **同期スクリプト (zenn-preview.sh):**
+    *   指定されたMarkdownファイルを、Zenn CLIが認識できる固定のファイル名（`preview-current.md`）に変換・コピーする。
+    *   Zenn CLIのプレビューサーバー（`localhost:8000`）を起動・管理する。
+    *   ファイル保存を監視し、変更があれば自動でZennプレビューに反映させる。
+4.  **Zenn CLI プレビューサーバー:** `localhost:8000` で動作し、`~/zenn-content/articles/preview-current.md` を監視してリアルタイムにプレビューを更新する。
+
+**ポイント:**
+*   記事ファイル自体は移動させず、Zenn CLIが認識する固定のプレビュー用ファイルに変換コピーすることで、どこにあるMarkdownファイルでもプレビュー可能にする。
+*   ローカル画像は、記事があるディレクトリへのシンボリックリンクを作成し、画像パスを書き換えることで表示させる。
+
+**構築手順:**
+
+1.  **Zenn CLIのセットアップ:**
+    *   Zenn CLI用の作業ディレクトリ（例: `~/zenn-content`）を作成し、Zenn CLIをインストールする。
+    *   `npx zenn init` で初期設定を行う。
+    *   `npx zenn preview` でプレビューサーバーの動作確認をする。
+
+2.  **同期スクリプトの作成 (`zenn-preview.sh`):**
+    *   MarkdownファイルのFrontmatter（`title`, `tags`など）をZenn形式（`title`, `emoji`, `type`, `topics`, `published`）に変換する。
+    *   記事のあるディレクトリを `~/zenn-content/images/preview` にシンボリックリンクし、記事内の相対パス画像参照を `/images/preview/...` に書き換える。
+    *   Zennプレビューサーバーが起動していない場合は起動し、15秒ごとに死活確認して自動復旧させる。
+    *   指定されたMarkdownファイルの更新を1秒ごとに監視し、保存されるたびに変換・コピー処理を実行する。
+    *   スクリプト冒頭の `ZENN_DIR` 変数でZenn CLIのディレクトリパスを、引数で対象のMarkdownファイルを指定する。
+
+3.  **VS Code拡張の作成:**
+    *   VS Codeの拡張機能ディレクトリ（`~/.vscode/extensions/`）に、`publisher.name-version` 形式のフォルダ（例: `local.markdown-zenn-preview-1.0.0`）を作成する。
+    *   `package.json` で拡張のメタ情報とコマンド（`zennPreview.open`）を定義する。
+    *   `extension.js` で、VS Codeのコマンド `zennPreview.open` を実装する。このコマンドは、アクティブなエディタのMarkdownファイルを保存し、`zenn-preview.sh` スクリプトを実行し、その後Simple BrowserでZennプレビューのURLを開く。
+
+4.  **キーバインドの設定:**
+    *   VS Codeの `keybindings.json` に、`cmd+alt+z` と `zennPreview.open` コマンドを紐付ける設定を追加する。
+
+5.  **動作確認:**
+    *   任意の場所にあるMarkdownファイルをVS Codeで開き、`⌘⌥Z` を押す。
+    *   VS Codeの横にSimple Browserが開き、Zennのレイアウトで記事が表示されることを確認する。
+    *   記事を編集・保存するたびに、プレビューが自動で更新されることを確認する。
+    *   別のMarkdownファイルを開いて `⌘⌥Z` を押し、プレビューが切り替わることを確認する。
+
+この環境を構築することで、執筆中のMarkdownをZennの美しいレイアウトでリアルタイムに確認しながら、快適に執筆を進めることができるようになります。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

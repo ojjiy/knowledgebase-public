@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Scaling Mixture-of-Experts Video Pretraining for Embodied Intelligence</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>Scaling Mixture-of-Experts Video Pretraining for Embodied Intelligence</h1>
+<p><strong>Date:</strong> 2026-07-08</p>
+<p><strong>Source:</strong> paper / paperswithcode-trending</p>
+
+<p><a href="http://arxiv.org/abs/2607.07675v1">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body"># タイトル
+Scaling Mixture-of-Experts Video Pretraining for Embodied Intelligence
+[View Paper](http://arxiv.org/abs/2607.07675v1)
+
+## 1. 問題意識：解決したい問題はなにか
+既存のビデオ生成モデルは、主にコンテンツ生成に重点を置いているため、ロボット制御のような「具現化された知能（embodied intelligence）」の領域でドメインミスマッチが生じています。具体的には、これらのモデルは視覚的な忠実度や創造性を優先する設計になっており、計算効率や物理的な現実感といった、ロボット制御で重要となる要素が犠牲になりがちです。このため、ロボットが現実世界で効率的かつ物理的に妥当な行動をとるために必要な、ビデオ理解や生成能力が十分ではありません。
+
+## 2. 提案手法のアプローチ：どのようなアイデア・アプローチで問題を解決しようとしたか
+本論文では、この問題に対処するために「LingBot-Video」という、具現化された知能に特化したビデオ事前学習パラダイムを提案しています。このアプローチは、以下の3つの側面から構成されています。
+
+1.  **アーキテクチャの選択**: 従来の密な（dense）フレームワークではなく、Mixture-of-Experts (MoE) アーキテクチャを採用しました。これにより、モデルの容量と推論効率のトレードオフを改善し、ゼロから大規模なモデルを構築することを目指しました。
+2.  **データセットの構築**: 標準的なインターネット動画に加えて、ロボットの操作、ナビゲーション、そしてロボット自身の視点（egocentric perspective）からの映像など、ロボット操作に特化した豊富なフッテージを収集・統合するデータプロファイリングエンジンを開発しました。これにより、モデルにアクションや世界のダイナミクスに関する内在的な理解を装備させます。
+3.  **学習方法の工夫**: 標準的な評価基準（美しさ、プロンプト追従、動きの一貫性など）に加えて、物理的な妥当性やタスク完了度を重視する多次元的な報酬システムを開発しました。これにより、モデルの出力が現実世界の物理法則やタスク目標に沿うように強制します。
+
+## 3. 成果：提案手法により、何が達成できたのか
+LingBot-Videoは、具現化された知能のためのビデオ基盤モデルとして、その性能と効率を包括的な評価によって検証されました。具体的には、以下の点が達成されました。
+
+*   **ドメインミスマッチの解消**: ロボット制御に必要な物理的現実感と効率性を向上させ、従来のビデオ生成モデルの限界を克服しました。
+*   **大規模なMoEビデオ基盤モデルの提供**: 大規模かつオープンソースのMoEビデオ基盤モデルとして、コミュニティに貢献しました。
+*   **デジタル創造性と物理的アクチュエーションの架け橋**: デジタル空間での生成能力と、物理世界でのロボットの動作能力を繋ぐ先駆的な試みとなりました。
+
+## 4. 課題：本手法の限界・課題にはなにか。本文中で著者が言及しているものと、あなたが想定するもの
+本文中で著者が直接的に言及している限界や課題は明記されていませんが、提案手法から想定される限界・課題は以下の通りです。
+
+**本文中で著者が言及している（と想定される）課題:**
+
+*   **MoEアーキテクチャのスケーリングの複雑さ**: MoEモデルは、その性質上、モデルのサイズが大きくなるにつれて、学習や推論の管理が複雑になる可能性があります。論文では「scale it up from scratch」とありますが、そのスケーリングプロセスの詳細や、それに伴う計算リソース、学習の安定性に関する課題は存在する可能性があります。
+*   **ロボット操作に特化したデータセットの収集・アノテーションのコスト**: 「extensive robot-oriented footage」を構築するために、現実世界でのデータ収集には多大な時間、労力、コストがかかることが予想されます。また、これらのデータを効果的に活用するためのアノテーションやラベリングにも課題があるかもしれません。
+*   **多次元報酬システムの設計とチューニングの難しさ**: 「multi-dimensional reward system」は、物理的妥当性やタスク完了度を包括的に捉えることを目指していますが、これらの複数の報酬をどのようにバランス良く設計し、学習プロセスで効果的に適用するかは、依然として研究開発上の難題であると考えられます。
+
+**あなたが想定する課題:**
+
+*   **汎用性**: LingBot-Videoは具現化された知能に特化していますが、この特化が逆に、ロボット制御以外の一般的なビデオ生成タスクにおける汎用性を低下させる可能性があります。
+*   **リアルタイム性**: 大規模なMoEモデルは、推論速度が重要ですが、複雑なモデル構造ゆえに、リアルタイム性が求められるロボット制御タスクにおいて、要求される速度を常に満たせるかどうかは、ハードウェアや最適化の度合いに依存します。
+*   **未知の環境やタスクへの適応**: 事前学習されたモデルは、学習データに含まれるような状況には強いかもしれませんが、学習データに含まれていない未知の環境や、想定外のタスクに対する適応能力については、さらなる検証が必要です。
+*   **説明可能性とデバッグ**: MoEモデルは、どのエキスパートがいつ活性化されるかの判断が複雑であり、モデルの挙動の説明可能性や、問題発生時のデバッグが困難になる可能性があります。
+
+## 5. 技術詳細：提案手法の技術的な詳細について、できるだけ詳しく。数式やアルゴリズム、モデル構造なども可能な限り詳しく
+本論文では、DiT (Diffusion Transformer) ベースのビデオ事前学習パラダイムに、Mixture-of-Experts (MoE) アーキテクチャを導入し、具現化された知能（embodied intelligence）に特化したデータと学習手法を組み合わせることで、LingBot-Videoを構築しています。
+
+**1. アーキテクチャ: Mixture-of-Experts (MoE)**
+
+*   **基本思想**: MoEは、複数の「エキスパート」と呼ばれるニューラルネットワークモジュールを持ち、入力データに応じて「ゲート」ネットワークがどのエキスパートに処理を任せるかを決定するアーキテクチャです。これにより、モデル全体のパラメータ数を抑えつつ、活性化されるパラメータ数を増やすことで、計算効率とモデリング能力のバランスを取ります。
+*   **DiTとの組み合わせ**: 既存のDiTモデルは、通常、Transformerブロックが密に（densely）構成されています。LingBot-Videoでは、このDiTのTransformerブロックの一部（あるいは全て）をMoEレイヤーに置き換えることで、モデルの容量をスケールアップさせながらも、推論時の計算コストを抑えています。
+*   **MoEレイヤーの構造（想定）**:
+    *   **Input**: Transformerブロックの入力 $x$
+    *   **Gate Network**: 入力 $x$ を受け取り、各エキスパートへの重み（またはルーティング指示）を出力します。例えば、ソフトマックス関数を通すことで、各エキスパートに割り当てられる確率 $p_i$ を得ることができます。
+        ```python
+        def gate_network(x, num_experts):
+            # Example: A simple linear layer followed by softmax
+            logits = Linear(x, num_experts)
+            weights = Softmax(logits)
+            return weights
+        ```
+    *   **Experts**: 複数の独立したニューラルネットワーク（例: フィードフォワードネットワーク）です。各エキスパートは、入力の一部または全体を処理します。
+        ```python
+        class Expert(nn.Module):
+            def __init__(self, hidden_size, intermediate_size):
+                super().__init__()
+                self.fc1 = nn.Linear(hidden_size, intermediate_size)
+                self.gelu = nn.GELU()
+                self.fc2 = nn.Linear(intermediate_size, hidden_size)
+
+            def forward(self, x):
+                return self.fc2(self.gelu(self.fc1(x)))
+
+        # num_experts = K
+        # experts = [Expert(hidden_size, intermediate_size) for _ in range(num_experts)]
+        ```
+    *   **Output**: ゲートネットワークによって計算された重みに基づいて、各エキスパートの出力が加重平均（あるいは選択）されて、最終的な出力 $y$ が生成されます。
+        ```python
+        def moe_layer(x, experts, gate_weights):
+            # expert_outputs = []
+            # for expert in experts:
+            #     expert_outputs.append(expert(x))
+            #
+            # # Weighted sum or selection based on gate_weights
+            # # For simplicity, weighted sum:
+            # y = sum(w_i * o_i for w_i, o_i in zip(gate_weights, expert_outputs))
+            # return y
+            pass # Actual implementation can be more complex for efficiency
+        ```
+*   **スケーリング**: 論文では「scale it up from scratch」とあるため、多数のエキスパートを持つMoEレイヤーを、Transformerの各ブロックや特定のブロックに適用し、モデル全体のサイズを大規模化しています。
+
+**2. データ: ロボット指向フッテージの拡張**
+
+*   **データプロファイリングエンジン**: 標準的なインターネット動画（例: YouTube）に加えて、ロボットの操作（物体の把持、移動、組み立てなど）、ナビゲーション（屋内、屋外での移動）、そしてロボット自身の視点（egocentric perspective）からの映像を大量に収集・統合しました。
+*   **目的**: これにより、モデルが現実世界での物理的な相互作用、因果関係、そして空間的な理解を学習できるようになります。例えば、「物体を掴む」というアクションの物理的な制約や、それが「移動」にどう繋がるかを、視覚情報と行動の関連性から学習します。
+
+**3. 学習: 多次元報酬システム**
+
+*   **目的**: 標準的なビデオ生成モデルの評価基準（美しさ、プロンプト追従、動きの一貫性）に加えて、具現化された知能において重要な物理的妥当性（physical rationality）とタスク完了度（task completion）を強化します。
+*   **報酬の要素（想定）**:
+    *   **物理的妥当性**:
+        *   **重力**: 物体が不自然に浮いていないか。
+        *   **慣性**: 物体の動きが急激すぎないか。
+        *   **衝突**: 物体同士が貫通していないか。
+        *   **エネルギー保存**: （単純なモデルでは難しいが）エネルギーが不自然に増減していないか。
+    *   **タスク完了度**:
+        *   **目標状態への到達**: ロボットが特定のタスク（例: 特定の場所に移動する、物体を所定の位置に置く）を達成したか。
+        *   **効率性**: タスク達成までの時間、動作の回数など。
+        *   **安全性**: ロボットや周囲の環境に危険な動作がないか。
+*   **学習アルゴリズム**: これらの報酬を組み込んだ強化学習（Reinforcement Learning）や、生成モデルとの統合学習（例: Denoising Diffusion Probabilistic Models (DDPM) をベースにした生成と、報酬によるガイド）が用いられていると推測されます。具体的��なアルゴリズムは論文本文に詳細が記載されていないため、一般的な手法を想定しています。
+    ```python
+    # Conceptual reinforcement learning loop for embodied tasks
+    # state = current_robot_state_and_observation
+    # action = robot_action
+    # next_state, reward, done, info = env.step(action)
+    #
+    # # For LingBot-Video, the &#34;action&#34; could be generating a video sequence or predicting next frames.
+    # # The &#34;reward&#34; would be calculated based on the generated video&#39;s alignment with physical rules and task goals.
+    #
+    # # RL Algorithm (e.g., PPO, SAC) updates the policy (LingBot-Video model)
+    # # policy_loss = calculate_policy_loss(state, action, reward, next_state, done, model)
+    # # model.optimizer.zero_grad()
+    # # policy_loss.backward()
+    # # model.optimizer.step()
+    ```
+
+## 6. この論文を140字以内のツイートで要約すると？
+ロボット制御向けにMoEベースのビデオ事前学習モデル「LingBot-Video」を開発。ロボット操作データと物理・タスク報酬で学習。デジタル創造性と物理的アクチュエーションを繋ぐ、大規模オープンソース基盤モデル🚀 #AI #ロボット工学</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>PRX Part 4: Our Data Strategy</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>PRX Part 4: Our Data Strategy</h1>
+<p><strong>Date:</strong> 2026-07-07</p>
+<p><strong>Source:</strong> rss / Hugging Face Blog</p>
+
+<p><a href="https://huggingface.co/blog/Photoroom/prx-part4-data">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">PRXモデルの学習に使用されたデータ戦略について、その詳細が解説されています。PRXは、モデルアーキテクチャ、学習設計、24時間スピードランに続くシリーズの第4弾です。
+
+**データ戦略の概要:**
+
+*   **データ収集:** 公開データセットと内部データセットを組み合わせて、多様で大規模な事前学習用データセットを構築します。
+*   **画像再キャプション:** Visual-Language Model (VLM) を使用して、すべての画像に詳細で正確なキャプションを付け直します。
+*   **データフォーマット:** データの構築にはLance、学習時のストリーミングにはMosaic Data Shards (MDS) を使用します。
+*   **データフィルタリング:** キャプションに基づいて、テキスト中心の画像、NSFWコンテンツ、重複などを特定し、フィルタリングします。
+*   **データセットの構築:** Lanceフォーマットでデータを構築し、Ray Dataを使って並列処理を行います。断片化（フラグメンテーション）の管理がパフォーマンスに影響するため、適切なサイズの断片化を維持します。
+*   **探索とプロファイリング:** Lanceの機能（全文検索、類似性検索）を活用してデータセットを探索し、解像度分布、非写真コンテンツ、重複などを特定します。
+*   **再キャプション:** Qwen2.5-VL-7B-Captioner-Relaxed、Qwen3-VL-8B、Qwen3.5-9BなどのVLMを比較検討し、最終的にQwen3-VL-8Bを選択しました。詳細なキャプションは、モデルの出力品質を大幅に向上させることが確認されています。
+*   **Mosaic Data Shards (MDS) への変換:** 学習時に効率的にデータをストリーミングするために、MDSフォーマットに変換します。解像度とアスペクト比によるバケット化を行い、学習効率を最大化します。
+*   **フィルタリング:** Qwen3-8Bのキャプション分類機能を用いて、テキスト中心、NSFWコンテンツなどを特定し、skip-list機能で学習から除外します。
+*   **重複排除:** 知覚ハッシュ（perceptual hash）を用いて、重複または類似した画像を特定し、学習計算資源の無駄を省き、分布の偏りをなくします。
+
+**重要なポイント:**
+
+*   **事前学習の目的:** モデルが世界の構造、オブジェクト、シーン、ライティングなどを広く学習することであり、美しさよりもカバレッジと多様性が重視されます。
+*   **キャプションの重要性:** 長く正確なキャプションは、モデルの学習に不可欠であり、画像内の「ノイズ」さえも制御可能な属性として学習させることができます。
+*   **データフォーマットの役割:** Lanceはデータ構築と探索に、MDSは効率的な学習ストリーミングにそれぞれ適しています。
+*   **フィルタリングと重複排除の柔軟性:** skip-list機能や重複排除によるデータセットの書き換えなしで、後からフィルタリングや重複排除の対象を柔軟に変更できる仕組みが導入されています。
+
+将来的には、ファインチューニングや選好アライメントのために、より高品質なデータサブセットをキュレーションするためのツール開発についても言及されています。PRXのコードはApache 2.0ライセンスで公開されており、GitHubやHugging Face Spaceで試すことができます。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

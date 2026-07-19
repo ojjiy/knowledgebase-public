@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>RynnWorld-Teleop: An Action-Conditioned World Model for Digital Teleoperation</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>RynnWorld-Teleop: An Action-Conditioned World Model for Digital Teleoperation</h1>
+<p><strong>Date:</strong> 2026-07-07</p>
+<p><strong>Source:</strong> paper / hf-papers</p>
+
+<p><a href="http://arxiv.org/abs/2607.06558v1">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body"># タイトル
+RynnWorld-Teleop: An Action-Conditioned World Model for Digital Teleoperation
+[View Paper](http://arxiv.org/abs/2607.06558v1)
+
+## 1. 問題意識：解決したい問題はなにか
+ロボット学習をスケールさせるためには、大量かつ多様な移動軌跡データが必要ですが、その収集は物理的なテレオペレーションにボトルネックがあります。物理的なテレオペレーションでは、オペレーターの時間は特定のハードウェアやワークスペースに拘束され、データ収集の効率が著しく制限されます。この問題は、ロボットが現実世界で汎用的に自律行動を行うために必要な、多様な状況に対応できる学習データの不足を招いています。
+
+## 2. 提案手法のアプローチ：どのようなアイデア・アプローチで問題を解決しようとしたか
+この問題を解決するために、「デジタル・テレオペレーション」という新しいパラダイムを提案しています。これは、物理的なロボットの代わりに生成的な世界モデルを使用することで、データ収集を物理的な制約から解放するものです。具体的には、オペレーターの手のポーズストリームを入力として、ロボット中心の生成的世界モデルが、単一の参照画像から高忠実度の自己視点（エゴセントリック）動画を生成します。記録されたポーズストリームは、どのロボットにも転送可能な、実装に依存しない（エンボディメント・アグノスティック）アクションラベルとして機能します。これにより、物理的なハードウェアに依存せずに、模倣学習のための完全な状態・行動軌跡を生成することが可能になります。
+
+## 3. 成果：提案手法により、何が達成できたのか
+提案手法であるRynnWorld-Teleopにより、以下の成果が達成されました。
+*   **データ収集の効率化とスケーラビリティの向上:** 物理的なロボットを介さずに、オペレーターの直感的な操作から高忠実度のロボット実行動画と同期した行動データを生成できるようになりました。これにより、データ収集のボトルネックが解消され、大量かつ多様な学習データの生成が可能になりました。
+*   **ゼロショットSim2Real転送の達成:** RynnWorld-Teleopで生成されたデータのみで学習されたポリシーが、物理的なロボット（Sim2Real）に対して、多様で器用な両腕タスクにおいて効果的なゼロショット転送を達成しました。これは、生成されたデータが物理的に現実的であることを示しています。
+*   **既存データセットの性能向上:** 実際のロボットデータセットにRynnWorld-Teleopで生成されたデータを追加することで、タスクの成功率が一貫して向上することが実証されました。これは、RynnWorld-Teleopが物理的なテレオペレーションを補完・増幅する高忠実度でスケーラブルなデータエンジンの役割を果たすことを示しています。
+*   **リアルタイム生成:** 提案されたパイプラインは、単一のH100 GPU上で40+ FPSのリアルタイムインタラクティブ生成を可能にし、オペレーターが制御ループ内に留まることを可能にしました。
+
+## 4. 課題：本手法の限界・課題にはなにか。本文中で著者が言及しているものと、あなたが想定するもの
+**本文中で著者が言及している課題:**
+*   **複雑な物理現象への対応:** 液体の細かい動きや、非常に変形しやすい物体の操作といった複雑な物理現象については、モデルが時折苦戦する可能性があります。これらのケースへの対応には、そのような相互作用を網羅する、より豊かなトレーニングデータが必要になるでしょう。
+*   **スケーラビリティの制約:** 現状では、プラットフォーム間でエンボディメントのギャップを埋めるために、プラットフォームごとのファインチューニングが必要です。これは、ロボットフリート全体へのパラダイムのスケーラビリティを制限します。ロボットのキネマティクス記述子によって条件付けされる可能性のある、クロス・エンボディメントの基盤となる世界モデルが、有望な方向性であると考えられます。
+
+**あなたが想定する課題:**
+*   **初期参照画像の依存性:** 生成される動画の品質は、初期参照画像の品質に大きく依存します。参照画像が不明瞭であったり、タスクに必要な情報を含んでいなかったりする場合、生成される動画の忠実度やタスクの成功率に影響を与える可能性があります。
+*   **「想像力」の限界:** 著者は「ロボットのデータ収集は、物理インフラではなく、オペレーターの想像力によってのみ制限される」と述べていますが、オペレーターの想像力自体にも限界がある可能性があります。例えば、オペレーターが経験したことのない、あるいは想像できないような複雑なタスクや環境への対応には、依然として課題が残るかもしれません。
+*   **計算リソース:** 40+ FPSでのリアルタイム生成は可能ですが、それでも高性能なGPU（H100）を必要とします。より広範な展開のためには、より低い計算リソースで同等の性能を発揮できるモデルの開発が望まれるかもしれません。
+
+## 5. 技術詳細：提案手法の技術的な詳細について、できるだけ詳しく。数式やアルゴリズム、モデル構造なども可能な限り詳しく
+RynnWorld-Teleopは、以下の主要なコンポーネントと技術から構成されています。
+
+### 1. デジタル・テレオペレーションのパラダイム
+*   **概念:** 物理的なロボットの代わりに、生成的な世界モデル（RynnWorld-Teleop）を使用します。オペレーターの手のポーズストリームが、ロボット中心の生成的世界モデルを駆動し、単一の参照画像から高忠実度の自己視点（エゴセントリック）動画を合成します。
+*   **データ生成:**
+    *   **入力:** オペレーターの手のポーズストリーム、単一の参照画像。
+    *   **出力:** ロボットが実行したであろう自己視点動画、およびそれに同期したロボットの行動（関節角度など）。
+*   **利点:**
+    *   データ収集と物理的な制約（ハードウェア、ワークスペース）の分離。
+    *   物理的なロボットなしで、模倣学習のための状態・行動軌跡を生成。
+    *   オペレーターの想像力によってのみ、データ収集が制限される。
+
+### 2. RynnWorld-Teleop: モデルアーキテクチャとコアデザイン
+RynnWorld-Teleopは、以下の3つのコアデザインを採用したロボット中心のアクション条件付き世界モデルです。
+
+#### a) 深さ認識スケルタル条件付け (Depth-Aware Skeletal Conditioning)
+*   **目的:** 2D投影の曖昧さを解消し、精密な手の操作に必要な3D空間情報を捉える。
+*   **手法:** 21関節のハンドポーズを、カメラ距離に応じて色と半径が変化するスケルトン動画としてレンダリングします。これにより、明示的な3D手がかりを2D潜在条件信号として提供します。
+*   **詳細:**
+    *   ハンドポーズは、21関節のスケルトン動画として表現されます。
+    *   各関節や骨の「色」と「直径」は、カメラ空間での深さに応じて動的にスケーリングされます。これは、図 `Fig. 2 (a)` などで示唆されます。
+    *   この表現は、関節構造と操作に不可欠な空間的キューをカプセル化します。
+    *   レンダリングされたスケルトン動画は、VAE (Variational Autoencoder) エンコーダーによって潜在空間に投影され、制御潜在変数 `c` が生成されます。
+        ```python
+        # Conceptual representation of depth-aware rendering
+        def render_skeletal_video(hand_poses, camera_params):
+            skeletal_frames = []
+            for frame_poses in hand_poses:
+                depth_scaled_frame = depth_aware_scaling(frame_poses, camera_params)
+                skeletal_frames.append(depth_scaled_frame)
+            return skeletal_frames
+
+        # Conceptual representation of VAE encoding
+        vae_encoder = VAE_Encoder()
+        control_latent_c = vae_encoder.encode(skeletal_video)
+        ```
+
+#### b) プログレッシブ人間-ロボット学習 (Progressive Human-to-Robot Training)
+*   **目的:** 人間の器用な操作スキルをロボットの具現化（エンボディメント）に転送する。
+*   **手法:** 2段階のトレーニングパラダイムを採用します。
+    1.  **段階1: 人間データでの事前学習:** 大規模な自己視点人間動画データセット（例: EgoDex, VITRA）でモデルを事前学習します。これにより、手の操作の基本的なダイナミクスと、スケルトン構成から現実的な視覚合成へのマッピングを学習します。
+    2.  **段階2: ロボットデータでのファインチューニング:** ペアになった人間-ロボットのテレオペレーションデータ（人間のジェスチャーが逆運動学(IK)を通じてロボットのアクションにマッピングされる）でモデルをファインチューニングします。これにより、人間のような意図が直接ロボット実行動画を駆動するロボット中心の世界モデルとして機能させます。
+*   **詳細:**
+    *   人間データセット（EgoDex, VITRA）は、3D SE(3) ハンドポーズから2Dスケルトン動画に変換されます。
+    *   ロボットデータセットは、大規模な実世界の複雑な両腕協調タスクデータ（例: Plate Picking, Block Pushing, Bimanual Lifting, Lid Placement）で収集されます。
+    *   この2段階学習により、広範な人間操作の知識を、特定のロボットの具現化へと効果的に転送します。
+
+#### c) ストリーミング自動回帰蒸留 (Streaming Autoregressive Distillation)
+*   **目的:** 双方向（bidirectional）の教師モデルを、リアルタイムのインタラクティブ生成が可能な因果的（causal）生徒モデルに蒸留する。
+*   **手法:**
+    *   **双方向教師モデル:** Wan-I2Vアーキテクチャ（3D VAE + Transformerベースのデノイザー）をベースとし、チェルノフ（Chernoff）フローマッチング（CFM）損失で学習されます。
+        ```python
+        # Conceptual CFM Loss
+        loss_cfm = E[||v_theta(z_t, t, z_ref, c) - (epsilon - z_0)||_2^2]
+        ```
+    *   **因果的生徒モデル:** ストリーミング推論のためにモデルを再構成し、因果的マスキングと固定サイズのKVキャッシュを使用して低遅延推論を実現します。
+    *   **蒸留プロセス:**
+        1.  **因果的フローマッチングウォームアップ:** 双方向モデルと因果的モデルの間のギャップを埋めるために、単一ステップの速度回帰でストリーミング生成と制御追従能力を確立します。
+            ```python
+            # Conceptual MSE loss for causal warm-up
+            loss_mse = E[||v_theta(x_t, t) - (epsilon - x_0)||^2]
+            ```
+        2.  **分布マッチング蒸留 (DMD):** 4ステップのサンプリングロールアウトで、教師モデルの出力分布に生徒モデルの出力分布を近づけます。クロスチャンク勾配フローにより、境界アーティファクトを最小限に抑え、滑らかな時間的連続性を確保します。
+*   **詳細:**
+    *   生徒モデルは、因果的 temporal mask と KV cache を使用して、時間 `t` での注意計算が過去のフレームのみに依存するようにします。
+    *   `KV cache` は、生成されたすべてのKV状態を保持し、初期参照画像のアイデンティティと空間的コンテキストを生成全体で維持します。
+    *   この蒸留により、40+ FPSのリアルタイム生成が可能になります。
+
+### 3. モデルアーキテクチャ詳細 (WAN-I2Vベース)
+*   **ベースモデル:** Wan-I2Vアーキテクチャを使用。これは3D VAEとTransformerベースのデノイザー（DiT - Diffusion Transformer）から構成されます。
+*   **条件付け:**
+    *   **参照画像潜在変数 `z_ref`:** 画像からVAEエンコーダーで抽出されます。
+    *   **深さ認識スケルタル制御潜在変数 `c`:** 手のポーズストリームからVAEエンコーダーで抽出されます。
+*   **DiTへの条件付け:**
+    *   **パッチ埋め込み (Patch Embedding):** DiTの各層で、入力 `z_t` と制御潜在変数 `c` のパッチ埋め込みを並行して行います。
+    *   **分布アラインメント:** `c` と `z_t` の統計的な違いを調整するために、`c` を正規化し、`z_t` の統計量（平均と標準偏差 `mu_z`, `sigma_z`）に合わせます。
+        ```python
+        # Conceptual additive conditioning
+        normalized_c = (c - mu_c) / sigma_c
+        aligned_c = normalized_c * sigma_z + mu_z
+        x = patch_embed_z(z_t) + alpha * patch_embed_c(aligned_c)
+        ```
+    *   **ゲーティング機構 (Gating):** `alpha` は学習可能なスカラーゲートであり、制御信号の寄与度を調整します。`alpha` はゼロ初期化され、`alpha` は学習中に徐々に増加することで、初期段階ではpretrained weightsを安定させます。
+*   **学習損失:** CFM損失 `L_CFM` は、速度フィールド `v_Theta` を、ノイズ `epsilon` と元のデータ `z_0` の差分から予測するように学習します。
+    ```python
+    # Conceptual CFM Loss
+    loss_cfm = E_t, z_0, epsilon [ || v_Theta(z_t, t, z_ref, c) - (epsilon - z_0) ||_2^2 ]
+    ```
+
+### 4. データ生成パイプライン
+*   **目的:** ポリシー学習のための合成ロボット軌跡を生成する。
+*   **ステップ:**
+    1.  **ロボットアクションの取得:** オペレーターの6-DoFポーズ（HTC Viveトラッカー）から、キャリブレーションされた座標変換チェーンとDLS (Damped Least Squares) 逆運動学ソルバーを用いて、ロボットのターゲットエンドエフェクターポーズと対応する関節構成を取得します。これにより、オペレーターの手のポーズストリームと同期した54次元のロボットアクションベクトル（デュアル7-DoFアーム + デュアル20-DoFハンド）が生成されます。
+    2.  **参照画像の抽出:** ソースデモンストレーションの初期RGBフレームを参照画像 `x_ref` として抽出します。
+    3.  **スケルトンシーケンスのレンダリング:** オペレーターの手のポーズストリームを、16 FPSで深さ認識スケルトンシーケンス `s` としてレンダリングします。
+    4.  **動画合成:** RynnWorld-Teleopに `s` と `x_ref` を条件付け、対応するロボット実行動画を合成します。
+    5.  **行動との同期:** ground-truthのロボット行動 `a` （絶対関節位置）は、生成された動画フレームと同期しています。
+*   **ドリフト軽減 (Mitigating Drift):**
+    *   **チャンクベース生成:** 81フレームのセグメント長でチャンクベースの生成戦略を採用します。
+    *   **チャンク再アンカーリング (Chunked Re-anchoring):** 後続のチャンクでは、そのタイムステップにおける実際のロボットの自己視点フレームを新しい参照画像 `x_ref` として提供し、生成を「再アンカー」します。これにより、合成環境（オブジェクトポーズ、照明など）が、長期間にわたる複雑なタスク全体で、ground-truthアクションシーケンスと整合性が保たれます。
+
+### 5. データエンジンとしての比較 (Traditional Simulation vs. Digital Teleoperation)
+*   **従来のシミュレーション:**
+    *   各オブジェクトの3DメッシュとURDFが必要。
+    *   レンダリングは現実とのギャップ（reality gap）に悩まされる。
+    *   システム同定（摩擦、質量）や変形オブジェクトの扱いに苦労する。
+*   **デジタル・テレオペレーション (RynnWorld-Teleop):**
+    *   単一の参照画像から環境を暗黙的にインスタンシエートし、手動アセットモデリングのボトルネックを回避。
+    *   現実世界のピクセル分布内でフレームを合成し、複雑な照明、反射、センサーノイズを自然に捉える。
+    *   大規模な人間動画での事前学習により、物理的な「常識」を吸収し、明示的な微分方程式なしで妥当な接触ダイナミクスを生成。
+
+### 6. リアルタイム性能評価
+*   **ハードウェア:** NVIDIA H100 GPU x1
+*   **スループット:** 40+ FPS
+*   **平均フレーム遅延:** 約 25 ms
+    *   前処理とVAEエンコーディング
+    *   4ステップDiT推論（KVキャッシュ使用）
+    *   VAEデコーディング
+*   **インタラクティブ周波数:** 40 Hz (既存モデルより優位)
+
+## 6. この論文を140字以内のツイートで要約すると？
+物理ロボット不要！「RynnWorld-Teleop」は、オペレーターの手の動きから高忠実度なロボット動画をリアルタイム生成。データ収集を劇的に効率化し、ゼロショットSim2Real転送を実現。ロボット学習の次世代データエンジンに！ #ロボット学習 #AI</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

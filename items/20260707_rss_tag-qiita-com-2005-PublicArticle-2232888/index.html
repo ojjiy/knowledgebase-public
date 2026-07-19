@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ChatGPTを活用してWebアプリを効率よく多言語対応する</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>ChatGPTを活用してWebアプリを効率よく多言語対応する</h1>
+<p><strong>Date:</strong> 2026-07-07</p>
+<p><strong>Source:</strong> rss / Qiita Trend</p>
+
+<p><a href="https://qiita.com/usui0623/items/e7ca1a6954cd7af6751b?utm_campaign=popular_items&amp;utm_medium=feed&amp;utm_source=popular_items">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">この記事は、Webアプリケーションの多言語対応を効率的に進めるための手法について、LaravelとVue.jsを用いた事例を基に解説しています。
+
+**開発方針と全体構成**
+
+*   **対応範囲:** 日本語と英語の切り替えのみに対応。
+*   **文字列の切り出し:** 画面に直接記述されている文字列を翻訳ファイルへ移行。
+*   **段階的な対応:** 影響範囲の小さいページから順次対応し、開発への影響を最小限に抑える。
+*   **管理方法:** フロントエンド（Vue.js）とAPI（Laravel）でそれぞれ翻訳ファイルを管理。
+    *   フロントエンドでは `vue-i18n` を使用し、`ja.json` と `en.json` から文言を取得。
+    *   APIではLaravelのミドルウェアでロケールを設定し、`lang/ja` または `lang/en` の翻訳ファイルからメッセージを取得。
+
+**実装内容**
+
+1.  **フロントエンド (Vue.js):**
+    *   画面上の直接記述された文字列を `{{ $t(&#39;翻訳キー&#39;) }}` の形式に変更。
+    *   `vue-i18n` を設定し、ブラウザの言語設定に基づいて初期表示言語を判定（日本語優先）。
+    *   各コンポーネントに `locale` プロパティを渡し、表示言語を切り替えて確認できるようにする。
+    *   翻訳キーは、コンポーネントのファイルパスを基に命名（例: `resources/components/account.vue` なら `account.title`）。
+
+2.  **API (Laravel):**
+    *   返却するメッセージを `__( &#39;locale.翻訳キー&#39; )` の形式で翻訳ファイルから取得。
+    *   Laravelのミドルウェア (`SetLocale`) を使用して言語の切り替え設定。将来的にはリクエストヘッダー (`Accept-Language`) から言語を取得することを想定。
+    *   翻訳キーは、API側のファイルパスを基に命名（例: `lang/en/locale.php` の `account.title`）。
+
+**進め方とAI活用**
+
+*   **ChatGPTの活用:** 画面に直接記述された文字列を翻訳ファイルに切り出す作業において、ChatGPTにファイル名とソースコードを渡し、翻訳対象の洗い出し、翻訳ファイルの生成、修正後のコード生成を依頼。
+*   **AI活用の注意点:**
+    *   インデントや改行の変更、意図しない箇所の修正、不自然な翻訳キー、エラーが発生するコード生成などの可能性があるため、出力結果をそのまま使用せず、差分確認とプロンプトの修正が必須。
+    *   AIはあくまで作業補助として捉え、最終的な確認は人間が行う。
+
+**学びと振り返り**
+
+*   **保守性の重要性:** 将来的な保守性を考慮した翻訳キーの命名や翻訳ファイルの分割が重要。
+*   **AIとの協業:** AIによる作業スピード向上は期待できるが、最終的な品質担保と理解のためには人間の確認・修正が不可欠。
+
+**参考文献**
+
+*   技術ブログの更新情報とソーイ（sewii）のフォローを推奨。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

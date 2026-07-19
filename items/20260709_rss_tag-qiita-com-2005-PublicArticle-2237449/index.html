@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Copilot Studio の自律型エージェントの作成方法を整理してみた</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>Copilot Studio の自律型エージェントの作成方法を整理してみた</h1>
+<p><strong>Date:</strong> 2026-07-09</p>
+<p><strong>Source:</strong> rss / Qiita Trend</p>
+
+<p><a href="https://qiita.com/Takashi_Masumori/items/4ed4994f8641e5a9e58e?utm_campaign=popular_items&amp;utm_medium=feed&amp;utm_source=popular_items">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">Copilot Studio を用いて、ユーザーの操作なしに自律的に動作するエージェントを作成する方法について解説しています。
+
+自律型エージェントとは、ユーザーがチャットを起動しなくても、メール受信やスケジュールなどのトリガーを基に自動的に情報調査や対応を行うエージェントのことです。
+
+作成方法は、旧UIと新UIのワークフローで大きく分けて説明されています。
+
+**旧UIでの作成方法:**
+
+*   **トリガーの設定:** Power Automate を利用して、メール受信などのトリガーを設定します。
+*   **エージェントへの情報連携:** Power Automate のフローから「Sends a prompt to the specified copilot for processing」アクションで、トリガーで取得した情報をエージェントに渡します。
+*   **エージェントでの処理:**
+    *   **ツールの利用:** 回答メール送信などのタスクにはコネクタを利用します。
+    *   **エージェントフロー:** 回答できない場合の問い合わせ起票や担当チームへの連絡などは、Copilot Studio 側で作成するエージェントフローで行います。
+*   **ライセンスとクレジット:**
+    *   トリガー用のフローは Power Automate のライセンス、エージェントフローは Copilot Studio のライセンスで動作します。
+    *   エージェントフローの実行には、Microsoft 365 Copilot ライセンスを持つユーザーでも別途クレジットが消費される場合があります。環境に従量課金ポリシーを割り当てることで実行可能になるケースもあります。
+*   **公開の必要性:** 自律型エージェントを実行する前には、必ずエージェントを公開しておく必要があります。
+
+**Power Automate のフローからエージェントを呼び出す方法:**
+
+*   Power Automate のフローから特定のアクションを利用して、Copilot Studio のエージェントを直接呼び出すことも可能です。
+*   この方法で作成した場合、Power Automate のライセンスで動作します。
+*   エージェントの実行部分については、実行者が Microsoft 365 ライセンスを持っているかどうかで、環境のクレジット消費の有無が変わります。
+*   このアプローチは、費用感を把握しやすいと感じる人もいるかもしれません。
+
+**新UIワークフローでの作成方法 (プレビュー):**
+
+*   新UIでは、エージェントフローは「ワークフロー」という名称に変わります。
+*   作成画面が大きく変更され、Microsoft 365 Copilot Chat や Agent Builder で作成したエージェント、ファーストパーティのエージェントを呼び出すことが可能です。
+*   **シナリオ例:** Microsoft 365 Copilot のリサーチツールで調査し、その結果をHTMLに変換するエージェントを介してニュースレターを配信する、といったことが可能です。
+*   **自律型エージェントの位置づけ:** ワークフローでエージェントを呼び出す処理は、全て自律型エージェントとみなされます。
+*   **ライセンスとクレジット:**
+    *   ワークフローは Power Automate からは開けなくなり、Copilot Studio のライセンスで動作すると考えられています。
+    *   アクションの実行には、別途クレジットを消費するという認識です。
+
+**まとめ:**
+
+Copilot Studio で自律型エージェントを作成する方法は複数存在し、作成方法、利用するアクション、ライセンス、クレジット消費など、それぞれに違いがあります。今後は新UIのワークフローに集約されていく見込みですが、現時点では複数のアプローチがあるため、混乱を招く可能性があるため、本記事で整理が試みられています。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

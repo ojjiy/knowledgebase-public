@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Books/Resources to improve mathematical foundations for ML research [D]</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>Books/Resources to improve mathematical foundations for ML research [D]</h1>
+<p><strong>Date:</strong> 2026-07-02</p>
+<p><strong>Source:</strong> reddit / MachineLearning</p>
+
+<p><a href="https://www.reddit.com/r/MachineLearning/comments/1ulmy9g/booksresources_to_improve_mathematical/">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">## 1. このポストの内容を説明してください。
+
+このRedditのポストは、機械学習（ML）の研究を行っている大学院生（博士課程の後半〜後期）からのものです。投稿者は、自身の数学的基礎が「必要に応じて学んでいく」というスタイルで進めてきたため、現在 shaky (不安定) であると感じており、卒業までにその基礎をしっかりと固めたいと考えています。
+
+具体的には、以下の3つの分野の知識を向上させたいと述べています。
+
+*   **線形代数 (Linear Algebra)**: &#34;Linear Algebra done Right&#34; という書籍を候補として挙げており、これで十分か他者の意見を求めています。
+*   **確率論 (Probability Theory)**: どこから手をつけるべきか迷っているようです。
+*   **関数解析 (Functional Analysis)**: Rudin の書籍は難しすぎると感じており、代わりに RKHS (Reproducing Kernel Hilbert Spaces) に関する論文 &#34;A primer on RKHS&#34; で「様子見」をしている状況です。
+
+これらの主要な分野に加えて、PRML (Pattern Recognition and Machine Learning) の再読や、Pat Kidger 氏の &#34;Just-Know-Stuff&#34; リストの完遂も検討しています。
+
+投稿の最後では、良い教材を見つけることよりも、それらを実際に読み進め、演習をこなすことの難しさを認識しており、他の学業との両立の困難さにも言及しています。そして、他のユーザーに対し、上記分野や関連分野（YouTubeチャンネル &#34;the bright side of mathematics&#34; など）に関する書籍やリソースの推薦を求めています。
+
+## 2. このポストに対するコメントのうち、特に興味深いものを教えてください。
+
+このポストに対するコメントは多岐にわたり、投稿者の質問に対して具体的な書籍やリソース、学習方法などを提案しています。特に興味深いものをいくつか挙げます。
+
+### 具体的な書籍・リソースの推薦
+
+*   **線形代数:**
+    *   **&#34;Linear Algebra done Right&#34; (Axler著)**: 多くのコメントで推薦されており、投稿者も候補に挙げています。コメントでは、「演習をしっかりこなすことが重要」「最新版（V3）ではMLに関連するトピック（最小化問題、SVDの一般化）が拡張されている」といった具体的なアドバイスがあります。Axler氏のスタイルが気に入った場合、&#34;Measure Integration and Real Analysis&#34; も推奨されています。
+    *   **&#34;Mathematics of Deep Learning&#34;**: 最近公開された、深層学習の数学的基礎に焦点を当てた推薦書籍があります。
+
+*   **確率論:**
+    *   **&#34;High Dimensional Probability&#34; (Vershynin著)**: 非常に良い書籍として紹介されており、関連するコースも提供されているようです（リンクあり）。
+    *   **MIT 6.041 Probabilistic Systems Analysis and Applied Probability (YouTubeコース)**: 過去に受講した人が推薦しており、確率論の基礎を学ぶための良いリソースとして挙げられています（講義ノートのリンクは切れているようです）。
+
+*   **関数解析:**
+    *   **&#34;Deep Learning&#34; (Goodfellow, Bengio, Courville著) の付録:** &#34;d2l.ai&#34; というサイトの「Mathematics for Deep Learning」というセクションが、基礎から応用までカバーしており、宿題や演習もあるため、学習を深めるのに役立つと推薦されています。RKHSの論文は、カーネル法が研究テーマでない限り、汎用的な関数解析の基礎固めとしては限定的かもしれないが、読む価値はあると補足されています。
+
+*   **その他の関連分野:**
+    *   **&#34;Artificial Intelligence: A Modern Approach&#34; (Russell &amp; Norvig著) の第IV部:** 不確実な知識と推論に関する章が、数学的基礎として有用であると指摘されています。
+    *   **アルゴリズミック情報理論 (Algorithmic Information Theory):** 関連するYouTube講義とノートが紹介されています。
+    *   **因果推論 (Causality):** Judea Pearl 氏の &#34;Causal Inference in Statistics&#34; が推奨されています。
+
+### 学習方法の提案
+
+*   **演習問題の重要性:** &#34;Linear Algebra done Right&#34; に関するコメントで強調されています。理論だけでなく、実際に問題を解くことで理解が深まるという指摘は重要です。
+*   **TA (Teaching Assistant) / 講師としての役割:** 関連コースのTAや講師を務めることが、自身の理解を深め、洗練させるのに非常に役立つという実体験に基づいたアドバイスがあります。教えることで、曖昧な点が明確になるという効果はよく知られています。
+*   **大学の応用数学科の授業を取る:** 疑問を直接大学の授業で解消するという、より直接的なアプローチも提案されています。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

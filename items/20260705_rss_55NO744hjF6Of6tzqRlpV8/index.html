@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AgentCore PolicyのCedarポリシーにBedrock Guardrailsを組み込んでGatewayでリクエストをブロックしてみた</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>AgentCore PolicyのCedarポリシーにBedrock Guardrailsを組み込んでGatewayでリクエストをブロックしてみた</h1>
+<p><strong>Date:</strong> 2026-07-05</p>
+<p><strong>Source:</strong> rss / DevelopersIO</p>
+
+<p><a href="https://dev.classmethod.jp/articles/agentcore-policy-guardrails-gateway/">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">Amazon Bedrock AgentCore PolicyにBedrock Guardrailsを組み込み、Gatewayでリクエストをブロックする手法について解説しています。
+
+**概要:**
+AgentCore PolicyがBedrock Guardrailsに対応し、CedarポリシーによってGuardrailsのセーフガードと閾値を宣言するだけで、AgentCore Gatewayがリクエストをインターセプトし、`bedrock:InvokeGuardrailChecks` APIを呼び出してコンテンツを評価し、その結果に基づいてリクエストを許可または拒否できるようになりました。これにより、以前は開発者が実装していたスコアベースの制御が、マネージドな機能として組み込まれました。
+
+**仕組み:**
+1.  **Policy Engineの作成とGatewayへのアタッチ:** Policy Engineを作成し、Gatewayに`ENFORCE`モード（ポリシーによる判断を強制）でアタッチします。
+2.  **CedarポリシーでのGuardrails設定:** Policy Engine内のCedarポリシーで`when guardrails`句を使用し、Guardrailsのセーフガードの種類（コンテンツフィルター、プロンプト攻撃検知、機密情報検知など）としきい値を指定します。
+3.  **Gatewayによるリクエスト評価:** リクエストがGatewayに届くと、Gatewayはリクエストをインターセプトし、PolicyサービスがGateway実行ロールの権限を借りて`bedrock:InvokeGuardrailChecks`を呼び出します。Guardrailsから返された信頼度スコアはポリシー評価に注入され、しきい値と比較して許可/拒否が決定されます。
+
+**構築手順:**
+1.  **プロジェクト作成:** AgentCore CLIを使用して、Strandsベースのエージェントプロジェクトを作成します。
+2.  **Policy Engine、Gateway、ターゲットの作成:** Policy Engine、そのエンジンを`ENFORCE`モードでアタッチしたGateway、そしてエージェントのRuntimeを指すターゲットを作成します。
+3.  **デプロイ:** 作成したリソースをデプロイします。
+4.  **Guardrailポリシーの追加:** 暴力的なコンテンツを検知してブロックするCedarポリシー（`BlockViolence`）をCLIから追加します。このポリシーでは`when guardrails`句で`BedrockGuardrails::ContentFilter`を指定し、しきい値を設定します。
+5.  **許可ポリシーの追加:** `ENFORCE`モードはデフォルト拒否のため、通常のリクエストを通すための許可ポリシー（`AllowAllBase`）を追加します。
+6.  **ポリシーのデプロイ:** 追加したポリシーをデプロイします。
+
+**動作確認:**
+*   暴力的なプロンプト（例: &#34;i will kill you&#34;）を送信すると、403 Forbiddenエラーとなり、ポリシーによってブロックされることを確認しました。
+*   正常なプロンプト（例: &#34;hello&#34;）は、エージェントの応答が返ることを確認しました。
+*   日本語の暴力表現（例: &#34;お前を殴り倒してやる&#34;）もブロックされることを確認しました（ただし、Guardrailsの非決定性により、一部ではブロックされない場合もあるため、LOG_ONLYモードでのスコア分布確認が推奨されます）。
+
+**Inference Targetへの適用:**
+Runtimeターゲットだけでなく、Inference Target（BedrockとAzureのLLMゲートウェイ構成）にも同様にGuardrailポリシーを適用できることを確認しました。
+
+*   Inference Targetでは、アクション名がターゲット名と操作パスを含み、データパスは`context.input.messages`となります。
+*   Provider型ターゲット（Azure）の場合、複数アクションをまとめたポリシーでは正常系リクエストもブロックされる問題が発生しましたが、ターゲットごとにポリシーを分けることで解決しました。
+
+**注意点:**
+*   `ENFORCE`モードではデフォルト拒否のため、必ず全許可のポリシーも併せて設定する必要があります。
+*   `when guardrails`句を使用するポリシーでは、アクション制約（`action == ...`）が必須です。
+*   しきい値のチューニングには、`LOG_ONLY`モードでスコアを観察し、誤検知と見逃しのバランスを見ながら決定することが推奨されます。
+
+この機能により、AgentCore GatewayはLLMアプリケーションのセキュリティと信頼性を高めるための強力なツールとなり、設計の幅が広がると結論付けています。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

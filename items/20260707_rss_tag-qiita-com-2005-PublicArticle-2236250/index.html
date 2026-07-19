@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>【AWS】Bedrock AgentCore Web Search を試してみた！</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>【AWS】Bedrock AgentCore Web Search を試してみた！</h1>
+<p><strong>Date:</strong> 2026-07-07</p>
+<p><strong>Source:</strong> rss / Qiita Trend</p>
+
+<p><a href="https://qiita.com/PDC-Kurashinak/items/9bc404e35625ade6e198?utm_campaign=popular_items&amp;utm_medium=feed&amp;utm_source=popular_items">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">このブログ記事は、Amazon Bedrock AgentCore の Web Search 機能について、AWS CDK (Cloud Development Kit) を使用して構築し、Strands Agents から利用する方法を解説しています。
+
+Web Search 機能は AgentCore Gateway に組み込まれたツールであり、エージェントが最新情報や変化しやすい情報を扱う際に、外部ウェブサイトの検索結果を根拠として利用できるようになります。
+
+記事では、以下の3点をゴールとしています。
+1. AgentCore Gateway に Web Search connector target を作成する。
+2. Strands Agents で作成した Python エージェントを AgentCore Runtime にデプロイする。
+3. Runtime 上のエージェントから Web Search を呼び出し、検索結果に基づいて回答させる。
+
+実装の流れは以下の通りです。
+*   **CDKプロジェクトの準備:** 依存パッケージのインストール、CDKのエントリーポイント、仮想環境の設定を行います。
+*   **AgentCore Gateway の作成:** Web Search connector target を CloudFormation リソース (`CfnResource`) を直接定義して作成します。除外したいドメインは `domainFilter` で指定可能です。
+*   **IAMロールの作成:** Gateway 用と Runtime 用の IAM ロールを作成します。Gateway 用ロールには Web Search 実行権限、Runtime 用ロールには Bedrock モデル呼び出し、ECR pull、CloudWatch Logs、Gateway 呼び出し権限を付与します。
+*   **Runtimeコンテナの作成:** Python で記述された AgentCore Runtime の Dockerfile を用意します。`bedrock_agentcore.runtime.BedrockAgentCoreApp` を使用してエントリポイントを公開します。
+*   **AgentCore Runtime の CDK による構築:** Docker image asset を作成し、ECR リポジトリにコピーして Runtime に渡します。Gateway URL などの設定を環境変数で渡します。
+*   **Strands Agents から Web Search の呼び出し:** Strands Agents 側で `web_search` という tool を定義し、システムプロンプトで最新情報や出典リンクの必要性を指示します。
+*   **Gateway の MCP endpoint の利用:** AgentCore Gateway の URL を正規化し、SigV4 署名付きで MCP endpoint にアクセスします。`initialize`、`notifications/initialized` を送信後、`tools/list` で tool 名を取得し、`tools/call` で Web Search を実行します。
+*   **デプロイと動作確認:** CDK でデプロイ後、AgentCore コンソールから payload を送信し、Web Search の結果が回答に含まれるか確認します。
+*   **ハマりどころ:** Web Search connector は `us-east-1` にデプロイすること、Runtime から Gateway を呼ぶには `InvokeGateway` 権限が必要であること、Gateway URL の末尾に `/mcp` を追加すること、`ping` handler は `PingStatus` を返すことなどが挙げられています。
+
+結論として、Web Search、Browser、Code Interpreter などのツールを組み合わせて利用する構成も試していく意向が示されています。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

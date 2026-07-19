@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Hugging Face Models on Foundry Managed Compute</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>Hugging Face Models on Foundry Managed Compute</h1>
+<p><strong>Date:</strong> 2026-07-08</p>
+<p><strong>Source:</strong> rss / Hugging Face Blog</p>
+
+<p><a href="https://huggingface.co/blog/microsoft/foundry-managed-compute">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">Microsoft Azure Foundry Managed Compute 上の Hugging Face モデルは、Hugging Face エコシステムから厳選されたオープンウェイトモデルを、週次で更新されるカタログで提供し、ワンクリックで Foundry Managed Compute にデプロイできるようにするサービスです。これらのモデルは Azure 上に事前にステージングされ、Microsoft によって実行環境が構築・スキャンされており、Foundry 上の他のモデルと同様のエンタープライズレベルのセキュリティ、ガバナンス、オブザーバビリティ、請求機能が提供されます。
+
+Foundry は、エージェント型 AI アプリケーションの構築および運用プラットフォームであり、Microsoft、OpenAI、Anthropic、Meta、Mistral、DeepSeek、Hugging Face など、幅広いモデルを単一のエンドポイントと SDK で利用できます。Agent Service は、マルチエージェントのオーケストレーション、メモリ、Foundry IQ による知識グラウンディング、ツール連携機能を提供し、エンドツーエンドのトレーシング、リアルタイム監視、継続的な評価、プロンプト最適化などのオブザーバビリティ機能も備えています。
+
+Foundry Managed Compute は、Foundry 上でのモデルデプロイオプションの 3 つ目として、オープンソースおよびカスタムモデル向けのマネージド GPU プラットフォームサービスです。モデルのパラメータ数、コンテキスト長、レイテンシーまたはスループットの最適化などの要件に基づいてデプロイインスタンスを設定でき、Foundry が GPU トポロジーを管理します。vLLM、SGLang、TensorRT-LLM、NIM、TEI、llama.cpp などのサポートされる実行環境では、コンテナの更新、ランタイムのアップグレード、セキュリティパッチが自動的に適用されます。
+
+Hugging Face は、1,500 万人の開発者、40 万組織、300 万以上のオープンモデルが集まるプラットフォームであり、最新の AI 技術が毎週追加されています。オープンモデルは、ベンチマークでプロプライエタリモデルに匹敵する性能を示し、ファインチューニング、蒸留、量子化、LoRA によるカスタマイズが可能です。モデルの重みはユーザーのテナント内で実行され、インフラストラクチャを制御できます。
+
+Hugging Face Models on Foundry は、Hugging Face のオープンモデルをエンタープライズグレードのサービスとして提供するための運用レイヤーを提供します。Foundry モデルカタログには、最新のトレンドモデルが毎週追加され、テキスト、ビジョン、オーディオ、マルチモーダルなど、あらゆるモダリティをサポートします。モデルは Safetensors 形式のみで、セキュリティスキャン済みであり、信頼できないコードの実行は排除されます。モデルには、vLLM、SGLang、TensorRT-LLM、NIM、TEI、llama.cpp、hf-serve などの適切な実行環境が自動的に選択され、デプロイされます。
+
+モデルのデプロイは、カタログからモデルを選択し、デプロイテンプレート（レイテンシーまたはスループット最適化、アクセラレータファミリー、コンテキスト長などを指定）を選択し、インスタンス数を設定してデプロイする 5 ステップで行われます。デプロイされたモデルは、統一された Foundry エンドポイントを通じて、SDK（OpenAI SDK など）でスコアリングできます。Foundry Agents では、Collection からのチャットコンプリーションモデルは、管理者接続モデルとして統合され、同様の SDK で呼び出すことができます。
+
+現在プレビュー版では、Foundry モデルカタログに Hugging Face Collection が提供されており、多様なモダリティの数千のモデルが利用可能です。NVIDIA A100、H100、AMD MI300X などのアクセラレータにデプロイでき、グローバルおよびデータゾーンスコープで利用できます。今後は、Hugging Face エコシステムのより広範なカバー、追加のアクセラレータファミリー、および Bring Your Own Weights のサポートがロードマップにあります。Microsoft Foundry は、オープンモデルをエンタープライズで運用するためのプラットフォームとして、キュレーションされ、ライセンス・セキュリティスキャン済みのモデル、CVE スキャン済みの実行環境、およびエンタープライズグレードの管理機能を提供します。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

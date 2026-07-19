@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>テスト距離という考え方で回帰テストを整理する</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>テスト距離という考え方で回帰テストを整理する</h1>
+<p><strong>Date:</strong> 2026-07-03</p>
+<p><strong>Source:</strong> rss / Qiita Trend</p>
+
+<p><a href="https://qiita.com/daikou223/items/bb50627a899ef1dc2da8?utm_campaign=popular_items&amp;utm_medium=feed&amp;utm_source=popular_items">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">本記事では、ソフトウェア開発における「機能テスト」と「回帰テスト」の境界が曖昧であるという問題に対し、「テスト距離」という概念を導入することで、これらのテストを連続的な尺度として整理することを提案しています。
+
+「テスト距離」とは、変更箇所からテスト対象までの、変更の影響が伝播するしやすさを表す尺度です。具体的には、以下の3つの要素を考慮して定量化します。
+
+*   **Dependency（依存関係）**: 変更箇所との依存関係の強さ
+*   **SharedState（共有状態）**: 共有状態による影響範囲
+*   **UserFlow（ユーザー導線）**: ユーザー導線・業務上の関連度
+
+これらの要素を合計した「Distance(Test)」の値が小さいほど変更箇所に近く、機能確認の側面が強くなります。一方、値が大きいほど変更箇所から離れており、副作用の確認、すなわち回帰テストとしての意味合いが強まります。
+
+この「テスト距離」の概念を用いることで、機能テストと回帰テストを独立した種類としてではなく、テスト距離という連続量の中で役割が変化するものとして捉えることができます。これにより、現場ごとに「どこまでを回帰テストとして実施するか」といった基準を定量的に議論できるようになり、テスト範囲の設計や回帰テストの優先順位付けを、経験だけでなく共通の尺度で行うことが可能になります。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

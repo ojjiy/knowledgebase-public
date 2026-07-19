@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Claude Code on the webを少し使ってわかったこと</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>Claude Code on the webを少し使ってわかったこと</h1>
+<p><strong>Date:</strong> 2026-07-05</p>
+<p><strong>Source:</strong> rss / DevelopersIO</p>
+
+<p><a href="https://dev.classmethod.jp/articles/what-i-learned-about-claude-code-on-the-web-in-june-2026/">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">## Claude Code on the Web: クラウド上のAIコーディング環境の利点と課題
+
+本記事は、2026年6月下旬にリサーチプレビュー段階の「Claude Code on the Web」を試した際の所感をまとめたものです。Claude Code on the Webは、ローカル環境ではなく、クラウド上の隔離された仮想マシン（VM）でClaude Codeを実行し、ブラウザやモバイルから操作できるサービスです。VMの利用に際して追加料金はかかりません。
+
+### セキュリティ面での発見事項
+
+*   **リポジトリへのアクセス制限:** Claude Code on the Webがアクセスできるリポジトリは、GitHub Appのインストール範囲ではなく、接続しているGitHubアカウントがアクセス可能な全リポジトリに及びます。そのため、アクセス範囲を制限するには、GitHub側でアカウントやチームへのアクセス権を個別に設定する必要があります。AIエージェント専用のGitHubアカウントを作成し、必要最低限のリポジトリへのアクセス権のみを付与する運用が推奨されます。
+*   **クラウド環境設定の共有:** クラウド環境の設定（セットアップスクリプト、環境変数、ネットワーク許可リストなど）をチーム間で共有・テンプレート化する仕組みは現状ありません。セットアップスクリプトはSessionStartフックでコミット・プッシュすることで共有可能ですが、キャッシュされません。ネットワーク許可リストの共有方法も提供されていません。
+*   **プリインストールツールの脆弱性リスク:** VMには多くのツールがプリインストールされており、これらの脆弱性が影響範囲を広げる可能性があります。Dev Containerのように必要最小限に絞ることはできません。
+*   **GitHub連携ツールの自動セットアップ:** Bashでの`git push`が deny リストでブロックされていても、GitHub API経由のツール（`mcp__github__push_files`など）ではプッシュできてしまう場合があります。また、MCPサーバーが設定されていなくても、Claude Code on the Webでは自動的に追加されるようです。Bashのpush制限だけでは不十分な可能性があるため、注意が必要です。
+*   **pre-pushフックの限定的な動作:** `git push`の実行方法（BashかAPIツールか）によってpre-pushフックが発火しない場合があるため、セキュリティチェックの有効性が限定的になる可能性があります。Claude Codeの`PreToolUse`フックによる代替が検討されます。
+*   **MDMセキュリティツールの適用外:** 端末に導入されているMDM（Mobile Device Management）によるセキュリティツールは、クラウド上の隔離されたVMには適用されません。
+
+### 開発者体験面での発見事項
+
+*   **ローカルとリモートセッションの引き継ぎ:** ローカルセッションからリモートセッションへ途中から引き継ぐ機能は、現時点では提供されていません。`claude --remote`コマンドでリモートセッションを開始できますが、既存のセッションを途中から引き継ぐことはできません。`--cloud`オプションや`--teleport`コマンドについても、ローカルセッションとの連携には制約があります。
+*   **利用できない組み込みコマンド:** ローカル環境で利用できる一部の組み込みコマンド（`/branch`, `/doctor`, `/rewind`など）は、Web版では利用できません。また、`/model`や`/config`のようなインタラクティブなターミナルピッカーを開くコマンドも原則利用できませんが、一部のコマンドは異なる挙動を示すか、設定画面を開く場合があるようです。
+*   **`settings.local.json`の運用変更:** `settings.local.json`をコミットしない運用がWeb版では通用しません。開発者固有の環境変数は、セットアップスクリプトや環境変数設定、またはセッション内での入力による管理が必要になります。
+*   **プルリクエストの自動作成:** セッション完了時にプルリクエストを自動作成するモードや、プルリクエストを監視して修正対応するモードが提供されています。
+*   **サブディレクトリ単位のセッション作成不可:** GitリポジトリのサブディレクトリのみをVM上にクローンしてセッションを作成することはできません。リポジトリ全体がクローンされます。
+*   **プラン変更によるセッション履歴の引き継ぎ不可:** 契約プランを変更した場合、旧プランで作成したリモートセッションの履歴は引き継げません。
+
+Claude Code on the Webは、クラウド上で開発環境を構築・利用できる利便性を持つ一方で、セキュリティ設定や開発ワークフローにおいて、ローカル環境とは異なる考慮事項が存在します。プレビュー段階の機能であるため、今後の仕様変更に注目が必要です。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>既存のCloudWatch監視を止めずにOTelメトリクスへ移行してみた</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>既存のCloudWatch監視を止めずにOTelメトリクスへ移行してみた</h1>
+<p><strong>Date:</strong> 2026-07-07</p>
+<p><strong>Source:</strong> rss / DevelopersIO</p>
+
+<p><a href="https://dev.classmethod.jp/articles/migrate-cloudwatch-to-otel-metrics-without-downtime/">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">## CloudWatch Classic メトリクスから OpenTelemetry (OTel) メトリクスへの段階的移行：実証検証レポート
+
+本記事は、2026年6月に一般提供が開始された CloudWatch の OpenTelemetry (OTel) メトリクスネイティブサポート を利用し、既存の Classic メトリクス監視を停止せずに OTel メトリクスへ移行する方法について検証した結果をまとめたものです。OTel メトリクスは、カーディナリティ（重複具合や種類の多さ）に強く、GB 単位の取り込み課金で魅力的ですが、現在稼働中の Classic メトリクス監視を即座に切り替えることは困難です。
+
+本検証では、公式移行ガイドの Phase 1 である「dual-write（二重書き込み）」に焦点を当て、アプリケーション改修なしで OpenTelemetry Collector を使用した fan-out 設定で実装し、以下の項目を実測しました。
+
+*   **Collector 1つの設定で Classic および OTel の両系統にメトリクスを送信**
+*   **両系統でのメトリクス名とディメンション/ラベルの差異**
+*   **Classic アラームと PromQL アラームを並走させた場合の挙動**
+*   **二重課金の状況**
+*   **移行時に踏む可能性のある落とし穴と、移行判断チェックリスト**
+
+### 移行の全体像と「3つの dual」
+
+公式のカスタムメトリクス移行ガイドでは、移行を4フェーズ（Dual-write, Validate, Recreate consumers, Cut over）で定義しています。本検証は、この Phase 1〜3 を小さく一周するものです。
+
+ここで紛らわしいのが、「dual」が付く用語が3つあることです。
+
+1.  **Dual publishing**: EKS Container Insights アドオンで Classic/OTel 両ストリームを同時発行する機能。
+2.  **Dual-write**: 本記事の検証対象。カスタムメトリクスにおいて、両系統に同じメトリクスを書き込むこと。
+3.  **Dual ingest**: Classic と OTLP の両方を受け入れる期間の IAM 設計における用語。
+
+本記事は、PutMetricData や EMF でカスタムメトリクスを送信しているユーザー向けに、Collector の fan-out による dual-write を実装します。
+
+### 環境・前提条件
+
+*   **ツール**: AWS CLI, Terraform, OTel Collector, Docker, awscurl など
+*   **リージョン**: ap-northeast-1 (東京)
+*   **検証環境**: EC2 t3.micro に Docker で Collector とダミーメトリクスジェネレーターを同居
+*   **稼働時間**: 約2時間11分
+*   **費用**: 概算 $1 未満
+
+### 検証内容と結果
+
+1.  **Terraform で検証環境を構築**: EC2、IAM ロール、アラームペア、IAM 検証用ロールを Terraform で構築しました。Terraform AWS Provider v6.53.0 が PromQL アラームに対応済みであることが確認されました。
+2.  **1つの Collector config で dual-write**: アプリケーションは Collector に OTLP で送信するだけで、Collector が otlphttp exporter と awsemf exporter を使用して Classic と OTel の両系統にメトリクスを送信する設定を実装しました。Classic 側への送信のみ、cumulativetodelta processor を挟み、OTel 側は cumulative のまま送信します。
+3.  **両系統にメトリクスが届くことを確認**:
+    *   **Classic 側**: `DualWriteLab` 名前空間に7つのメトリクス系列が出現。ただし、`OTelLib` という覚えのないディメンションが自動追加されていました。
+    *   **OTel 側**: PromQL API からメトリクスを取得。リソース属性が `@resource.*`、AWS メタデータが `@aws.*` としてラベル化され、`__type__` などのメタラベルも付与されており、情報量が多いことが確認されました。
+    *   **数値の一致**: 同一メトリクスの平均値が、OTel 側 (histogram_avg) で 0.17739648746006、Classic 側 (get-metric-statistics) で 0.17896521488163447 と、ほぼ一致しました。
+4.  **名前・次元/ラベルのズレを対応表に**:
+    *   Classic 側は `app.request.duration` というメトリクス名で、`endpoint` ディメンション、`OTelLib` ディメンションが付与されます。
+    *   OTel 側は `__name__=&#34;app.request.duration&#34;`、`endpoint` ラベル、`@resource.service.name` などのリソース属性がラベルとして保持されます。
+    *   EMF ログでは、`Max: 0`, `Min: 0` となっているのは `cumulativetodelta` の副作用です。
+5.  **Classic アラームと PromQL アラームの並走**: 同一の異常で両アラームが発火しましたが、PromQL 側が Classic 側より約90秒遅延しました。これは `evaluation_interval` と `pending_period` の設定によるもので、移行時には「何秒で発火してほしいか」から逆算して設定し直す必要があります。
+6.  **二重課金**: 検証期間中の概算費用は $1 未満でした。Classic のメトリクス数課金がコストの主因となることが示唆されました。
+
+### 踏んだ落とし穴と対策
+
+*   **`cumulative` のまま `awsemf` に流すと Classic 統計が「プロセス開始以来の累積」になる**: Classic 側のアラームが正常に発火しない原因となります。`cumulativetodelta` processor を Classic 行きにのみ適用することで回避しますが、Classic 側の histogram の Min/Max は 0 になります。
+*   **`OTelLib` ディメンション不一致で Classic アラームが `INSUFFICIENT_DATA` のまま**: `awsemf` が `OTelLib` ディメンションを自動追加するため、既存のディメンション指定ではアラームが発火しません。アラーム定義を更新する必要があります。
+*   **IAM の `cloudwatch:namespace` 条件で OTLP が暗黙 Deny される**: OTLP リクエストには namespace がないため、`StringEquals` 条件で評価できず、アクセス拒否されます。`StringEqualsIfExists` に変更するか、IAM ポリシーを適切に設定する必要があります。
+*   **「系列が分かれる」の実態は再起動と quote 忘れ**: プロセス再起動で `service.instance.id` が変わったり、ラベルにドットが含まれる場合に quote を忘れると系列が分離します。PromQL クエリには集約関数を使用し、ラベルは quote するのが安全です。
+*   **500系列超えはサイレントに切り捨てられる**: API は `warnings` 付きで切り捨て、Query Studio は警告なしで表示します。500系列を超えうる selector の使用は避けるか、集約を挟む必要があります。
+*   **クエリレンジ上限**: ドキュメントと実測値に差異がありました。`query_range` は8日、`range selector` は24時間の上限があります。
+
+### 移行判断チェックリスト
+
+| 確認項目                               | なぜ確認するか                               | 本検証での根拠                                                                           |
+| :------------------------------------- | :------------------------------------------- | :--------------------------------------------------------------------------------------- |
+| メトリクスのカーディナリティ（系列数）   | 系列数が多いほど OTel のコストメリットが大きい | dual-write した600系列が Classic 側で600メトリクス課金として実体化                           |
+| Maximum / Minimum 統計のアラーム・ダッシュボード | `cumulativetodelta` 経由の Classic 側では維持できない | EMF 生ログで Max: 0, Min: 0 を実測                                                       |
+| Classic アラームの本数とディメンション一致 | `OTelLib` 自動追加により、既存の感覚のディメンション指定では `INSUFFICIENT_DATA` になる | ディメンション不一致で10分以上 `INSUFFICIENT_DATA` を実測                                |
+| PromQL アラームのクエリ（集約関数有無）  | 再起動ごとの `service.instance.id` 変化で系列が分かれる | 再起動直後に2系列へ分離するのを実測                                                       |
+| 500系列を超えうる selector の有無        | API は `warnings`、Query Studio は警告なしでサイレントに切り捨てる                  | 600系列 → 500系列切り捨てを実測                                                          |
+| IAM の `cloudwatch:namespace` の `StringEquals` 条件 | OTLP リクエストが暗黙 Deny される                  | AccessDenied と `IfExists` での解消を実測                                                |
+| アラームの発火・復帰までの所要時間の要件 | PromQL アラームは Classic と異なるパラメータ体系 | 同一スパイクで Classic +68秒 / PromQL +158秒を実測                                      |
+| IaC の対応状況                           | Terraform AWS Provider は `promql_criteria` 対応済み | v6.53.0 で apply 成功                                                                    |
+
+### まとめ
+
+本検証では、Collector の fan-out 設定による dual-write が、アプリケーション改修ゼロで実現可能であることを確認しました。OTel メトリクスと Classic メトリクスの両系統でメトリクスが正常に送信され、平均値もほぼ一致しました。
+
+しかし、「同じメトリクス」であっても両系統での見え方（メトリクス名、ディメンション、リソース属性、単位など）は大きく異なります。PromQL アラームの要件（単一系列）や、API の系列数上限（500系列）など、OTel メトリクス特有の仕様も理解する必要があります。
+
+また、想定外のエラーにならない「沈黙する落とし穴」が多く存在することが明らかになりました。移行計画においては、これらの落とし穴を事前に把握し、入念な検証を行うことが不可欠です。
+
+今回の検証は小規模構成でしたが、約2時間・$1 未満で多くの落とし穴を事前に踏むことができ、本番移行前に小さく dual-write 検証を回すことの有効性を強く感じました。この記事が、CloudWatch Classic メトリクスから OTel メトリクスへの移行を計画している方々の一助となれば幸いです。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>VS Code DevContainer を使わなくなった私の、LLM エージェント向け開発環境</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>VS Code DevContainer を使わなくなった私の、LLM エージェント向け開発環境</h1>
+<p><strong>Date:</strong> 2026-07-08</p>
+<p><strong>Source:</strong> rss / Hatena Bookmark LLM</p>
+
+<p><a href="https://zenn.dev/kenfdev/articles/1febc0052b0d71">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">## LLMエージェント開発のための開発環境移行：DevContainerからSSH可能な開発マシンへ
+
+本記事は、筆者が以前「最高の開発環境はRemote Dev Containers」と考えていた状態から、現在はVS Code DevContainerを全く使用せず、「コンテナをSSHできる個人用開発マシンとして扱う」という開発思想へ移行した経緯と、その現在の開発環境について共有するものである。LLMエージェントとの協業が増える中で、開発環境に求めるものが変化したことがその理由である。
+
+### 以前の開発環境（VS Code + DevContainer）の限界
+
+筆者は以前、VS CodeとDevContainerを組み合わせることで、ローカル環境を維持しつつ開発のみLinux上に集約し、TailscaleやRemote SSHと連携させることで、どこからでも同じ開発環境にアクセスできる点を高く評価していた。しかし、LLMエージェントに実装や調査を任せる作業が増えるにつれ、コードを快適に書くことや拡張機能の便利さよりも、以下の点が重要になった。
+
+*   **LLMエージェントが動作する環境の存在**
+*   **複数のエージェントターミナルを並行して動かせること**
+*   **エージェントの状態が一目で分かりやすいこと（通知機能など）**
+*   **必要なポートを簡単に確認できること**
+
+この変化に伴い、VS Code + DevContainerを中心とした開発スタイルは限界を感じるようになった。特に、LLMエージェントを活用するようになるとgit worktreeを多用するが、DevContainerと組み合わせるとworktreeごとにコンテナが増殖し、ポートの衝突、周辺サービス（DB、Redisなど）の共有、初期化・後片付けの増加、VS Codeの接続状態や初期化処理に運用が左右されるといった問題が生じやすかった。
+
+### 現在の開発環境：SSH可能な開発マシンとしてのコンテナ
+
+筆者は現在、「1プロジェクト1コンテナ」から、「組織が扱っているドメインごとに1つの開発コンテナ」という思想で運用している。ドメインとは、顧客、契約、事業、扱う権限が同じ範囲を指す。これにより、同一組織内の複数プロジェクトやworktreeを1つのコンテナ内に配置し、OrcaというAgent Development Environment (ADE) からSSHで接続し、remote worktreeとagent terminalを使用している。
+
+**現在の構成と開発フローのポイント:**
+
+*   **「1組織のドメインごとに1つの長生きする開発コンテナ」:** プロジェクト単位ではなく、ドメイン単位でコンテナを管理する。これにより、同じシェルヒストリー、gh認証、package cache、LLMエージェントの実行権限などを共有できる。
+*   **コンテナをSSH可能な開発マシンとして扱う:** OrcaのSSH worktrees機能を利用し、コンテナをSSHターゲットとして登録。リモートホスト上でgit worktreeを作成し、エージェントもリモートホスト上で実行。エディタ、diff、ブラウザなどはローカルに残し、実行環境のみSSH先に寄せる。
+*   **SSH設定:** 環境に合わせてSSH configを設定。セキュリティはプライベートな開発コンテナであることを前提に割り切っている。
+*   **Secretの管理:** Secretは物理ファイルに残さず、基本的に1Passwordのop CLI経由で必要な時に環境変数として注入する。
+*   **Base Imageとプロジェクト依存の分離:** よく使うツール群を入れたbase imageを作成し、プロジェクト固有の依存はプロジェクト側で追加する。
+*   **個人環境とプロジェクトの分離:** チームで共有すべきものはプロジェクト側に、個人でカスタマイズした開発環境はプロジェクトから分離し、base imageやworkspace定義として管理する。
+*   **AGW (Agent&#39;s Workspace Generator) の活用:** 開発コンテナの起動、プロジェクト側のインフラ起動、ネットワーク参加、Secret注入などを自動化するCLIツール。
+
+### この構成の利点
+
+*   **VS Code中心からの解放:** メモリ消費の大きいVS Codeに依存せず、SSHでアクセス可能なLinuxマシンとして開発環境を扱える。
+*   **worktreeの増やしやすさ:** コンテナを増やすのではなく、既存のコンテナ内にworktreeを増やすため、プロジェクト依存やキャッシュの使い回しが容易。
+*   **Orcaとの相性の良さ:** OrcaのSSH worktrees機能との親和性が高く、VS Code + Remote SSH + Devcontainersの上位互換のような体験が得られる。
+
+### 割り切りと注意点
+
+*   **プロジェクト単位の完全な再現性:** チームメンバー全員に同じ環境を配布するには不向き。
+*   **Sandboxとしての過信:** host mount、SSH agent forwardingなどを利用する場合、境界は弱くなるため、あくまで「プロジェクトを動かすための最小限の登場人物に絞っている」程度の保証と考えるべき。
+*   **Secretの管理:** 1Passwordを利用しても、環境変数として渡した時点でプロセスから見えるため、最低限のものだけを渡す注意が必要。
+*   **掃除の必要性:** 長生きするコンテナにはキャッシュや古いworktreeなどが溜まるため、定期的な整理が必要。
+
+### 向いている人と向いていない人
+
+*   **向いている人:**
+    *   個人でLLMエージェントをよく使う
+    *   git worktreeで並列作業する
+    *   SSH/terminal/ADE中心で作業したい
+    *   Secretやworkspaceの境界を自分で管理できる
+*   **向いていない人:**
+    *   チーム全員に同じ環境を配りたい
+    *   並列開発をあまりしない、VS Codeで困っていない
+    *   SSHやSecretの運用を増やしたくない
+
+### まとめ
+
+筆者は、LLMエージェントとの協業を前提とした開発環境として、コンテナを「VS Codeでコードを書く場所」から「エージェントが安定して入れる開発マシン」へとシフトさせた。OrcaからSSHでコンテナに接続し、コンテナ内にworktreeを作成してエージェントを動かすスタイルが、現在の筆者にとって最もフィットしている。まだ完成形ではないものの、LLM時代のコンテナ開発環境の進化形として、同様の課題意識を持つ人々との情報交換を求めている。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

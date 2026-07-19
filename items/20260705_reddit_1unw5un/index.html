@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Competence Gate: gating tool-use on a small model&#39;s internal confidence signal instead of its verbalised one — Qwen3.5-4B, open weights [P]</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>Competence Gate: gating tool-use on a small model&#39;s internal confidence signal instead of its verbalised one — Qwen3.5-4B, open weights [P]</h1>
+<p><strong>Date:</strong> 2026-07-05</p>
+<p><strong>Source:</strong> reddit / MachineLearning</p>
+
+<p><a href="https://www.reddit.com/r/MachineLearning/comments/1unw5un/competence_gate_gating_tooluse_on_a_small_models/">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">### 1. このポストの内容を説明してください。
+
+このRedditのポストは、AIモデル「Qwen3.5-4B」の性能を向上させるための新しい技術「Competence Gate」について説明しています。
+
+**Competence Gateとは何か？**
+
+*   **目的:** 小さなAIモデル（Qwen3.5-4B）は、自分がどれだけ自信を持って答えられるかを正確に表現するのが苦手です。常に自信があるかのように振る舞いがちですが、実際には内部の信号にはその自信度に関する情報が含まれています。Competence Gateは、この**モデル内部の「本当の自信度」を読み取り**、それに基づいてモデルがどのように応答するかを判断します。
+*   **仕組み:** 通常のAIモデルは、質問に対して「直接答える」「ウェブで検索する」「ローカルの文書から情報を取得する」といったツールを使うかどうかを判断します。Competence Gateは、モデル内部の信号を分析し、その信頼度が高くないと判断した場合、無理に答えを作らず、正直に「わからない」と答えるようにします。
+*   **実装:** この技術は、Qwen3.5-4Bという比較的規模の小さいモデルのために、10MBのLoRAアダプターと小さなオーケストレーションレイヤーとして実装されています。ローカル環境（Apple Silicon/MLX、GGUFビルド）で動作します。
+
+**Competence Gateの主な利点:**
+
+*   **エラー検出の向上:** モデルが間違った情報を生成するのを、元のモデルよりも効果的に防ぎます。投稿者は、Competence Gateが検出した誤りの87%が実際に間違いであったと述べています。
+*   **プライバシー保護:** 個人情報が含まれる可能性のある質問（例：「私の退院サマリーには何と書いてありましたか？」）を、ウェブ検索ではなくローカルの文書検索にルーティングします。これにより、機密情報が公開検索に漏洩するリスクを低減します（22%から10%に減少）。
+*   **回答の追跡可能性:** モデルが情報を取得した場合、その情報源（どの文書のどの部分か）を明記し、回答がその情報源に基づいていることを確認します。検証できない場合は、「確認できませんでした」と正直に伝えます。
+
+**制限事項:**
+
+*   プライバシーに関する実験結果は60件、文書検索と信頼度分離の実験結果は126件と、サンプルサイズが小さいです。
+*   GGUF（ローカル実行用フォーマット）での再現性は高いですが、MLX（Apple Silicon用）とは若干の差異が見られます。
+*   推論時の信頼度表示は「根本的/拒否/回答済み」と大まかであり、より詳細な信頼度バンドはオフラインでの分析が必要です。
+*   Qwen3.5-4B自体の知識やバイアスは引き継ぎます。Competence Gateは「いつ信頼するか」を制御するものであり、モデルの知識自体を変更するものではありません。
+
+**その他:**
+
+*   この技術はQwen3.5-4Bに限定されるものではなく、他のモデルにも応用可能であるとのことです。
+*   コード、重み、モデルカードはHugging Faceで公開されており、Apache-2.0ライセンスで利用できます。
+*   投稿者は、この研究に対するフィードバックや批判を求めています。
+
+### 2. このポストに対するコメントのうち、特に興味深いものを教えてください。
+
+提示されたコメントは空欄のため、現時点では回答できません。もしコメントがあれば、それを提示していただければ、その中から興味深いものを特定し、説明します。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

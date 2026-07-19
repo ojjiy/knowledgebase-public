@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>新しいHTTPメソッド「QUERY」をHono + Bunで実装してみる</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>新しいHTTPメソッド「QUERY」をHono + Bunで実装してみる</h1>
+<p><strong>Date:</strong> 2026-07-03</p>
+<p><strong>Source:</strong> rss / Qiita Trend</p>
+
+<p><a href="https://qiita.com/maaaashi/items/6eefccb7361f64607865?utm_campaign=popular_items&amp;utm_medium=feed&amp;utm_source=popular_items">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">この記事では、HTTPの新しいメソッドである「QUERY」について解説し、WebフレームワークHonoとJavaScriptランタイムBunを用いて実際にAPIを実装する手順が紹介されています。
+
+**QUERYメソッドとは**
+
+QUERYメソッドは、「ボディを持てる、安全なGET」と位置づけられています。従来のGETメソッドはリソースを変更せず、冪等であり、レスポンスをキャッシュできますが、リクエストボディを利用できません。一方、POSTメソッドはリクエストボディを利用できますが、リソースを変更する可能性があり、冪等性やキャッシュの恩恵を受けにくいという欠点があります。
+
+QUERYメソッドは、GETの「リソースを変更しない」「冪等」「キャッシュ可能」という利点と、POSTの「リクエストボディを利用できる」という利点を兼ね備えています。これにより、複雑な検索条件などをリクエストボディで安全かつ効率的にサーバーに渡すことが可能になります。
+
+**QUERYメソッドが必要な理由**
+
+GETメソッドで複雑な検索条件を渡そうとすると、URLのクエリ文字列が長くなったり、ネストした構造を表現しにくかったりする問題が生じます。POSTメソッドで代用すると、検索という目的に対して状態変更と見なされる可能性があり、キャッシュも利用できません。QUERYメソッドは、このような「ボディで複雑な条件を渡したいが、あくまで安全な読み取りである」というギャップを埋めるために必要とされています。
+
+**Hono + Bunでの実装**
+
+記事では、Honoの`app.on(method, path, handler)`メソッドを用いることで、標準にないQUERYメソッドも容易に登録できることが示されています。また、`OPTIONS`メソッドへのレスポンスで`Allow: QUERY, OPTIONS`や`Accept-Query: application/json`といったヘッダーを返すことで、クライアントがエンドポイントの対応状況を確認できるようにする親切な設計が紹介されています。
+
+ハンドラ部分では、`@hono/zod-validator`を使用してリクエストボディのバリデーションを行い、JSON形式で渡された検索条件（`query`や`limit`など）に基づいてブログデータを検索・フィルタリング・ソート・件数制限するロジックが実装されています。検索ロジックは、`search`, `sortById`, `take`といったメソッドをチェーンでつなげて書けるように、イミュータブルな実装が採用されています。
+
+**動作確認**
+
+実装後、`curl`コマンドを使用して、まず`OPTIONS`メソッドでエンドポイントがQUERYを受け付けるか確認し、その後`QUERY`メソッドで実際に検索を実行する手順が示されています。URLの長さに依存せず、JSON形式で柔軟に検索条件を渡せること、そしてバリデーションが正しく機能することも確認されています。
+
+**まとめ**
+
+QUERYメソッドは、GETとPOSTの良いところを組み合わせた新しいHTTPメソッドであり、HonoとBunを使用すれば比較的容易に実装できます。ただし、ブラウザやプロキシ、CDNの対応はまだこれからであるため、当面はPOSTメソッドとの併用が現実的であると述べられています。新しいHTTPメソッドが標準に加わることは珍しく、設計の選択肢として覚えておく価値があるとのことです。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

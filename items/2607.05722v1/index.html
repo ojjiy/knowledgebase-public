@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Nemotron-Labs-Diffusion: A Tri-Mode Language Model Unifying Autoregressive, Diffusion, and Self-Speculation Decoding</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>Nemotron-Labs-Diffusion: A Tri-Mode Language Model Unifying Autoregressive, Diffusion, and Self-Speculation Decoding</h1>
+<p><strong>Date:</strong> 2026-07-07</p>
+<p><strong>Source:</strong> paper / hf-papers</p>
+
+<p><a href="http://arxiv.org/abs/2607.05722v1">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body"># タイトル
+Nemotron-Labs-Diffusion: A Tri-Mode Language Model Unifying Autoregressive, Diffusion, and Self-Speculation Decoding
+[View Paper](http://arxiv.org/abs/2607.05722v1)
+
+## 1. 問題意識：解決したい問題はなにか
+既存の言語モデル（LM）は、主に自己回帰型（AR）モデルが主流ですが、その逐次的なトークン生成プロセスは推論の並列化を著しく制限し、特に低バッチサイズでのデプロイメントシナリオにおいて、リソースの未活用と低いスループットを引き起こしていました。近年、ARモデルの代替として拡散モデル（Diffusion LM）が登場し、1回のフォワードパスで複数のトークンを生成することで並列生成を可能にしましたが、Diffusion LMはARモデルに比べて精度や学習効率で劣ることが多く、同等の性能を達成するためにはより多くのデータが必要でした。また、既存のDiffusion LMは、多トークン予測（MTP）手法と比較して明確な優位性を持たず、実用的な効率と精度のトレードオフにおいても後塵を拝することがありました。これらの課題は、Diffusion LMの真の可能性を判断し、その正しい普及を導く上で、以下の3つの問いを提起していました。
+
+Q1: Diffusion LMはAR LMと競合すべきか、それとも両方のパラダイムを調和させることができるか？
+Q2: Diffusion LMはMTP手法よりも強力な加速メカニズムを提供できるか？
+Q3: Diffusionデコーディングには、より深い探求を正当化する十分な長期的潜在能力があるか？
+
+## 2. 提案手法のアプローチ：どのようなアイデア・アプローチで問題を解決しようとしたか
+本研究では、これらの疑問に答えるため、単一のモデルアーキテクチャ内でARモデリングとDiffusionモデリングを統合するというアプローチを取りました。ARモデルの強み（左から右への言語的先行知識）を維持しつつ、Diffusionモデルの利点（並列生成）と潜在能力を探求することを目指しました。このアプローチの動機は、ARとDiffusion LMが互いに排他的なパラダイムではなく、むしろ互いに有益であり、因果的注意（causal attention）と双方向的注意（bidirectional attention）を切り替えることで単一モデルに統合できるという考えに基づいています。具体的には、ARモデルが自然に将来のトークンを計画する能力を学習し、Diffusionトレーニングがこの能力をさらに強化できると考えました。逆に、AR目的をトレーニング中に維持することで、Diffusionモデリングに強力な左から右への言語的先行知識を注入できます。
+
+この洞察に基づき、「Nemotron-Labs-Diffusion」というトリモードLMを導入しました。これは、統一されたトレーニングフレームワークの下でDiffusionとARの損失を共同で最適化するモデルです。トレーニングスキームは、グローバルな損失平均化戦略を採用し、最適化を安定させます。さらに、2段階のトレーニング手順を採用しました。まず、AR能力を強化して強力な左から右への言語的先行知識を確立し、次にDiffusionとARの共同トレーニングを可能にして両方の目的を完全に統合します。これにより、モデルは以下の3つのモードでデコーディングをサポートします。
+
+1.  **ARデコーディング**: 標準的な自己回帰型デコーディング。
+2.  **並列Diffusionデコーディング**: 最適化されたサンプラーと組み合わせて並列生成を改善できる、Diffusionベースのデコーディング。
+3.  **自己 spéculation（Self-speculation）**: Diffusionが候補トークンをドラフト（下書き）し、ARがそれらを検証するモード。
+
+このアプローチにより、ARモデルの精度とDiffusionモデルの並列生成能力を兼ね備えた、より汎用的で高速な言語モデルの実現を目指しました。
+
+## 3. 成果：提案手法により、何が達成できたのか
+Nemotron-Labs-Diffusionの導入により、以下の成果が達成されました。
+
+*   **ARとDiffusionの調和**: ARとDiffusionの目的は競合するものではなく、むしろ補完的であり、統一されたトレーニングにより両者の利点を引き出すことができることが示されました。Diffusionは並列生成を可能にし、ARは言語的先行知識を提供します。
+*   **自己 spéculationの有効性**: DiffusionドラフトとAR検証を組み合わせた自己 spéculationモードは、既存の多トークン予測（MTP）手法と比較して、より高い受理率（acceptance rate）と実デバイスでの効率を実現しました。これは、補助的な予測ヘッドを必要としないため、より効率的です。
+*   **Diffusionデコーディングの長期的な可能性**: スピード・オブ・ライト（SOL）分析により、Diffusionデコーディングは、最適なサンプラーを使用した場合、自己 spéculationモードと比較して、フォワードパスあたり最大76.5%多くのトークンを生成できる可能性が示されました。これは、現在のサンプラーがDiffusionの潜在的な並列性を十分に活用できていないことを示唆しています。
+*   **SOTAモデルの性能凌駕**: 3B、8B、14BパラメータのNemotron-Labs-Diffusionファミリー（ベース、Instruct、Vision-Languageモデルを含む）は、精度と速度の両方において、最先端のオープンソースARおよびDiffusion LMを一貫して上回りました。具体例として、Nemotron-Labs-Diffusion-8Bは、同等の精度でQwen3-8Bよりも6倍多くのトークンをフォワードパスあたりでデコードし、GB200 GPU上のSGLangでSPEED-Benchにおいて4倍高いスループットを達成しました。
+*   **デプロイメントシナリオへの適応性**: トリモードモデルは、低並行性設定では自己 spéculationが特に効果的であり、高並行性シナリオではARが依然として適しているなど、異なるデプロイメント設定や並行性レベルに対応して高いスループットを維持できます。これにより、従来のAR LMのドロップイン代替として機能します。
+*   **Vision-Languageモデルへの拡張**: Vision-Languageモデル（VLM）への拡張も成功し、AR性能、Diffusionモードでの効率、および自己 spéculationモードでの高速化において、最先端のDiffusion VLMを上回りました。
+
+## 4. 課題：本手法の限界・課題にはなにか。本文中で著者が言及しているものと、あなたが想定するもの
+### 本文中で著者が言及している課題・限界
+*   **DiffusionデコーディングとSOL上限のギャップ**: 生成されたDiffusionトークンをSOL上限に近づけることは依然として未解決の課題です。現在のConfidence-based samplingは、SOL上限からかけ離れており、より優れたサンプラーの設計や、より積極的な並列サンプリングを可能にする高度なトレーニングスキームが必要とされています。
+*   **自己 spéculationにおけるドラフトと検証の整合性**: DiffusionドラフトモードとAR検証モードの整合性をトレーニング中にさらに改善することが、受理率を向上させるための重要な将来の方向性として挙げられています。
+*   **AR検証のプレフィックス制限**: 現在のAR検証は、ドラフトされたトークンをプレフィックス（接頭辞）単位でのみ受け入れるため、Diffusionドラフトの非AR的な性質を完全に活用できていません。非連続的なドラフトトークンを検証できるDiffusionモード検証の探索が将来の方向性として示唆されています。
+*   **Diffusion生成における高レベル並列性の欠如**: Diffusionデコーディングはトークンレベルの並列性を提供しますが、生成順序は依然として左から右への傾向が強く、セグメントレベルや段落レベルの並列性を促進する将来のトレーニングアルゴリズムが、グローバルな計画能力と効率の可能性をさらに引き出すことが期待されています。
+*   **Quadratic Self-speculationのインフラストラクチャ依存性**: Quadratic self-speculationは、より高いTPFを達成する可能性がありますが、FlexAttentionなどの最適化されていないカーネルの使用により、実デバイスでの効率が線形自己 spéculationに劣ることが報告されています。インフラストラクチャの改善が望まれます。
+*   **Instruction-following complianceへの影響**: Diffusionトレーニングを適切に統合した場合、AR精度は一般的に維持または若干向上しますが、Instructモデルにおいては、厳密な指示追従コンプライアンスがDiffusion目的によってわずかに影響を受ける可能性が指摘されています（IFEvalやHumanEvalでの低下）。
+
+### あなたが想定する課題・限界
+*   **トレーニングコストと複雑性**: ARとDiffusionの目的を統合した共同トレーニングは、単一目的のモデルと比較して、トレーニングプロセスがより複雑になり、計算リソースと時間をより多く消費する可能性があります。特に、2段階トレーニングやグローバル損失平均化などの手法は、実装とチューニングに注意が必要です。
+*   **ハイパーパラメータチューニングの難しさ**: 共同トレーニングにおける損失係数（alpha）などのハイパーパラメータの選択が、モデルの性能に大きく影響する可能性があります。最適なハイパーパラメータを見つけるためには、広範な実験とチューニングが必要になるかもしれません。
+*   **モデルサイズの増大とメモリ使用量**: Diffusionモデルは、ARモデルよりも大きなモデルサイズやメモリ使用量を持つ傾向があるため、Nemotron-Labs-Diffusionファミリーも、特に大規模モデルでは、リソース制約のある環境でのデプロイメントに課題をもたらす可能性があります。
+*   **「Speed-of-light」分析の現実世界への適用**: SOL分析は理論上の上限を示しますが、実際のハードウェアやサンプラーの制約により、その上限を完全に達成することは困難である可能性があります。実世界でのスループット向上は、SOL分析で示されたほど劇的ではないかもしれません。
+*   **特定のタスクへの適合性**: Diffusionデコーディングは、構造化されたタスク（コーディング、数学など）で特に強みを発揮する可能性がありますが、より自由形式のテキスト生成や、文脈依存性が極めて高いタスクにおいては、ARモデルが依然として優位性を持つ可能性があります。
+
+## 5. 技術詳細：提案手法の技術的な詳細について、できるだけ詳しく。数式やアルゴリズム、モデル構造なども可能な限り詳しく
+Nemotron-Labs-Diffusionは、以下の主要な技術要素で構成されています。
+
+### 5.1. 共同AR-Diffusionトレーニングフレームワーク
+ARとDiffusionの目的を単一モデルで統合するため、以下の損失関数を組み合わせた共同トレーニングを行います。
+
+**AR損失 ($\mathcal{L}_{\text{AR}}$):**
+標準的な自己回帰型言語モデルの対数尤度を最大化します。
+```python
+loss_ar = -sum(log(p_theta(x_i | x_&lt;i))) for i in tokens
+```
+
+**Diffusion損失 ($\mathcal{L}_{\text{diff}}$):**
+ブロックごとのDiffusionモデルのノイズ除去目的を使用します。入力シーケンス $x$ を $B$ 個のブロック $x^b$ に分割し、各ブロックをノイズレベル $t$ までノイズ化し、それをクリーンなプレフィックス $x^{&lt;b}$ の条件付けで復元します。
+```python
+loss_diff = -sum(log(p_theta(x^b | ~x_t^b, x^{&lt;b}))) / t for each block b and noise level t
+```
+ここで、$\tilde{x}_t^b$ はノイズ化されたブロック、$x^{&lt;b}$ はそれ以前のクリーンなブロックです。
+
+**統合損失 ($\mathcal{L}$):**
+AR損失とDiffusion損失を重み付きで結合します。
+```python
+loss_total = loss_ar + alpha * loss_diff
+```
+ここで、$\alpha$ はDiffusion損失の強度を制御するハイパーパラメータです。
+
+**2段階トレーニング戦略:**
+1.  **Stage 1 (Pure AR):** まず、AR目的のみでモデルをトレーニングし、強力な左から右への言語的先行知識を確立します。
+2.  **Stage 2 (Joint AR-Diffusion):** 次に、ARとDiffusionの共同目的でトレーニングを継続し、$\alpha$ を調整して両者の損失の大きさを揃え、Diffusion勾配がAR先行知識を補完するようにします。
+
+**損失平均化戦略:**
+Diffusion損失では、ランダムなマスキングにより、トレーニング例ごとに損失に寄与するトークンの数が異なるため、損失の平均化戦略が重要です。
+*   **Sequence-wise averaging ($\mathcal{L}_{\text{seq-avg}}$):** 各シーケンス内のトークン損失を平均し、その後シーケンス間で平均します。
+*   **Global averaging ($\mathcal{L}_{\text{global}}$):** バッチ全体で全てのトークンを平等に扱い、グローバルに平均します。本研究では、$\mathcal{L}_{\text{global}}$ を採用し、勾配分散を低減させました。
+
+### 5.2. デュアルストリームアテンションパターン
+トレーニング時には、ノイズ化されたビューとクリーンなビューのデュアルストリーム入力を連結し、構造化されたアテンションパターンを使用します。
+*   **Noisy stream:** 各ブロック内で双方向的に、ブロック間では因果的にアテンションします。
+*   **Clean stream:** AR目的を計算し、Diffusion目的のためにクリーンコンテキスト条件付けを達成するために、ブロック内のトークンはクリーンなプレフィックスブロックにもアテンションします。ただし、クリーンストリーム内では厳密な因果マスクが適用されます。
+
+### 5.3. トリモード推論
+共同トレーニングにより、以下の3つのデコーディングモードが自然に実現されます。
+
+1.  **ARデコーディング**: 標準的な左から右への因果的アテンションによるトークン生成。高並行性でのサービングに適しています。
+2.  **並列Diffusionデコーディング**: ブロックごとに、マスクトークンを初期化し、Confidence thresholdingや学習済みサンプラーを用いて、1ステップあたり複数のトークンを並列にデノイズします。ブロック完了後、KVキャッシュが更新され、次のブロックに進みます。
+    *   **学習済みサンプラー**: Diffusionデコーディングの効率を向上させるため、Diffusionバックボーンの上に軽量Transformerベースのサンプラーをトレーニングします。このサンプラーは、将来のトークンをグリディに受け入れる確率を予測し、より高いTPF（Tokens Per Forward）と精度のトレードオフを実現します。
+3.  **自己 spéculationデコーディング**:
+    *   **Linear Self-speculation**: Diffusionモードで複数の候補トークン（ドラフト）を生成し、ARモードでそれらを検証します。検証に成功したプレフィックスのみを受け入れ、残りは破棄します。
+        *   **LoRAによる拡張**: DiffusionドラフトパスにLoRAアダプターをファインチューニングすることで、AR検証器との整合性を高め、1ステップあたりの受理プレフィックス長を拡張します。
+    *   **Quadratic Self-speculation**: より高度な形式で、単一のフォワードパス内でドラフティングと検証を同時に行います。構造化されたアテンションマスクにより、各イテレーションで常に固定数の spéculative トークンを生成します。AR-Diffusionアンサンブル検証器もサポートされます。
+
+### 5.4. スピード・オブ・ライト（SOL）分析
+Diffusionモードの潜在的な並列性を定量化するために、SOL分析が行われます。これは、最適なサンプラーを備えた場合のDiffusionデコーディングの最大受理率/トークンあたりのフォワードパスを推定します。
+*   **目標**: Diffusionモデルが収束するターゲットシーケンスを、最小限のフォワードパスで再現すること。
+*   **手法**: グリーディーアクセプタンス（greedy acceptance）と、より正確なリカバーリング（recovering）スキーム（安全なコミットメントのための戦略的検索）が用いられます。
+
+### 5.5. モデルファミリー
+3B、8B、14BパラメータのNemotron-Labs-Diffusionモデルファミリーが構築され、ベースモデル、Instructモデル、およびVision-Languageモデル（VLM）が含まれます。Vision-Languageモデルは、テキストモデルにビジョンエンコーダーとマルチモーダルプロジェクターを追加し、ビジョン認識とクロスモーダルアライメントを統合しています。VisionトークンはDiffusion損失計算から除外される（Anisotropic layout）ことで、効率化が図られています。
+
+## 6. この論文を140字以内のツイートで要約すると？
+ARとDiffusionを統合した新言語モデル「Nemotron-Labs-Diffusion」登場！単一モデルで高精度・高速な3モード（AR/Diffusion/Self-speculation）生成を実現。SOTA性能を凌駕し、推論速度を大幅向上。Diffusionの可能性を再定義。 #AI #LLM #DiffusionModel</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

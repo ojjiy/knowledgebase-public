@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Run AI workloads on any cloud, store on Hugging Face: zero-egress storage with SkyPilot</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>Run AI workloads on any cloud, store on Hugging Face: zero-egress storage with SkyPilot</h1>
+<p><strong>Date:</strong> 2026-07-07</p>
+<p><strong>Source:</strong> rss / Hugging Face Blog</p>
+
+<p><a href="https://huggingface.co/blog/skypilot-hf-storage">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">SkyPilotは、Hugging Faceストレージと統合され、AIワークロードを任意のクラウドで実行し、Hugging Faceにゼロエグラコストでデータを保存できる機能を提供します。
+
+**主な機能と利点:**
+
+*   **Hugging Faceデータとの統合:**
+    *   Hugging Faceのモデル、データセット、Spaceリポジトリ、またはBucketを、`hf://` URLと既存の`HF_TOKEN`を使用して、SkyPilotのジョブにマウント（読み書き可能または読み取り専用）できます。
+    *   これにより、モデルやデータセットの保存場所をHugging Face Hubに保ちながら、SkyPilotで任意のクラウド上のGPUインスタンスで実行できます。
+*   **ゼロエグラコスト:**
+    *   Hugging Face Storageはエグラ料金を請求しないため、モデルやデータセットをGPUインスタンスに読み込む際のデータ転送コストが無料になります。これは、特に複数のクラウドにまたがってAIワークロードを実行する場合に、高額なエグラ料金を回避するのに役立ちます。
+    *   AWS S3などと比較して、Hugging Face Storageはストレージ料金も安価です。
+*   **任意のクラウドでの実行:**
+    *   SkyPilotは20以上のクラウド、Kubernetes、Slurm、オンプレミス環境に対応しており、利用可能なGPUリソースがある場所でジョブを実行できます。
+    *   これにより、特定のベンダーのインフラストラクチャに依存することなく、最適なGPUリソースを柔軟に利用できます。
+*   **Xetによる重複排除:**
+    *   Hugging Face BucketはXetテクノロジーを基盤としており、ファイルがコンテンツ定義チャンキングで分割され、重複するチャンクは一度だけ保存されます。
+    *   これにより、差分のみが転送されるため、チェックポイント、モデルバリアント、データセットの追加などが効率化され、ストレージと転送コストが削減されます。
+*   **効率的なデータ読み込み（MOUNTモード）:**
+    *   MOUNTモードでは、`hf-mount` FUSEバックエンドが使用され、必要なデータチャンクのみがファイルシステムレイヤーで遅延して読み込まれます。
+    *   これにより、GPUがすぐに作業を開始でき、データセット全体のダウンロードを待つ必要がなくなり、GPUのアイドル時間を削減できます。
+*   **簡単な認証:**
+    *   `HF_TOKEN`を環境変数に設定するか、`--secret HF_TOKEN`オプションで渡すだけで、認証が完了します。これにより、クラウドごとに異なるバケットキーを管理する必要がなくなります。
+
+**利用開始方法:**
+
+1.  `pip install &#34;skypilot[huggingface]&#34;`でSkyPilotをインストールします。
+2.  `hf auth login`コマンドを実行するか、`HF_TOKEN`環境変数を設定して認証します。
+3.  SkyPilotのジョブ定義に`hf://`マウントを追加し、任意のエンドポイントで起動します。
+
+この機能により、AIチームはデータとコンピューティングリソースの場所にとらわれず、コスト効率よく柔軟にAIワークロードを実行できるようになります。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

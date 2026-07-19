@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>富士通のPHOTONを論文からスクラッチ再実装し、DGX Spark (GB10) 1台で学習・推論まで検証してみる</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>富士通のPHOTONを論文からスクラッチ再実装し、DGX Spark (GB10) 1台で学習・推論まで検証してみる</h1>
+<p><strong>Date:</strong> 2026-07-08</p>
+<p><strong>Source:</strong> rss / Hatena Bookmark LLM</p>
+
+<p><a href="https://zenn.dev/chitako/articles/e76ce82919e39f">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">## 富士通の階層型言語モデル「PHOTON」の再実装と性能検証
+
+本稿では、2026年6月に発表された富士通、理化学研究所、東京科学大学、東海大学による階層型言語モデル「PHOTON」を、公式実装が存在しない中、論文のみを頼りにスクラッチから再実装し、NVIDIA DGX Spark (GB10) 1台で学習から推論、アブレーション、スケールアップまで検証した結果を詳細に報告する。
+
+**結論として、 PHOTONの推論効率における優位性は明確に再現できた。** 具体的には、プレフィルで最大3.75倍、長文デコードで最大6.36倍のスループット向上、KVメモリ使用量を最大2.37倍削減（同規模の通常Transformer比）を達成した。
+
+一方で、**同じ学習予算では、言語モデリング品質（perplexity）において通常Transformerに劣る**という結果になった。しかし、この品質ギャップはスケールを上げることで縮小する傾向が見られた（FineWebデータセットで1.98倍から1.71倍、WikiTextデータセットで3.73倍から2.80倍）。
+
+また、論文で提案されている第2の推論モード「RecGen」は、再構成損失α&gt;0での学習が事実上必須であることが分かった。しかし、158Mパラメータ規模では実用品質には程遠く、論文で示されている600Mパラメータ以上、134Bトークン規模の学習が必要と推測される。
+
+本実装および実験は、Claude Codeを利用し、GB10上で実行された。設計判断や検証方針の議論も対話的に進められた。
+
+### PHOTONの概要
+
+PHOTONは、自己回帰型LLMのコスト、特に長文生成におけるKVキャッシュの増大とメモリ帯域のボトルネックを解消することを目指したモデルである。従来の「注意機構そのものを置き換える/削る」アプローチとは異なり、**注意機構はそのままに、系列の解像度を階層的に下げる**という発想に基づいている。自然言語が持つ「トークン→フレーズ→文→段落」といった階層構造に着目し、遠い文脈は圧縮された潜在ベクトルとして保持することで効率化を図る。
+
+モデル構造は、「ボトムアップのエンコーダ」と「トップダウンのデコーダ」から成る。系列長 T に対して、レベル l の潜在列を $X^l$、チャンクサイズを $C_l$ とする。階層数 L=2 で、系列長は圧縮ごとに短くなる。各レベルは以下の4つのモジュールで構成される。
+
+1.  **ContextChunker（圧縮）**: 連続する $C_l$ 個のベクトルを連結し、線形層で上位レベルの次元 $D_l$ に射影する。位置情報が保存されるよう、単純な「連結＋線形」が用いられる。
+2.  **ContextEncoder（圧縮列上の文脈化）**: 各レベルの潜在列上で動作する、通常の因果Transformer。入力系列が短いため、注意コストは激減する。系列長とともに伸びるKVキャッシュはこのエンコーダ側にのみ存在する。
+3.  **ContextConverter（トップダウンの橋渡し）**: 上位の潜在1個を、下位デコーダの条件付けに使うprefixベクトル $R_l$ 個に展開する。ConvTranspose1dが用いられ、隣接チャンクへの構造的な情報リークを防ぐ。
+4.  **ContextDecoder（局所生成）**: 各チャンクを生成する局所因果Transformer。入力はprefixと自チャンクの過去 $j-1$ 個であり、注意の窓幅は $R_l + C_l$ に固定され、グローバル系列長 T に依存しない。最下層（レベル0）のデコーダはトークンlogitsを、上位レベルのデコーダは下位潜在の再構成 $\hat{X}^l$ を出力する。
+
+### 学習と推論モード
+
+PHOTONの学習は完全に並列であり、RNN的な階層モデルとは異なる。全レベルをボトムアップにエンコードし、各レベルのConverterでprefix化された後、局所デコーダに一括投入される。損失は合算される。Converterはエンコーダの真の状態を参照するため、学習と推論のデータフローが同一になり、train/inference mismatchによる品質劣化の心配がない設計となっている。
+
+推論モードは以下の2つが提案されている。
+
+1.  **HierGen（忠実だが手数が多い）**: チャンク単位の自己回帰生成。1チャンク生成ごとにトップダウンでprefixを生成し、デコーダでトークンをサンプリング後、完成したチャンクをボトムアップで再エンコードし、上位レベルの潜在を更新する。このモードは学習時とデータフローが同一であり、品質ロスがない。
+2.  **RecGen（再エンコードを省く）**: HierGenの手順2（ボトムアップ再エンコード）を省略する。代わりに、レベル1デコーダが出力する再構成 $\hat{X}^1$ を真の $X^1$ の代用品として使用し、潜在列をデコーダだけで再帰的に進める。これにより、最上位のKVキャッシュのみが系列長とともに伸び、階層が深い/系列が長いほど高速化する。しかし、サンプルしたトークンが次の潜在列更新まで反映されない開ループ動作となり、再構成誤差が蓄積するため、学習時のα（再構成損失）が実質的な前提条件となる。
+
+### 実験環境と検証方法
+
+実験はNVIDIA DGX Spark (GB10)（メモリ121GB、Unified Memory）を使用し、CUDA 13.0、PyTorch 2.12.1、bf16 autocast環境で行われた。データはFineWeb-Edu (sample-10BT) を使用。
+
+公式実装がないため、再実装の正しさを担保するために以下の3層のテストが用意された。
+
+1.  **勾配ベースの因果性証明**: 位置 j のlogitsを位置 j 以降の入力トークンで微分し、勾配が厳密にゼロであることを確認。
+2.  **小バッチ過学習**: 固定ミニバッチで損失がほぼゼロまで落ちることを確認。
+3.  **HierGen ⇔ 並列teacher-forcingの自己無矛盾性**: 逐次生成（HierGen）のgreedy出力と、並列forward時のargmaxが全トークン一致することを確認。
+
+### 実験結果
+
+#### 第1弾：36M/44Mモデル・200Mトークンでの結果
+
+*   **Perplexity**: PHOTONは同規模の通常Transformerに比べて大幅に劣った。
+*   **推論効率**: PHOTONは推論速度、メモリ使用量ともに通常Transformerを大きく上回った。
+*   **考察**: この規模では、PHOTONは推論効率に優れるものの、品質面で劣る。効率と品質のトレードオフが存在し、 PHOTONの効率性を活かすには、より多くのトークン・パラメータでの学習が必要であることが示唆された。
+
+#### 第2弾①：アブレーション（何が品質ギャップを縮めるか）
+
+*   再構成損失αを増やすほど品質は悪化する。
+*   圧縮率を緩和（チャンクサイズを小さく）すると、品質が大きく改善した。
+*   **結論**: 品質ギャップは階層圧縮の強さにほぼ直結しており、効率と品質のトレードオフのつまみであることが確認された。
+
+#### 第2弾②：RecGen — 第2推論モードの動作検証
+
+*   RecGenはα&gt;0での学習が必須であり、α&gt;0で潜在再構成の忠実度が向上する。
+*   しかし、この規模ではRecGenの品質はHierGenより大幅に劣り、実用に達しない。論文で提案されている規模での実用性が示唆された。
+*   デコード時のメモリ使用量はHierGen比で約30%削減された。
+
+#### 第2弾③：スケールアップ — 品質ギャップはスケールで縮むのか
+
+*   medium構成（158M/187Mパラメータ）を1.5Bトークンで学習した結果、PHOTONは通常Transformerより学習も1.7倍速かった。
+*   品質ギャップ（PHOTON ppl ÷ baseline ppl）は、スケールアップとともに縮小するトレンドが確認された（FineWeb: 1.98x→1.71x, WikiText: 3.73x→2.80x）。
+*   推論効率は、スケールと系列長の両方で拡大し、特に長系列デコードにおける PHOTONの優位性が顕著になった。
+
+### まとめ
+
+本研究では、公式実装がない階層型言語モデルPHOTONを論文のみを基に再実装し、主要な主張である推論効率の優位性を明確に再現した。学習効率の高さ、スケールアップによる品質ギャップの縮小傾向も確認できた。一方で、RecGenモードは特定条件下で有効なものの、現時点でのモデル規模では実用的な品質には達しないことが明らかになった。
+
+本検証を通じて、参照実装がない場合のモデル実装における「検証の作法」の重要性が再認識された。具体的には、勾配ベースの因果性証明や自己無矛盾性テストが、バグ検出に極めて有効であることが実証された。また、「良すぎる指標」を疑うこと、長時間実験においては事故を防ぐための堅牢なコード設計が不可欠であることも示唆された。torch.compileの有効性も確認された。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

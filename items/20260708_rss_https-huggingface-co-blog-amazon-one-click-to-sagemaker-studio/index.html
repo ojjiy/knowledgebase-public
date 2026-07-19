@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>From Hugging Face to Amazon SageMaker Studio in one click</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>From Hugging Face to Amazon SageMaker Studio in one click</h1>
+<p><strong>Date:</strong> 2026-07-08</p>
+<p><strong>Source:</strong> rss / Hugging Face Blog</p>
+
+<p><a href="https://huggingface.co/blog/amazon/one-click-to-sagemaker-studio">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">Hugging FaceとAmazon SageMaker Studio間の統合により、開発者はモデルの発見からSageMaker Studioでの実践的な実験までをワンクリックで実現できるようになりました。これにより、Amazon SageMaker JumpStartでファウンデーションモデル（FM）をファインチューニングしたり、Amazon SageMaker Inferenceエンドポイントにデプロイしたりする際に、直接SageMaker Studioの該当ワークフローに遷移できます。
+
+以前は、Hugging Faceでモデルを発見した後、SageMaker Studioで作業を開始するには、AWSコンソールでAmazon SageMakerを開き、ドメインの作成、IAM権限の設定、場合によってはGPUクォータの申請など、複数のステップを踏む必要がありました。この統合により、これらの手間が省かれ、インスピレーションからエンタープライズデプロイメントまでのパスが大幅に短縮されます。
+
+この統合は、Hugging Faceの対応モデルページにある「Customize on SageMaker AI」または「Deploy on SageMaker AI」ボタンを選択することで起動します。これにより、SageMaker Studioに直接移動し、モデルがプリロードされ、環境も完全に構成された状態で利用可能になります。
+
+新機能の主な点は以下の3つです。
+
+1.  **Hugging FaceからSageMaker Studioへのディープリンク:** Hugging Faceのモデルページにある「Customize on SageMaker AI」ボタンは、選択したモデルがプリロードされた状態でStudioのモデルカスタマイズページを開きます。「Deploy on SageMaker AI」ボタンは、エンドポイントデプロイメント用にプリコンフィグされた状態でStudioのデプロイメントページを開きます。
+2.  **プリコンフィグされた権限:** このフローを通じて作成された新しいStudio環境には、モデルカスタマイズ、トレーニングジョブ、ノートブック実験、エンドポイントデプロイメントなど、SageMakerの全機能に対応する権限が自動的に設定されます。これにより、手動でのIAMロールやポリシーの設定が不要になります。
+3.  **GPUクォータの可視化:** インスタンスタイプを選択する際に、Studio UI上で現在のクォータ制限に基づいたGPUインスタンス（G5、G6）の利用可能性が直接表示されるようになりました。これにより、Service Quotasページへ別途移動することなく、クォータ状況を確認し、必要に応じて上限緩和を申請できます。
+
+この機能により、開発者はモデルの発見から実行までのプロセスをシームレスに行えるようになり、コンテキストスイッチや手動での環境設定、権限トラブルシューティングといった作業を最小限に抑えながら、迅速な開発が可能になります。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

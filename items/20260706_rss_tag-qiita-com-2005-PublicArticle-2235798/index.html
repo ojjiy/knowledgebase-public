@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>New Relic MCPの回答精度を向上させるプロファイルのご紹介</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>New Relic MCPの回答精度を向上させるプロファイルのご紹介</h1>
+<p><strong>Date:</strong> 2026-07-06</p>
+<p><strong>Source:</strong> rss / Qiita Trend</p>
+
+<p><a href="https://qiita.com/seamoooooo/items/e458d2a7969e8c92d9ba?utm_campaign=popular_items&amp;utm_medium=feed&amp;utm_source=popular_items">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">New Relic MCP（Model Context Protocol）は、AIエージェントがNew Relicのオブザーバビリティデータ（メトリクス、ログ、トレースなど）にアクセスし、活用するための標準化された手法を提供するプロトコルです。このMCPを活用することで、開発者はIDE（統合開発環境）から離れることなく、AIと対話しながらシステムのパフォーマンス問題やエラーの原因を直感的に特定できるようになります。
+
+特に、AI IDEであるKiroとNew Relic MCPを連携させるための公式プラグイン「New Relic kiro power」がリリースされました。このプラグインは、KiroにNew Relicのデータへのアクセスを可能にし、AIエージェントのアウトプットを最適化します。
+
+「New Relic kiro power」リポジトリ内の「steering」ディレクトリに格納されているプロファイル（システムプロンプトやインストラクションの集合）が、AIエージェントの回答精度を向上させる鍵となります。このプロファイルには、SREとしての理想的な振る舞い方、NRQL（New Relic Query Language）の適切な扱い方、New Relicの各エンティティの解釈方法などが詳細に定義されています。
+
+このプロファイルを自社のAI Agentのナレッジデータベースに追加することで、AIは汎用的なアシスタントからNew Relicに精通したSREへと進化し、日々の調査効率を大幅に向上させることができます。
+
+具体的には、KiroとNew Relic MCPの連携により、以下の4点が実現します。
+
+1.  **コンテキストスイッチの排除:** ダッシュボードとエディタを行き来する必要がなくなり、IDE内で直接パフォーマンスデータを確認できます。
+2.  **自然言語でのNRQL実行:** 「直近1時間の500エラー原因を特定して」といった指示だけで、AIがNRQLの組み立て、実行、解析を代行します。
+3.  **コードと稼働データの統合分析:** 編集中のコードと実際のパフォーマンスデータを紐付け、コードレベルでの原因特定が可能になります。
+4.  **自律的な初動調査（トリアージ）:** 障害発生時にAIに依頼するだけで、関連ログの収集やゴールデンメトリクスの確認を自律的に行い、初動対応を短縮します。
+
+このMCPとプロファイルの仕組みは、Claude CodeなどのコマンドラインAIエージェントにも容易に取り入れることができます。Kiroのプラグインリポジトリで公開されている「steering」ディレクトリの内容をプロジェクトのカスタムインストラクションやプロンプト定義ファイルに組み込み、`mcp.json`にNew Relicの接続情報を追記することで、AIエージェントがNew Relicのツールを利用できるようになります。
+
+MCPの登場によりAIエージェントとNew Relicデータの連携は容易になりましたが、AIエージェントを的確に機能させるためには、今回紹介したようなコンテキストを与えるプロファイル設定が重要です。自社のシステム特性に合わせてプロファイルに「障害時に必ず確認すべき重要指標のNRQL」などを追加し、継続的にAI Agentを育てていくことで、より高いパフォーマンスを発揮することが期待できます。
+
+さらに、New RelicではAIコーディングアシスタントのトークン消費、コスト、非効率な動作パターンを可視化するオープンソースツール「New Relic Preflight」も提供しています。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

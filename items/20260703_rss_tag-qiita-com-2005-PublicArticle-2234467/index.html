@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>このプロンプトをAIエージェントに貼り付けて、Kaggleのベースラインを作ろう！</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>このプロンプトをAIエージェントに貼り付けて、Kaggleのベースラインを作ろう！</h1>
+<p><strong>Date:</strong> 2026-07-03</p>
+<p><strong>Source:</strong> rss / Qiita Trend</p>
+
+<p><a href="https://qiita.com/Isaka-code/items/8fafc5cc522b5eb655da?utm_campaign=popular_items&amp;utm_medium=feed&amp;utm_source=popular_items">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">この記事は、AIエージェントを活用してKaggleのベースラインを効率的に作成する方法について解説しています。AIエージェントの普及により、Kaggleへの参加ハードルが大幅に低下したことを背景に、環境構築やデータ読み込みのエラーに時間を費やすことなく、迅速にベースラインを構築できるプロンプトと、その意図を解説しています。
+
+**事前準備として、以下の3点が必要です。**
+1.  **コンペへの参加登録:** ルールに同意し、API経由でのデータダウンロードを可能にする。
+2.  **Kaggle APIトークンの発行:** `kaggle.json` を発行し、指定ディレクトリに配置する。
+3.  **AIエージェントのインストール:** Claude Code、Codex、Cursorなど、好みのエージェントを用意する。
+これらの準備が完了したか確認するため、AIエージェントに「Kaggle APIを使って、現在開催中のコンペ一覧を教えてください」と質問し、正しく一覧が返ってくるかで判断できます。
+
+**AIエージェントに貼り付けるプロンプトのテンプレートも提供されています。**
+このプロンプトでは、以下の要素が指示されています。
+*   **環境構築:** パッケージ管理に高速な `uv` を使用する。
+*   **Kaggle CLIの活用:** ディスカッションの取得、データダウンロード、提出などをAPI経由で行う。
+*   **実行ステップ:**
+    1.  **ベースライン作成とSubmit確認:** 最もシンプルなモデルで提出エラーがないか確認する。
+    2.  **ローカル検証（CV）の確立と自律的改善:** 信頼できるローカル検証環境を構築し、特徴量エンジニアリングやモデル改善を進め、CVスコア改善時に提出してLBスコアを確認する。
+    3.  **実験管理と可視化:** 実験内容、CVスコア、LBスコアを記録し、CVとLBの相関を可視化するプロットを作成・更新する。
+    4.  **コンペ理解のためのドキュメント化:** コンペ概要、データ仕様、EDA結果、試したアプローチなどを日本語Markdown形式で整理・保存する。
+
+**プロンプトの意図は以下の通りです。**
+*   `uv` の指定: ライブラリの依存関係解決やインストールを迅速化するため。
+*   Kaggle CLIの明示: ブラウザ操作によるスクレイピング対策を回避し、安全かつ確実なAPI経由の操作を促すため。
+*   「まずはベースライン作成とSubmit確認」: 提出フォーマットエラーや推論時間制限による手戻りを防ぎ、最小構成での提出成功を最優先するため。
+*   「CVの確立とCV-LBプロット作成」: Public LBへの過学習を防ぐため、信頼できるローカル検証環境を構築し、人間がCVとLBの乖離をチェックできるようにするため。
+*   「日本語でMarkdownとして保存」: AIエージェントに丸投げするのではなく、人間がアイデアを出しやすく、コンペの全体像を深く理解できるようにするため。
+
+この記事は、Kaggle初心者や、AIエージェントを活用して効率的に学習を進めたいと考えている人々にとって、実践的で有用なガイドとなっています。AIエージェントを単なる自動化ツールとしてではなく、学習と探求を支援するパートナーとして活用する視点を提供しています。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Contrastive Decoding Diffing (CDD): recovering verbatim finetuning data from logits alone, no weight access needed[R]</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>Contrastive Decoding Diffing (CDD): recovering verbatim finetuning data from logits alone, no weight access needed[R]</h1>
+<p><strong>Date:</strong> 2026-07-03</p>
+<p><strong>Source:</strong> reddit / MachineLearning</p>
+
+<p><a href="https://www.reddit.com/r/MachineLearning/comments/1umn2dk/contrastive_decoding_diffing_cdd_recovering/">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body">1.  **ポストの内容説明**
+
+    このRedditのポストは、「Contrastive Decoding Diffing (CDD)」という新しい手法について説明しています。これは、**ファインチューニングされた大規模言語モデル（LLM）から、元の学習データ（ファインチューニングに使用されたデータ）を、モデルの重みにアクセスすることなく、生成されるテキストの「ロジット」情報だけで復元する**ことを可能にする技術です。
+
+    *   **先行研究との比較:** 以前の研究では、ファインチューニングによってモデルの「活性化」に変化が生じ、それを分析することでファインチューニングの内容を推測する手法（Activation Difference Lens, ADL）がありました。しかし、ADLはモデルの重みにアクセスする必要があり（ホワイトボックス）、復元できるのは大まかな内容にとどまっていました。
+    *   **CDDの革新性:** CDDは、モデルの重みにアクセスせず、生成される各単語の「ロジット」（モデルが次の単語としてどの単語を選択するかの確率のようなもの）を比較するだけで、元のファインチューニングデータを「 verbatim（そのまま、逐語的）」に復元できると主張しています。これは、より限定的な情報（グレーボックス）しかなくても、より正確な復元が可能であることを示しています。
+    *   **実験結果:** 複数のモデルファミリー（1Bから32Bパラメータ）とデータセット（SDFベンチマーク）でテストした結果、CDDは高い精度（4/5）で元のデータを復元でき、ADL（最大3/5）を上回る性能を示したとのことです。
+    *   **予期せぬ発見:** この研究の過程で、「Dr. Elena Rodriguez」という架空の科学者の名前が、異なるファインチューニングドメイン（医薬品承認、料理レシピ、コンクリート研究など）で繰り返し登場するという興味深い発見がありました。これは、Claude Sonnet 3.6というLLMが、架空の科学者を生成する際にこの名前を頻繁に使う傾向があり、その名前がファインチューニングデータに「焼き付いて」しまったことが原因だと分析されています。この発見は、別途「ghost couple」というタイトルの投稿でも共有されています。
+    *   **提供情報:** ポストには、研究論文へのリンクと、実装コードへのGitHubリンクも添付されています。
+
+2.  **興味深いコメント**
+
+    このポストに対するコメントの中で、特に興味深いものは以下の2つです。
+
+    *   **「the dr elena rodriguez thing is so funny but also kind of terrifying, like how much synthetic data is just full of the same hallucinated names over and over」**
+        （「Dr. Elena Rodriguez の話はすごく面白いけど、同時にちょっと恐ろしいね。どのくらい合成データに同じような幻覚（ハルシネーション）の名前が繰り返し入っているんだろう。」）
+        このコメントは、前述の「Dr. Elena Rodriguez」という予期せぬ発見に対する率直な感想を述べています。面白いと感じる一方で、合成データ生成の際に、AIが特定のパターンや名前を過剰に繰り返してしまう可能性を示唆しており、その普遍性や潜在的な問題点（データの偏りや信頼性）に対する懸念を表している点が興味深いです。
+
+    *   **「never thought logit diffs alone would pull full sentences, the fact it beats whitebox methods without touching weights is insane」**
+        （「ロジットの違いだけで文章全体が復元できるなんて考えたこともなかった。重みに触れずにホワイトボックスの手法を上回るというのはすごい。」）
+        このコメントは、CDDの技術的な驚異を直接的に表現しています。モデルの重みにアクセスするという、従来は不可欠と考えられていた条件なしに、生成されるテキストの確率情報（ロジット）だけで元のデータを復元できるという点が、非常に革新的で「insane（信じられないほどすごい）」だと感じていることが伝わってきます。これは、CDDの技術的なインパクトの大きさを物語っています。</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>

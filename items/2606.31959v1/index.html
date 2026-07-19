@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AnyBokeh: Physics-Guided Any-to-Any Bokeh Editing with Optical Fingerprint Transfer</title>
+  <link rel="stylesheet" href="/knowledgebase-public/assets/vendor/katex-0.16.45.min.css" />
+  <link rel="stylesheet" href="/knowledgebase-public/assets/styles.css?v=calendar-link-theme-bookmark-summary-backtop" />
+  
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="site-nav-links">
+        <a href="/knowledgebase-public/index.html">Top</a>
+        
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" class="theme-button" data-theme-set="light" aria-label="Light mode" title="Light mode">☀</button>
+        <button type="button" class="theme-button" data-theme-set="dark" aria-label="Dark mode" title="Dark mode">☾</button>
+      </div>
+    </nav>
+  </header>
+  <main class="page-shell">
+    
+<h1>AnyBokeh: Physics-Guided Any-to-Any Bokeh Editing with Optical Fingerprint Transfer</h1>
+<p><strong>Date:</strong> 2026-06-30</p>
+<p><strong>Source:</strong> paper / hf-papers</p>
+
+<p><a href="http://arxiv.org/abs/2606.31959v1">Original URL</a></p>
+<article id="item-summary-markdown" class="summary-long markdown-body"># タイトル
+AnyBokeh: Physics-Guided Any-to-Any Bokeh Editing with Optical Fingerprint Transfer
+[View Paper](http://arxiv.org/abs/2606.31959v1)
+
+## 1. 問題意識：解決したい問題はなにか
+単一の画像から、撮影後にボケ（被写界深度効果）を編集することが難しいという問題意識があります。特に、既存の手法は、入力画像がすべてピントが合っている（all-in-focus）ことを前提としているか、一度すべてピントが合った状態に復元してから新しいボケを生成するというパイプラインをとることが多いです。しかし、このような手法では、元の画像に含まれる有用なボケの手がかりが失われたり、復元処理のアーティファクトが最終的な編集結果に影響を及ぼしたりする可能性があります。実用的なボケ編集ツールは、任意にフォーカスや絞りの設定で撮影された画像に対応できる必要があります。
+
+## 2. 提案手法のアプローチ：どのようなアイデア・アプローチで問題を解決しようとしたか
+本研究では、AnyBokehという物理学に基づいた「任意から任意へのボケ編集」フレームワークを提案します。従来のボケ編集手法が、元の画像のボケを単なる除去すべき劣化と見なすのに対し、AnyBokehでは元の画像のボケ状態を、符号付き円形錯乱円（signed circle-of-confusion: CoC）マップと視差（disparity）マップを用いて明示的に推定します。
+
+具体的には、以下のアイデアに基づいています。
+*   **ソース画像のボケ状態の推定**: 元の画像に含まれるボケの程度と分布を、CoCマップと視差マップという2つの情報から推定します。
+*   **物理的光学指紋（Optical Fingerprint）の抽出**: CoCと視差の違いの線形関係をモデル化することで、ソース画像固有の「光学指紋」を推定します。この光学指紋は、視差の違いが画像空間のボケにどのように変換されるかを決定する、開口部、焦点距離、センサーサイズ、画像解像度などのグローバルな光学およびスケーリング要因を吸収する量です。
+*   **光学指紋の転送**: 推定されたソース固有の光学指紋を、目標とするフォーカスと絞りの設定に転送します。これにより、すべてピントが合った状態への復元を回避し、ソース画像の光学特性をターゲット設定に適用します。
+*   **相対的なボケ合成**: ソース画像、ソースCoCマップ、ターゲットCoCマップを条件とする生成エディターを用いて、相対的なボケ合成を行います。これにより、空間的に適応的なデブラーリング、ボケの維持、およびデフォーカスレンダリングが可能になります。
+
+## 3. 成果：提案手法により、何が達成できたのか
+AnyBokehにより、以下のことが達成できました。
+*   **任意から任意へのボケ編集**: 任意のフォーカスや絞りの設定で撮影された画像に対して、ボケの除去、維持、または強調といった、より柔軟な編集が可能になりました。
+*   **すべてピントが合った状態への復元回避**: 従来の「すべてピントが合った状態への復元」パイプラインに内在する、ボケ情報や光学情報（optical cues）の損失、および復元アーティファクトの伝播を防ぐことができます。
+*   **テスト時のボケレベルキャリブレーション不要**: 既存手法で必要とされていた、ターゲットのボケ強度を合わせるためのテスト時のキャリブレーションが不要になります。
+*   **忠実で制御可能な編集**: 実世界のベンチマークデータセットでの実験により、AnyBokehが忠実で制御可能な編集を実現できることが示されました。具体的には、任意から任意へのボケ編集、すべてピントが合った状態からボケへのレンダリング、およびデフォーカスからのデブラーリングが可能です。
+*   **物理的に監督された学習のサポート**: 高忠実度な合成データセット「UnrealBokeh」を構築し、物理学的に監督された学習を可能にしました。
+
+## 4. 課題：本手法の限界・課題にはなにか。本文中で著者が言及しているものと、あなたが想定するもの
+### 本文中で著者が言及している課題
+*   **極端なソースブラー**: 入力画像が極端にボケている場合、高周波テクスチャや細かな幾何学的構造が失われているため、忠実な再構成は本質的に曖昧になります。この場合、完全にシャープな詳細を復元できない可能性があります。
+*   **非常に大きなボケ球の縮小**: ターゲット設定でボケサイズを大幅に縮小する必要がある場合、特に非常に大きなボケ球を縮小する際に、残存するボケアーティファクトや空洞状の構造が生成される可能性があります。これは、学習データにおけるそのような極端なボケ球の事例が少ないことや、シーンの内容が大きなデフォーカスディスクによって覆い隠されていることが原因として考えられます。
+*   **高解像度推論の速度**: 高解像度推論のためにタイリングとステッチング戦略を用いることは、入力画像のネイティブなアスペクト比と解像度を維持するのに役立ちますが、シングルパス推論と比較して実行時間が増加します。
+
+### あなたが想定する課題
+*   **計算リソース**: 提案手法は、CoCマップや視差マップの推定、および生成エディターによるボケ合成など、複数の段階を経ており、計算リソース（GPUメモリ、処理時間）を比較的多く消費する可能性があります。特に、高解像度画像に対しては、タイリング戦略によりさらに計算コストが増大します。
+*   **学習データの限界**: UnrealBokehデータセットは高品質ですが、現実世界のすべての撮影条件や被写体を網羅しているわけではありません。特に、特殊なレンズ、被写体、照明条件など、データセットに存在しない状況下では、性能が低下する可能性があります。
+*   **「光学指紋」の推定精度**: CoCと視差の関係から光学指紋を推定するプロセスは、推定されたCoCマップと視差マップの精度に依存します。これらのマップの推定が不正確な場合、光学指紋の転送も不正確になり、期待されるボケ編集結果が得られない可能性があります。
+*   **解釈可能性**: 生成モデルが、ソースとターゲットのCoCマップを条件としてどのようにボケを編集しているのか、その内部的なメカニズムはブラックボックスとなる可能性があります。
+
+## 5. 技術詳細：提案手法の技術的な詳細について、できるだけ詳しく。数式やアルゴリズム、モデル構造なども可能な限り詳しく
+
+AnyBokehは、主に2つのステージから構成されます。
+
+### Stage 1: ソースCoCマップと視差マップの推定
+このステージの目的は、入力ソース画像 `I_src` から、ソース画像のボケ状態を示す符号付きソースCoCマップ `CoC_src` と、シーンの幾何学的情報を表す視差マップ `D` を同時に推定することです。
+
+**理論的背景:**
+薄レンズモデルによれば、焦点面から離れたシーン点 `S_2` によるCoCの物理的な直径 `CoC_mm` は、焦点距離 `f`、絞り `N`、焦点距離 `S_1`、センサーサイズ `W_sensor`、解像度 `W_res` を用いて以下のように近似できます（`S_1` &gt;&gt; `f` の場合）。
+```
+CoC_mm ≈ (f^2 / (N * S_1)) * ((S_2 - S_1) / S_2)
+```
+さらに、被写界深度（Depth-of-Field）の式を拡張し、視差 `D` と焦点距離 `D_focus` の関係に注目すると、CoCのピクセル単位の直径 `CoC_px` は、視差 `D` と焦点距離 `D_focus` の差に線形関係があることが導かれます。
+```
+CoC_px = kappa * (D_focus - D)
+```
+ここで、`kappa` はソース画像に固有の係数であり、以下のように定義されます。
+```
+kappa = (f^2 * W_res) / (N * W_sensor)
+```
+この `kappa` は、ソース画像固有の「光学指紋（Optical Fingerprint）」として扱われます。これは、視差の違いを画像空間のボケに変換するグローバルな要因（開口部、焦点距離、センサーサイズ、解像度など）を吸収します。
+
+**モデル構造:**
+Stage 1 では、この関係を利用して、入力画像 `I_src` から `CoC_src` と `D` を同時に予測します。
+*   **入力**: ソース画像 `I_src`。
+*   **出力**: 符号付きソースCoCマップ `CoC_src` と視差マップ `D`。
+*   **モデルアーキテクチャ**: FLUX.1-Fill-dev などの生成モデルをバックボーンとして使用し、LoRA（Low-rank adaptation）でファインチューニングされます。
+*   **推論方法**: 画像全体を一度に処理することで、視差マップのスケールの一貫性を保ちます。これは、タイリング推論では視差のスケールが不整合になる可能性があるためです。
+*   **CoC正規化**: CoCマップは、そのダイナミックレンジが大きいため、直接回帰するのではなく、符号付き対数正規化（signed logarithmic normalization）を用いて正規化されます。これは、焦点に近い領域での正確なCoC予測が重要であるため、表現能力をより多く割り当てることを目的としています。
+    ```python
+    # Signed logarithmic normalization for Stage 1
+    def normalize_coc_stage1(coc_raw, coc_max):
+        coc_signed_log = np.sign(coc_raw) * np.log(1 + np.abs(coc_raw)) / np.log(1 + coc_max)
+        coc_norm_log = (coc_signed_log + 1) / 2
+        return np.clip(coc_norm_log, 0, 1)
+    ```
+    ここで `coc_max` は、学習データセットで観測される最大のCoC値です。
+
+### Stage 2: CoC条件付きボケ編集
+このステージでは、Stage 1 で推定されたソースCoCマップ `CoC_src` と視差マップ `D`、およびユーザーが指定したターゲットCoCマップ `CoC_tgt` を条件として、最終的なターゲット画像 `I_tgt` を生成します。
+
+**ターゲットCoCマップの生成:**
+ターゲットCoCマップ `CoC_tgt` は、ソース画像の光学指紋 `kappa_src` を、ユーザーが指定したターゲットのフォーカス `D_focus_tgt` と絞り `N_tgt` に基づいて計算します。
+相対編集の場合（ソースとターゲットの光学指紋を共有する）:
+```
+# Source optical fingerprint (slope)
+kappa_src = estimated_slope_from_CoC_src_and_D
+
+# Ratio of target aperture to source aperture (assuming fixed focal length and sensor scale)
+aperture_ratio = N_src / N_tgt
+
+# Target optical fingerprint
+kappa_tgt = aperture_ratio * kappa_src
+
+# Target CoC
+CoC_tgt_raw = kappa_tgt * (D_focus_tgt - D)
+```
+絶対編集の場合（ユーザーが直接 `kappa_abs` を指定）:
+```
+CoC_tgt_raw = kappa_abs * (D_focus_tgt - D)
+```
+これらの生の `CoC_tgt_raw` は、Stage 2 に入力するために正規化されます。
+
+**モデル構造:**
+*   **入力**: ソース画像 `I_src`、ソースCoCマップ `CoC_src`、ターゲットCoCマップ `CoC_tgt`。
+*   **出力**: ターゲット画像 `I_tgt`。
+*   **モデルアーキテクチャ**: FLUX.1-Fill-dev などの生成モデルをバックボーンとして使用し、LoRAでファインチューニングされます。
+*   **Dual-CoC Conditioning**: ソース画像とターゲットCoCマップの両方を条件として使用します。これにより、モデルは入力画像のボケ状態と望ましい出力のボケ状態の両方を明示的に認識し、空間的に適応的な編集（デブラーリング、維持、デフォーカス合成）を実行できます。
+*   **CoC正規化**: Stage 2 では、CoCは回帰ターゲットではなく条件信号として使用されるため、より単純な符号付きtanh正規化（signed tanh normalization）が使用されます。
+    ```python
+    # Signed tanh normalization for Stage 2
+    def normalize_coc_stage2(coc_raw, saturation_scale):
+        coc_signed_tanh = np.tanh(coc_raw / saturation_scale)
+        coc_norm_tanh = (coc_signed_tanh + 1) / 2
+        return coc_norm_tanh
+    ```
+    ここで `saturation_scale` は、CoCの飽和スケールを制御します。
+
+**UnrealBokehデータセット:**
+物理学的に監督された学習をサポートするために、Unreal Engineでレンダリングされた高忠実度の合成データセット「UnrealBokeh」が構築されました。このデータセットには、RGB画像、詳細な深度マップ、フォーカス距離、絞り、焦点距離、センサーサイズ、画像解像度などのメタデータが含まれており、Ground Truth CoCマップの計算を可能にします。
+
+**評価指標:**
+PSNR, SSIM, LPIPS, FID, DISTSなどが使用されます。
+
+## 6. この論文を140字以内のツイートで要約すると？
+単一画像からボケを自在に編集！AnyBokehは、元のボケ情報を「光学指紋」として抽出し、ターゲット設定へ転送。復元不要で、あらゆるボケ編集を忠実かつ制御可能に実現。高精度な合成データセットも公開。#AI #画像処理 #ボケ編集</article>
+
+  </main>
+  <button type="button" class="back-to-top" data-back-to-top aria-label="ページ先頭へ戻る" title="ページ先頭へ戻る">↑</button>
+  <script src="/knowledgebase-public/assets/vendor/dompurify-3.4.2.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-14.1.1.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/katex-0.16.45.min.js"></script>
+  <script src="/knowledgebase-public/assets/vendor/markdown-it-texmath-1.0.0.js"></script>
+  <script src="/knowledgebase-public/assets/bookmark.js?v=digest-dates-external"></script>
+  
+</body>
+</html>
